@@ -59,6 +59,7 @@ O modelo passou a identificar 63% dos inadimplentes reais, aceitando como trade-
 
       **Melhorias Mapeadas (Próximos Passos)**
 Este projeto está em evolução ativa. Com base no feedback recebido, as seguintes melhorias estão planejadas:
+
  **Validação cruzada (Cross-Validation)** — substituir o holdout simples por k-fold para aumentar a confiabilidade dos resultados
  
  **Comparação de modelos** — testar Regressão Logística e XGBoost e justificar a escolha final com métricas
