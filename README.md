@@ -26,18 +26,22 @@ O projeto segue o ciclo CRISP-DM (Cross Industry Standard Process for Data Minin
 
 
   **Resultados**
-Comparativo: Modelo Inicial vs. Modelo Corrigido
-**Métrica**                **Modelo Inicial**     **Modelo Corrigido** 
-**Acurácia geral**              87%                      ~72%
-**Recall (Inadimplentes)**       1%                       63%
-**Falsos Negativos**           125 de 126              46 de 126
+Comparativo: Modelo Inicial vs. Modelo Corrigido:
+
+| Métrica                  | Modelo Inicial | Modelo Corrigido |
+|:-------------------------|:--------------:|:----------------:|
+| Acurácia geral           |      87%       |       ~72%       |
+| Recall (Inadimplentes)   |    **1%**      |     **63%**      |
+| Falsos Negativos         |  125 de 126    |    46 de 126     |
 
 O modelo inicial tinha acurácia alta, mas era inútil para o negócio: identificava apenas 1 inadimplente real em 126. Esse foi o principal aprendizado do projeto — acurácia alta ≠ modelo bom.
 
-**Matriz de Confusão (Modelo Corrigido)**
-                      **Previsto: Bom Pagador**  **Previsto: Inadimplente**
-**Real:Bom Pagador**              637 ✅                 237⚠️
-**Real:Inadimplente**              46❌                  80✅
+### Matriz de Confusão (Modelo Corrigido)
+
+|                        | Previsto: Bom Pagador | Previsto: Inadimplente |
+|:-----------------------|:---------------------:|:----------------------:|
+| **Real: Bom Pagador**  | 637 ✅                | 237 ⚠️                 |
+| **Real: Inadimplente** | 46 ❌                 | 80 ✅                  |
 
 O modelo passou a identificar 63% dos inadimplentes reais, aceitando como trade-off uma taxa maior de falsos positivos — decisão justificada pela assimetria de custos do negócio.
 
@@ -56,7 +60,11 @@ O modelo passou a identificar 63% dos inadimplentes reais, aceitando como trade-
       **Melhorias Mapeadas (Próximos Passos)**
 Este projeto está em evolução ativa. Com base no feedback recebido, as seguintes melhorias estão planejadas:
  **Validação cruzada (Cross-Validation)** — substituir o holdout simples por k-fold para aumentar a confiabilidade dos resultados
+ 
  **Comparação de modelos** — testar Regressão Logística e XGBoost e justificar a escolha final com métricas
+ 
  **Otimização de threshold** — definir e documentar o ponto de corte ideal (aprovar / negar / revisar) com base no impacto de negócio
+ 
  **Alternativas ao UnderSampling** — testar SMOTE e class_weight como alternativas e documentar trade-offs
+ 
  **Especificação de Deploy** — detalhar os inputs do modelo, o que ele retorna (probabilidade ou decisão) e a regra de negócio aplicada
