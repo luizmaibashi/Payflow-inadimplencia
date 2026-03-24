@@ -86,6 +86,7 @@ Especificação de Deploy — detalhar os inputs do modelo, o que ele retorna (p
 
 
 **Refinamento (Pós-Feedback)**
+
 Após avaliação de especialistas, implementei as seguintes melhorias:
 
 Validação Cruzada (K-Fold): Substituí o teste simples por 5 rodadas de validação, garantindo que o desempenho do modelo é estável e não fruto do acaso.
