@@ -143,11 +143,14 @@ Output (JSON):
 
 
 **CONCLUSÃO FINAL E REFLEXÕES**
+
 Neste projeto de ciência de dados (crédito), aprendi que o "valor real" é muito mais do que entregar um código que funciona. Como estou migrando da análise de dados para a ciência de dados, este trabalho foi o meu "campo de prova" para entender que, na vida real, um modelo estatisticamente "perfeito" pode ser um desastre para o negócio.
 
 O que este projeto me ensinou?
 
 Acurácia não é tudo: No início, fiquei empolgado com os 90% de acurácia, mas logo entendi que o modelo estava sendo enviesado. Ele ignorava o inadimplente para manter uma nota alta. Aprendi que, em crédito, o Recall (a nossa rede de proteção) vale muito mais do que uma média geral bonita.
+
+Nem toda métrica é adequada para todo modelo ou estratégia de negócio. No início, foquei em "vencer" a Matriz de Confusão, buscando o menor número possível de Falsos Negativos. No entanto, ao evoluir para um modelo de estratégia de faixas (Thresholds), percebi que a Matriz de Confusão binária se tornou uma métrica limitada.
 
 O valor da segmentação: Ao implementar as probabilidades e os thresholds de 40% e 65%, percebi que a Ciência de Dados não precisa (e nem deve) tomar todas as decisões sozinha. Aprender a Esteira de Revisão foi o ponto alto: é aqui que a tecnologia ajuda o humano a focar onde realmente existe dúvida.
 
