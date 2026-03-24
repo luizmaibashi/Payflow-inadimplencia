@@ -149,7 +149,7 @@ Neste projeto de ciência de dados (crédito), aprendi que o "valor real" é mui
 
 O que este projeto me ensinou?
 
-Acurácia não é tudo: No início, fiquei empolgado com os 90% de acurácia, mas logo entendi que o modelo estava sendo enviesado. Ele ignorava o inadimplente para manter uma nota alta. Aprendi que, em crédito, o Recall (a nossa rede de proteção) vale muito mais do que uma média geral bonita.
+Acurácia: No início, fiquei empolgado com os 90% de acurácia, mas logo entendi que o modelo estava sendo enviesado. Ele ignorava o inadimplente para manter uma nota alta. Aprendi que, em crédito, o Recall (a nossa rede de proteção) vale muito mais do que uma média geral bonita.
 
 Nem toda métrica é adequada para todo modelo ou estratégia de negócio. No início, foquei em "vencer" a Matriz de Confusão, buscando o menor número possível de Falsos Negativos. No entanto, ao evoluir para um modelo de estratégia de faixas (Thresholds), percebi que a Matriz de Confusão binária se tornou uma métrica limitada.
 
