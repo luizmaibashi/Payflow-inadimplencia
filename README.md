@@ -158,6 +158,12 @@ Comprometimento de Renda: (Parcela Estimada / Renda Mensal).
 Intensidade de Crédito: Cruzamento de uso de limite e quantidade de cartões.
 O porquê: Um modelo de crédito é mais eficaz quando entende a "capacidade de pagamento" e não apenas o histórico. Essas variáveis tornaram-se os principais drivers de decisão no gráfico de Feature Importance, provando que a lógica econômica aumenta a precisão do algoritmo.
 
+<img width="983" height="553" alt="image" src="https://github.com/user-attachments/assets/fbecee65-2fe6-4285-a62a-1489c8aee5cb" />
+
+
+
+
+
 Fase 10: Quantificação Financeira (Perda Evitada)
 O quê: Tradução da Matriz de Confusão em valores monetários (R$).
 
