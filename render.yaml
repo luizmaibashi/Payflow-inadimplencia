@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: payflow-api
+    env: docker
+    dockerfilePath: Dockerfile.api
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: RISCO_BAIXO_MAX
+        value: 0.40
+      - key: RISCO_MEDIO_MAX
+        value: 0.65

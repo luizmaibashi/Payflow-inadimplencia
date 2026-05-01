@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    environment:
+      - RISCO_BAIXO_MAX=0.40
+      - RISCO_MEDIO_MAX=0.65
+    networks:
+      - payflow_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.front
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:8000/predict
+    depends_on:
+      - api
+    networks:
+      - payflow_network
+
+networks:
+  payflow_network:
+    driver: bridge
