@@ -1,17 +1,26 @@
-[README.md](https://github.com/user-attachments/files/26523562/README.md)
- <p align="center">
+<p align="center">
   <img src="reports/figures/banner_payflow.png" alt="PayFlow - Previsão de Risco de Crédito" width="100%"/>
 </p>
 
 <h1 align="center">📊 PayFlow — Previsão de Risco de Crédito</h1>
 
 <p align="center">
-  <strong>Projeto de portfólio | Em evolução ativa</strong>
+  <strong>Projeto de portfólio | Deploy em produção ativo</strong>
+</p>
+
+<p align="center">
+  <a href="https://payflow-inadimplencia-pdve4qkbja5woxpdpzbvbw.streamlit.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white"/>
+  </a>
+  <a href="https://payflow-inadimplencia.onrender.com/docs" target="_blank">
+    <img src="https://img.shields.io/badge/⚡%20API%20Docs-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white"/>
+  </a>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white"/>
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
   <img src="https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white"/>
   <img src="https://img.shields.io/badge/Imbalanced--Learn-00B0D8?style=for-the-badge&logoColor=white"/>
   <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white"/>
@@ -19,7 +28,13 @@
 
 ---
 
-Este é meu primeiro projeto de Data Science, desenvolvido durante a primeira fase da **Pós-Tech AI SCIENTIST (FIAP)**. A documentação acompanha não só o *como*, mas o **porquê** de cada decisão, incluindo os erros, correções e aprendizados ao longo do caminho.
+Projeto de Data Science desenvolvido durante a **Pós-Tech AI SCIENTIST (FIAP)** e evoluído para um sistema de produção completo com **MLOps Nível 1**. A documentação acompanha não só o *como*, mas o **porquê** de cada decisão — incluindo os erros, correções e a jornada de um notebook até uma API em produção na nuvem.
+
+| Componente | URL |
+|---|---|
+| 🎯 **Simulador (Frontend)** | [payflow-inadimplencia.streamlit.app](https://payflow-inadimplencia-pdve4qkbja5woxpdpzbvbw.streamlit.app/) |
+| ⚡ **API REST (Backend)** | [payflow-inadimplencia.onrender.com](https://payflow-inadimplencia.onrender.com) |
+| 📖 **Documentação da API** | [/docs (Swagger)](https://payflow-inadimplencia.onrender.com/docs) |
 
 ---
 
@@ -192,23 +207,28 @@ O simulador abrirá em seu navegador, permitindo a entrada interativa de dados d
 ```
 Payflow-inadimplencia/
 ├── app/
-│   └── main.py                            # Streamlit App para deploy do modelo
-├── data/
-│   ├── raw/
-│   │   └── payflow_credit_risk.csv        # Dataset original
-│   └── processed/                         # Dados processados (se houver)
+│   ├── api.py          # Rotas FastAPI (Backend REST)
+│   ├── schemas.py      # Contratos de entrada/saída (Pydantic)
+│   ├── service.py      # CreditScoringService (Deep Module)
+│   ├── utils.py        # ⭐ Feature Engineering centralizado (Anti Training-Serving Skew)
+│   └── main.py         # Streamlit App (Frontend)
+├── tests/
+│   └── test_paridade.py  # Testes de paridade treino-serventia (pytest)
+├── data/raw/
+│   └── payflow_credit_risk.csv
 ├── notebooks/
-│   └── 01_credit_risk_modeling_payflow.ipynb  # Notebook principal (EDA + Modelagem)
-├── models/                                # Modelos serializados (.pkl)
-│   ├── modelo_payflow_v1.pkl              # RandomForest treinado (~3MB)
-│   └── colunas_modelo.pkl                 # Lista de 30 features
-├── reports/
-│   └── figures/                           # Gráficos e Imagens do projeto
-│       ├── banner_payflow.png
-│       └── grafico_01.png...
-├── requirements.txt                       # Dependências do projeto
-├── .gitignore                             # Ignorados pelo git
-└── README.md                              # Este arquivo
+│   └── 01_credit_risk_modeling_payflow.ipynb
+├── models/
+│   ├── modelo_payflow_v1.pkl
+│   └── colunas_modelo.pkl
+├── reports/figures/
+├── Dockerfile            # Container da API (Render)
+├── Dockerfile.front      # Container do Frontend (Streamlit)
+├── docker-compose.yml    # Orquestração local
+├── render.yaml           # IaC: Deploy declarativo no Render
+├── Makefile              # Atalhos de execução
+├── requirements.txt
+└── README.md
 ```
 
 ---
