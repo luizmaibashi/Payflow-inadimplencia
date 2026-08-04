@@ -111,6 +111,18 @@ Toda a §2.1 assume que `p` é **probabilidade**, não score de ranqueamento.
 
 **Sem calibração validada, este motor é aritmética sobre número sem significado.** É gate, não recomendação (débito #3).
 
+**Gate 1 demonstrado empiricamente (2026-08-04)** — `scripts/camada1_baseline_e_gate1_calibracao.py`, baseline diagnóstico sobre `application_train.csv` (307.511 linhas). Três variantes avaliadas no mesmo conjunto de teste (distribuição real, 8,07% de TARGET=1):
+
+| Variante | AUC | Brier | `p̂` médio | Gap vs. taxa real |
+|---|---|---|---|---|
+| Natural (sem reamostragem) | 0,7589 | 0,0678 | 8,03% | −0,04 p.p. |
+| Undersample (não calibrado) | 0,7537 | 0,2018 | 42,41% | **+34,33 p.p.** |
+| Undersample + isotônica | 0,7531 | 0,0683 | 8,00% | −0,08 p.p. |
+
+**AUC praticamente idêntico entre as três** confirma exatamente o previsto: undersampling não piora o ranqueamento, então **AUC sozinho nunca detectaria o problema**. O reliability diagram da variante não calibrada mostra gap de até **+51 p.p.** no bin de maior risco — um `p*` comparado contra esse `p̂` aprovaria sistematicamente menos do que deveria (o inverso do medo original de "aprovar demais"; ver correção registrada na aula, `wiki/concepts/04_business/Valor_Esperado_Decisao_Credito.md`). A isotônica recupera o Brier ao nível do modelo natural sem alterar o AUC. Relatório completo em `reports/gate1_calibracao.md`.
+
+> Este é um baseline diagnóstico (features cruas de `application_train.csv`, sem as tabelas relacionais do ADR-0001), não a Camada 1 final — mas fecha o Gate 1 com evidência empírica de que o mecanismo é real e de que a recalibração o corrige.
+
 ### 2.6 Zona cinzenta derivada, não arbitrada
 
 `p*` é uma linha, mas as premissas que a geram são incertas. A banda tem duas fontes, ambas quantificáveis:
