@@ -14,13 +14,17 @@ dificuldade dos casos sorteados e da mais poder estatistico ao IC
 bootstrap, com o mesmo n para as duas pontas.
 
 Limitacoes declaradas (heranca do app/motor_decisao.py):
-- margem = AMT_ANNUITY/AMT_CREDIT (proxy, nao a margem total sobre a
-  vida do contrato - CNT_PAYMENT nao existe para a aplicacao corrente)
+- margem = margem_via_prazo_historico_cliente() - reconstroi a formula
+  do Gate 0 (anuidade*prazo/credito - 1) usando o PRAZO MEDIO REAL do
+  historico de credito do proprio cliente (94,5% de cobertura) em vez
+  da razao anuidade/credito simples (que confundia prazo com margem -
+  achado de 2026-08-04, revisao pedida pelo Luiz). Ainda e estimativa
+  (prazo de contratos ANTERIORES, nao do contrato atual), nao medicao
+  direta - mas mais fiel que o proxy generico.
 - LGD por NAME_CONTRACT_TYPE (Cash/Revolving) - unico proxy disponivel
   neste dataset, diferente do proxy Consumer/Cash do Gate 0
-- valor realizado no caso de pagamento usa a MESMA margem proxy como
-  fracao de AMT_CREDIT - aproximacao, nao o lucro contabil real do
-  contrato (que dependeria do prazo/custo de funding, indisponiveis)
+- valor realizado no caso de pagamento usa a MESMA margem como fracao
+  de AMT_CREDIT - aproximacao, nao o lucro contabil real do contrato
 """
 import sys
 from pathlib import Path
@@ -124,6 +128,14 @@ def main():
     p_hat = modelo.predict_proba(X_test)[:, 1]
 
     print("Aplicando motor de decisao (EV) e baseline (thresholds legados)...")
+    # NOTA (2026-08-04): tentamos usar margem_via_prazo_historico_cliente()
+    # aqui - reconstruir a formula do Gate 0 com o prazo medio historico do
+    # cliente. FALHOU e foi revertido: o prazo dos contratos ANTERIORES
+    # (mediana 12 meses, emprestimos pequenos de varejo) e curto demais para
+    # o credito ATUAL (que precisa de ~20 meses so para amortizar o
+    # principal), gerando margem negativa em 77% dos casos - economicamente
+    # absurdo. Sao populacoes de contrato diferentes; um nao estima o outro.
+    # Ver ADR-0002 SS2.7 e AGENTS.md debito #12.
     margem = margem_proxy_anuidade(X_test["AMT_ANNUITY"], X_test["AMT_CREDIT"]).to_numpy()
     lgd = lgd_por_tipo_contrato(X_test["NAME_CONTRACT_TYPE"])
     p_estrela = calcular_p_estrela(margem, lgd)
@@ -158,9 +170,9 @@ def main():
     linhas.append(f"**Teste:** n={len(X_test):,} (mesmo split de `camada1_treino.py`)\n")
 
     linhas.append("## Limitações declaradas (leia antes dos números)\n")
-    linhas.append("- **Margem** = `AMT_ANNUITY/AMT_CREDIT` — proxy de intensidade de margem, **não** a margem total sobre a vida do contrato validada no Gate 0 (essa exige `CNT_PAYMENT`, indisponível para a aplicação corrente — o prazo é decidido junto com a aprovação, não é dado de entrada).")
+    linhas.append("- **Margem** = `AMT_ANNUITY/AMT_CREDIT` — proxy de intensidade de margem, **não** a margem total sobre a vida do contrato validada no Gate 0 (essa exige `CNT_PAYMENT`, indisponível para a aplicação corrente — o prazo é decidido junto com a aprovação). **Sabidamente enviesado: confunde prazo com margem** (débito #12). Uma tentativa de corrigir isso via prazo médio histórico do cliente foi testada e **revertida** — ver seção final.")
     linhas.append("- **LGD** por `NAME_CONTRACT_TYPE` (`Cash loans`→70%, `Revolving loans`→85%) — único proxy disponível *neste* dataset; diferente do proxy `Consumer/Cash` usado no Gate 0 (que veio de `previous_application`, com categorias diferentes).")
-    linhas.append("- **Valor realizado ao pagar** usa a mesma margem proxy como fração do crédito — aproximação do lucro, não o lucro contábil real (dependeria de prazo/custo de funding, indisponíveis).")
+    linhas.append("- **Valor realizado ao pagar** usa a mesma margem como fração do crédito — aproximação do lucro, não o lucro contábil real (dependeria de custo de funding, indisponível).")
     linhas.append("- **Banda de indiferença fixa** (±3pp em torno de `p*`) — simplificação; não deriva da incerteza real da estimativa de PD (débito conhecido).\n")
 
     linhas.append("## Distribuição de decisões (teste completo, n={:,})\n".format(len(X_test)))
@@ -209,6 +221,28 @@ def main():
         "sentido — não é que o motor por EV seja necessariamente superior a qualquer corte único, é que "
         "**um corte numérico fixo é frágil a mudanças na calibração do modelo por trás dele**, e a fórmula "
         "`p* = m/(m+ℓ)` não é (ela se recalcula a partir de premissas de negócio, não de um número decorado)."
+    )
+    linhas.append("\n## Tentativa de corrigir o proxy de margem — testada e revertida (2026-08-04)\n")
+    linhas.append(
+        "Ao revisar o débito #12 (o proxy `AMT_ANNUITY/AMT_CREDIT` confunde prazo com margem), tentamos "
+        "reconstruir a fórmula do Gate 0 usando `previous_cnt_payment_mean` — o **prazo médio real dos "
+        "contratos anteriores do próprio cliente**, já agregado na Camada 1, com 94,5% de cobertura. "
+        "Parecia a correção certa pelo princípio do ADR-0006 (substituir premissa por medição onde há dado)."
+    )
+    linhas.append(
+        "\n**Falhou, e o motivo é instrutivo:** a fórmula passou a produzir **margem negativa em 77% dos casos** "
+        "— economicamente absurdo (implicaria emprestar esperando receber menos que o principal). Diagnóstico: "
+        "o crédito **atual** precisa de ~20 meses (mediana) só para amortizar o principal, mas o histórico do "
+        "cliente tem prazo mediano de **12 meses**. São **populações de contrato diferentes** — os anteriores "
+        "são empréstimos pequenos de varejo/consumo; o atual é substancialmente maior. Um não estima o outro."
+    )
+    linhas.append(
+        "\n**Lição registrada:** \"existe dado disponível\" não é o mesmo que \"existe dado aplicável\". "
+        "O prazo histórico é uma medição real, mas de um objeto diferente do que se quer medir — usá-lo teria "
+        "trocado um viés conhecido e documentado por um erro maior e silencioso (a razão anuidade/crédito ao "
+        "menos é sempre positiva e monotônica na intensidade de pagamento). O proxy original foi mantido, com "
+        "seu viés declarado. A função `margem_via_prazo_historico_cliente()` segue em `app/motor_decisao.py` "
+        "com testes, documentada como **não usada em produção** — serve de registro do experimento negativo."
     )
     linhas.append(
         "\n**Comparação mais justa, não feita aqui:** um corte único **recalibrado** para esta mesma "

@@ -7,6 +7,7 @@ from app.motor_decisao import (
     classificar_decisao,
     lgd_por_tipo_contrato,
     margem_proxy_anuidade,
+    margem_via_prazo_historico_cliente,
 )
 
 
@@ -28,6 +29,31 @@ def test_margem_proxy_anuidade():
     amt_credit = pd.Series([20000.0, 40000.0])
     resultado = margem_proxy_anuidade(amt_annuity, amt_credit)
     assert resultado.tolist() == pytest.approx([0.05, 0.05])
+
+
+def test_margem_via_prazo_historico_cliente_usa_prazo_real():
+    amt_annuity = pd.Series([1000.0])
+    amt_credit = pd.Series([12000.0])
+    prazo = pd.Series([12.0])  # cliente com historico: prazo medio real de 12 meses
+    resultado = margem_via_prazo_historico_cliente(amt_annuity, amt_credit, prazo)
+    # m = (1000*12 - 12000) / 12000 = 0.0
+    assert resultado.iloc[0] == pytest.approx(0.0)
+
+
+def test_margem_via_prazo_historico_cliente_fallback_sem_historico():
+    amt_annuity = pd.Series([1000.0])
+    amt_credit = pd.Series([12000.0])
+    prazo = pd.Series([np.nan])  # sem historico -> usa fallback (12 meses)
+    resultado = margem_via_prazo_historico_cliente(amt_annuity, amt_credit, prazo)
+    assert resultado.iloc[0] == pytest.approx(0.0)
+
+
+def test_margem_via_prazo_historico_cliente_prazo_maior_da_mais_margem():
+    amt_annuity = pd.Series([1000.0, 1000.0])
+    amt_credit = pd.Series([12000.0, 12000.0])
+    prazo = pd.Series([12.0, 24.0])
+    resultado = margem_via_prazo_historico_cliente(amt_annuity, amt_credit, prazo)
+    assert resultado.iloc[1] > resultado.iloc[0]
 
 
 def test_lgd_por_tipo_contrato():

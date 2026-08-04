@@ -37,8 +37,45 @@ BANDA_INDIFERENCA_PP = 0.03
 
 def margem_proxy_anuidade(amt_annuity: pd.Series, amt_credit: pd.Series) -> pd.Series:
     """Proxy de m: razao anuidade/credito. NAO equivale a margem total
-    sobre a vida do contrato (exigiria CNT_PAYMENT, indisponivel aqui)."""
+    sobre a vida do contrato - CONFUNDE PRAZO COM MARGEM (dois contratos
+    com a mesma margem real e prazos diferentes tem razoes bem diferentes).
+
+    Mantido para comparacao/regressao, mas SUBSTITUIDO por
+    margem_via_prazo_historico_cliente() como proxy principal (achado de
+    2026-08-04, ver ADR-0002 SS2.7 e AGENTS.md debito #12/#13).
+    """
     return amt_annuity / amt_credit
+
+
+PRAZO_MEDIANO_FALLBACK_MESES = 12.0  # mediana populacional de CNT_PAYMENT em previous_application
+
+
+def margem_via_prazo_historico_cliente(
+    amt_annuity: pd.Series, amt_credit: pd.Series, prazo_medio_historico: pd.Series
+) -> pd.Series:
+    """[NAO USADA EM PRODUCAO - registro de experimento negativo, 2026-08-04]
+
+    Reconstroi a formula de margem do Gate 0 (m = anuidade*prazo/credito - 1)
+    usando o prazo medio dos contratos ANTERIORES do cliente
+    (previous_cnt_payment_mean) como estimativa do prazo do contrato atual.
+
+    POR QUE FOI DESCARTADA: produz margem negativa em 77% dos casos. O
+    credito ATUAL precisa de ~20 meses (mediana) so para amortizar o
+    principal, mas o historico do cliente tem prazo mediano de 12 meses -
+    sao populacoes de contrato diferentes (anteriores = emprestimos
+    pequenos de varejo; atual = substancialmente maior). Um nao estima
+    o outro.
+
+    Licao: "existe dado disponivel" != "existe dado aplicavel". O prazo
+    historico e medicao real, mas de um objeto diferente do que se quer
+    medir. Usa-la teria trocado o vies conhecido e declarado de
+    margem_proxy_anuidade() por um erro maior e silencioso.
+
+    Mantida com testes como registro do experimento. Ver
+    reports/motor_decisao_backtest.md e ADR-0002 SS2.7.
+    """
+    prazo = prazo_medio_historico.fillna(PRAZO_MEDIANO_FALLBACK_MESES)
+    return (amt_annuity * prazo - amt_credit) / amt_credit
 
 
 def lgd_por_tipo_contrato(name_contract_type: pd.Series) -> pd.Series:
