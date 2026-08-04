@@ -30,11 +30,14 @@
 - `docs/adr/` — 8 ADRs (D1-D8)
 - `tests/test_paridade.py` — reescrito para o esquema Home Credit (5 testes, ver débito #8)
 
+- `app/motor_decisao.py` — motor de decisão por valor esperado (ADR-0002), testado em `tests/test_motor_decisao.py` (9 testes)
+- `scripts/motor_decisao_backtest.py` — backtest pareado do motor contra o threshold legado, com IC bootstrap sobre o delta; resultado em `reports/motor_decisao_backtest.md` (ver débitos #12-14 sobre limitações)
+
 **Alvo (a construir):**
-- Motor de decisão — valor esperado por observação, implementado de fato usando `camada1_home_credit_v1.pkl` (ADR-0002)
 - Camada 2 — agente de underwriting com tools de caso e de cenário (ADR-0007)
 - `docs/audit/` — auditorias pós-implementação
 - Eval set versionado + relatório com `n` e intervalo
+- Baseline "corte único recalibrado" para isolar desenho do motor vs. calibração (débito #13)
 
 ---
 
@@ -121,6 +124,9 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 9. **Dataset de mercado emergente ≠ Brasil.** A transferência é de **método**, declarada. Nunca afirmar que o cliente do dataset é brasileiro (ADR-0008).
 10. **Juiz LLM não calibrado até haver labels humanos.** Até as 100 revisões existirem, as rubricas com juiz são indicativas, não medidas (ADR-0004).
 11. **Deploy atual (Streamlit + Render) serve o modelo legado.** Enquanto a Camada 1 nova não passar na paridade, o público vê o projeto antigo — decidir se despublica ou rotula.
+12. **Margem/LGD do motor de decisão são proxies, não a métrica validada no Gate 0.** `application_train.csv` não tem `CNT_PAYMENT` (a fórmula `m = anuidade×prazo/crédito` do Gate 0 exige prazo, que não existe para uma aplicação ainda não decidida). `app/motor_decisao.py` usa `AMT_ANNUITY/AMT_CREDIT` como proxy de margem e `NAME_CONTRACT_TYPE` (Cash/Revolving — categorias diferentes das de `previous_application`) como proxy de LGD. Declarado em código e no relatório do backtest.
+13. **Backtest do motor (`reports/motor_decisao_backtest.md`) não isola desenho de motor vs. calibração do baseline.** O delta de ~R$21 mil/caso a favor do motor de EV é majoritariamente efeito de os thresholds legados (0.40/0.65) estarem calibrados contra a escala de `p̂` de um modelo diferente (não calibrado) — contra `p̂` real, só 1% dos casos ultrapassam 0,40. Falta um terceiro braço (corte único recalibrado nesta mesma escala, otimizado no conjunto de calibração) para provar que "decidir por observação" bate um corte global bem calibrado — o que este backtest prova de fato é que threshold fixo é frágil a mudança de calibração do modelo.
+14. **Banda de indiferença do motor (±3pp) é largura fixa simplificada**, não derivada da incerteza real da estimativa de PD por caso (ADR-0002 §2.6 previa isso, ainda não implementado).
 
 ---
 

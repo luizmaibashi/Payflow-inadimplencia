@@ -134,6 +134,24 @@ Toda a §2.1 assume que `p` é **probabilidade**, não score de ranqueamento.
 
 ---
 
+## 2.7 Execução (2026-08-04) — motor implementado e testado, backtest com achado importante
+
+`app/motor_decisao.py` implementa `calcular_p_estrela`, `classificar_decisao` (APROVAR/ZONA_CINZENTA/NEGAR) e os dois proxies necessários, testados em `tests/test_motor_decisao.py` (9 testes, incluindo o caso exato da aula: R$20k e R$2k na mesma taxa/LGD dão o mesmo `p*` de 19,35%).
+
+**Achado que obrigou um desvio da fórmula original:** `application_train.csv` (a aplicação corrente que a Camada 1 pontua) **não tem `CNT_PAYMENT`** — só existe em `previous_application.csv` (contratos já fechados, usados no Gate 0). Na prática, o prazo é uma variável que o Home Credit decide **junto** com a aprovação, não um dado que chega pronto antes da decisão. Solução adotada (decisão explícita, não silenciosa): margem vira `AMT_ANNUITY/AMT_CREDIT` (proxy de intensidade, não a métrica total-sobre-a-vida validada no Gate 0) e LGD vira `NAME_CONTRACT_TYPE` (`Cash loans`→70%, `Revolving loans`→85% — categorias diferentes das de `previous_application`). Registrado como débitos #12 e #14 no `AGENTS.md`.
+
+**Backtest pareado contra o threshold legado** (`scripts/motor_decisao_backtest.py`, mesmo `p̂` calibrado nas duas estratégias, n=37.093 casos decididos por ambas):
+
+| Estratégia | Valor médio realizado/caso |
+|---|---|
+| Motor (EV) | R$ 11.145,29 |
+| Baseline (thresholds legados 0.40/0.65) | −R$ 10.239,00 |
+| **Delta (bootstrap, n=1000)** | **R$ 21.334,85, IC95% [R$ 20.045,93; R$ 22.587,80]** |
+
+**Investigação obrigatória antes de aceitar o número — e o que ela revelou:** com `p̂` real calibrado, só 1% dos casos ultrapassa 0,40 (o baseline aprova 99% da carteira quase sem negar/revisar nada). **Isto não isola "motor de EV bate corte global"** — é evidência de que **thresholds fixos são frágeis a mudança de calibração do modelo por trás deles**: 0.40/0.65 foram tunados contra a escala de `p̂` de um modelo diferente (não calibrado), e contra um `p̂` real e calibrado simplesmente param de fazer sentido. `p* = m/(m+ℓ)` não sofre desse problema porque se recalcula a partir de premissas de negócio, não de um número decorado — mas o backtest, como está, não prova que "decidir por observação" bate um **corte único recalibrado** nesta mesma escala. Esse terceiro braço de comparação é débito registrado (#13), não implementado nesta sessão.
+
+Relatório completo com todas as limitações declaradas: `reports/motor_decisao_backtest.md`.
+
 ## 3. CONSEQUÊNCIAS
 
 **Positivas:**
