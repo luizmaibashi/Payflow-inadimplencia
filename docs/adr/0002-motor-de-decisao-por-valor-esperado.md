@@ -83,6 +83,24 @@ Derivando em `m = 0,18`, `ℓ = 0,75`:
 
 > **Correção de rota registrada (2026-08-04):** a spec original ancorou a LGD em literatura (ticket 0007) e deixou a margem **sem fonte nenhuma** — rigor gasto na alavanca menor. Por isso `M` passa a ser **derivada do contrato**, não arbitrada, e o custo de funding usado no líquido precisa estar declarado como premissa própria.
 
+### 2.4.1 Gate 0 executado (2026-08-04) — resultado: dispersão real, motor por observação justificado
+
+Medição em `previous_application.csv` (939.001 contratos aprovados, não-revolving, com prazo/parcela reais), `scripts/gate0_dispersao_m_sobre_l.py`, relatório em `reports/gate0_dispersao_m_sobre_l.md`:
+
+| Métrica de `p*_i` | Valor |
+|---|---|
+| IQR (P25–P75) | **18,0 p.p.** |
+| Amplitude P5–P95 | **39,7 p.p.** |
+| Mediana | 24,7% |
+
+**Critério do gate:** IQR < 3 p.p. (mesma ordem do efeito isolado da LGD) reprovaria o motor por observação. IQR real de 18 p.p. é 6× o limiar — **aprovado**.
+
+**Checagem cruzada que valida a derivação de `m_i`:** a margem medida cresce monotonicamente com `NAME_YIELD_GROUP` — a categoria de faixa de juros que a própria Home Credit já declara (`low_action` 8,7% → `low_normal` 14,2% → `middle` 23,0% → `high` 34,8%, medianas). Se a derivação estivesse errada, não haveria por que bater com um rótulo independente do dataset.
+
+**Achado de qualidade de dado durante a execução:** a primeira tentativa usou `AMT_GOODS_PRICE > 0` como proxy de garantia (colateral) e deu 100% "garantido" — porque, após filtrar para contratos `Approved` com `CNT_PAYMENT` válido, o Home Credit preenche `AMT_GOODS_PRICE` mesmo em `Cash loans` (0% nulo nos dois tipos). O proxy correto é `NAME_CONTRACT_TYPE` diretamente (`Consumer loans` = vinculado a bem; `Cash loans` = sem colateral), que produz a segregação esperada: `p*` mediano de 22,6% (garantido) contra 32,7% (não garantido) — 10 p.p. de diferença, coerente com a lógica de negócio.
+
+**Limite do que este gate prova:** mede dispersão de `m/ℓ`, não a fração de clientes cujo `p̂` cai dentro da faixa em que a decisão muda de lado — essa é a métrica final (Teste de Domínio P3 da aula, `wiki/concepts/04_business/Valor_Esperado_Decisao_Credito.md`) e só é calculável após a Camada 1 estar treinada e calibrada (§2.5).
+
 ### 2.5 Pré-requisito bloqueante: calibração
 
 Toda a §2.1 assume que `p` é **probabilidade**, não score de ranqueamento.
@@ -134,7 +152,7 @@ Toda a §2.1 assume que `p` é **probabilidade**, não score de ranqueamento.
 
 ## 5. IMPACTO & VALIDAÇÃO
 
-**Gate 0 (antes de escrever o motor):** medir a **distribuição de `m/ℓ`** na carteira do Home Credit. Se a dispersão for estreita, o corte por observação é complexidade sem retorno — registrar isso e usar corte global derivado pela mesma fórmula. Este teste é barato e precede a implementação.
+**Gate 0 (antes de escrever o motor):** medir a **distribuição de `m/ℓ`** na carteira do Home Credit. Se a dispersão for estreita, o corte por observação é complexidade sem retorno — registrar isso e usar corte global derivado pela mesma fórmula. Este teste é barato e precede a implementação. **Executado em 2026-08-04 — ver §2.4.1: aprovado, IQR de 18 p.p.**
 
 **Gate 1:** calibração da Camada 1 validada (reliability + Brier), com `n` e intervalo.
 

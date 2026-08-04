@@ -15,3 +15,6 @@ pip-delete-this-directory.txt
 
 # Streamlit
 .streamlit/
+
+# Dataset Home Credit (Kaggle, ~3.3GB extraido - baixar via scripts/baixar_home_credit.md)
+data/raw/home_credit/

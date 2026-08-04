@@ -20,11 +20,15 @@
 - `notebooks/01_credit_risk_modeling_payflow.ipynb` — modelagem original
 - `tests/test_paridade.py` — paridade treino-serving (a **reescrever** para o esquema Home Credit)
 
+**Já existe (2026-08-04):**
+- `data/raw/home_credit/` — dataset Home Credit Default Risk (Kaggle), ~3,3GB, **não versionado** (`.gitignore`). Reproduzir via `scripts/baixar_home_credit.md`
+- `scripts/gate0_dispersao_m_sobre_l.py` — mede a dispersão de `m/ℓ` por contrato (Gate 0 do ADR-0002); resultado em `reports/gate0_dispersao_m_sobre_l.md`
+- `docs/adr/` — 8 ADRs (D1-D8)
+
 **Alvo (a construir):**
 - Camada 1 — classificador de PD sobre Home Credit, com **calibração validada**
 - Motor de decisão — valor esperado por observação (ADR-0002)
 - Camada 2 — agente de underwriting com tools de caso e de cenário (ADR-0007)
-- `docs/adr/` — Architecture Decision Records
 - `docs/audit/` — auditorias pós-implementação
 - Eval set versionado + relatório com `n` e intervalo
 
@@ -106,7 +110,7 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 2. **Thresholds 0.40/0.65 sem derivação** (`app/utils.py::get_decision_thresholds`) — números arbitrários. Substituídos por `p*` calculado (ADR-0002).
 3. **Calibração nunca medida.** O pipeline atual usa `imbalanced-learn` (rebalanceamento), que **desloca o prior e infla `p̂`** sem que o AUC acuse. Enquanto não houver reliability diagram + Brier, todo cálculo de EV é aritmética sobre número sem significado. **Bloqueante para o ADR-0002.**
 4. **Premissa de margem (`M`) sem fonte.** A LGD foi ancorada em literatura (ticket 0007), mas `M` — que move `p*` ~4× mais por ponto percentual — não tinha derivação. Endereçado no ADR-0002 §2.4; **validar empiricamente na carteira antes de implementar o motor**.
-5. **Dispersão de `M/LGD` não medida.** Se a razão for aproximadamente constante na carteira, o corte por observação **reproduz o corte global** e vira complexidade sem retorno. Teste barato obrigatório antes de codar o motor (ADR-0002 §5).
+5. ~~Dispersão de `M/LGD` não medida~~ **RESOLVIDO** (ADR-0002 §2.4.1, 2026-08-04) — `scripts/gate0_dispersao_m_sobre_l.py` sobre 939k contratos reais (`previous_application.csv`): IQR de `p*` = 18,0 p.p. (6× o limiar de reprovação de 3 p.p.). Corte por observação **justificado**. Checagem cruzada com `NAME_YIELD_GROUP` valida a derivação de `m_i`. Relatório em `reports/gate0_dispersao_m_sobre_l.md`.
 6. **`EAD = AMT_CREDIT`** ignora amortização — o default raramente ocorre em `t=0`. Premissa conservadora declarada, não medida.
 7. **LGD 70–85% é estimativa de mercado internacional**, não número brasileiro — não existe LGD pública do BCB para crédito pessoal. Contrastada com o piso Basel FIRB (45%).
 8. **`tests/test_paridade.py` é do esquema antigo** — precisa ser reescrito para o esquema Home Credit antes de qualquer serving.
