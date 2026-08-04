@@ -38,6 +38,31 @@ Projeto de Data Science desenvolvido durante a **Pós-Tech AI SCIENTIST (FIAP)**
 
 ---
 
+## 🚧 Estado atual — projeto em reconstrução (2026-08-04)
+
+Tudo abaixo desta seção descreve a **versão 1**, treinada sobre dado **sintético** de uma empresa fictícia. Ela continua no ar e continua sendo um registro honesto do que foi aprendido — mas está sendo **substituída**, não estendida.
+
+A versão 2 reconstrói a Camada 1 sobre dado real com outcome de default ([Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk)) e adiciona uma camada agêntica de underwriting com avaliação formal. As decisões estão registradas em [`docs/adr/`](docs/adr/) (8 ADRs) e a linguagem do domínio em [`AGENTS.md`](AGENTS.md).
+
+## 🔎 O que este projeto assume abertamente
+
+**Da versão 1 (no ar hoje):**
+
+- **O dado é sintético.** Não há outcome real de inadimplência. Toda métrica mede o acerto contra o gerador do dado, não contra o mundo — não existe backtest possível.
+- **Os cortes 0.40 / 0.65 nunca foram derivados.** A assimetria falso negativo × falso positivo está narrada acima corretamente, mas nunca virou cálculo. São números arbitrários, e a nota final desta página ("cada decisão de threshold foi validada") é otimista demais sobre esse ponto específico.
+- **O undersampling resolveu o recall e quebrou a calibração.** Reamostrar a classe majoritária desloca a taxa base e infla sistematicamente a probabilidade prevista. Para *ranquear* clientes isso é indiferente; para *decidir* com base no valor da probabilidade, não é. A calibração nunca foi medida (nem reliability diagram, nem Brier) — o AUC não acusa esse tipo de erro.
+
+**Da versão 2 (em construção):**
+
+- **O dataset é de mercados emergentes, não do Brasil.** A transferência é de **método**, declarada. O contexto macro brasileiro (BCB/IBGE) entra apenas como cenário de stress rotulado, deslocando a premissa de perda dada a inadimplência — nunca como atributo do cliente ([ADR-0008](docs/adr/0008-cenario-macro-brasileiro-pela-lgd.md)).
+- **A LGD (70–85%) é premissa, não medição.** Ancorada em literatura internacional; não existe número público do Banco Central para crédito pessoal brasileiro.
+- **Não há decisão de crédito autônoma.** O agente propõe e um humano decide. "Deferir" é ação de primeira classe.
+- **Sem consulta a bureau individual** — não existe API pública no Brasil, e o projeto não finge consultar o que não pode.
+
+Os débitos técnicos completos, numerados e vivos, estão em [`AGENTS.md`](AGENTS.md#débitos-técnicos-conhecidos).
+
+---
+
 ## 📋 Metodologia — CRISP-DM
 
 O projeto segue o ciclo **CRISP-DM** (Cross Industry Standard Process for Data Mining):
