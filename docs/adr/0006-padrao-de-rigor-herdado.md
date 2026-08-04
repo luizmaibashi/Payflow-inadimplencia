@@ -38,7 +38,7 @@ Aplicações diretas neste projeto:
 | Débitos técnicos numerados e **vivos**: resolvidos ficam ~~riscados~~ apontando o ADR, nunca deletados | ✅ 11 itens desde o dia zero |
 | Escopo negativo explícito | ✅ no `AGENTS.md` |
 | Seção de honestidade no README ("o que este projeto assume abertamente") | ✅ criada (v1 e v2 separadas) |
-| ≥1 arquivo de teste por módulo; a Camada 2 tem teste próprio | ⬜ pendente |
+| ≥1 arquivo de teste por módulo; a Camada 2 tem teste próprio | 🔶 `test_paridade.py` reescrito (5 testes, Camada 1); Camada 2 ainda não existe |
 | `docs/audit/` com achados numerados e severidade (🔴/🟠/🟡/🟢) | ⬜ pendente (≥1 pós-implementação) |
 | `docs/val-loop/` — validar premissa de negócio **antes** de implementar | ⬜ usar para a premissa de LGD e para o desenho do cenário macro |
 
@@ -52,7 +52,7 @@ VaR/Expected Shortfall, order book, depeg, IOF, trilhos de pagamento — matemá
 
 1. `AGENTS.md` com Linguagem Ubíqua + débitos numerados + escopo negativo. ✅
 2. `docs/adr/0001…N` — mínimo 6, um por decisão. ✅ (8)
-3. Testes: ≥1 arquivo por módulo, incluindo paridade treino-serving reescrita para o esquema Home Credit. ⬜
+3. Testes: ≥1 arquivo por módulo, incluindo paridade treino-serving reescrita para o esquema Home Credit. 🔶 (paridade da Camada 1 feita; Camada 2 pendente)
 4. Eval set versionado + relatório com `n` e intervalo. ⬜
 5. `docs/audit/` com ≥1 auditoria pós-implementação. ⬜
 6. README com seção "o que este projeto assume abertamente". ✅

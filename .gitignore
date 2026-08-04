@@ -18,3 +18,6 @@ pip-delete-this-directory.txt
 
 # Dataset Home Credit (Kaggle, ~3.3GB extraido - baixar via scripts/baixar_home_credit.md)
 data/raw/home_credit/
+
+# Features processadas (~45MB, regeneravel via scripts/camada1_feature_engineering.py)
+data/processed/

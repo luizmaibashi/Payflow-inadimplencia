@@ -23,11 +23,15 @@
 **Já existe (2026-08-04):**
 - `data/raw/home_credit/` — dataset Home Credit Default Risk (Kaggle), ~3,3GB, **não versionado** (`.gitignore`). Reproduzir via `scripts/baixar_home_credit.md`
 - `scripts/gate0_dispersao_m_sobre_l.py` — mede a dispersão de `m/ℓ` por contrato (Gate 0 do ADR-0002); resultado em `reports/gate0_dispersao_m_sobre_l.md`
+- `scripts/camada1_baseline_e_gate1_calibracao.py` — demonstra o mecanismo de descalibração por undersampling (Gate 1); resultado em `reports/gate1_calibracao.md`
+- `app/feature_engineering_home_credit.py` — agregação das 5 tabelas relacionais (bureau, previous_application, installments, POS_CASH, credit_card) em features por cliente, testado em `tests/test_paridade.py`
+- `scripts/camada1_feature_engineering.py` — roda a agregação sobre o dado bruto, salva `data/processed/` (não versionado, regenerável)
+- `scripts/camada1_treino.py` — treina a **Camada 1 final** com calibração isotônica embutida no pipeline (não só demonstrada); modelo em `models/camada1_home_credit_v1.pkl`, resultado em `reports/camada1_treino_final.md`. **AUC 0,776 (IC95% 0,769–0,782)** — ganho de +0,017 sobre o baseline sem features relacionais (Gate 1)
 - `docs/adr/` — 8 ADRs (D1-D8)
+- `tests/test_paridade.py` — reescrito para o esquema Home Credit (5 testes, ver débito #8)
 
 **Alvo (a construir):**
-- Camada 1 — classificador de PD sobre Home Credit, com **calibração validada**
-- Motor de decisão — valor esperado por observação (ADR-0002)
+- Motor de decisão — valor esperado por observação, implementado de fato usando `camada1_home_credit_v1.pkl` (ADR-0002)
 - Camada 2 — agente de underwriting com tools de caso e de cenário (ADR-0007)
 - `docs/audit/` — auditorias pós-implementação
 - Eval set versionado + relatório com `n` e intervalo
@@ -106,14 +110,14 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 
 ## Débitos técnicos conhecidos
 
-1. **Camada 1 legada treinada em dado sintético** de empresa fictícia — sem outcome real, sem validade externa. Será substituída (ADR-0001).
+1. ~~Camada 1 legada treinada em dado sintético~~ **RESOLVIDO** (2026-08-04) — nova Camada 1 treinada sobre Home Credit real (`models/camada1_home_credit_v1.pkl`, AUC 0,776). `app/service.py`/`app/utils.py` e `models/modelo_payflow_v1.pkl` seguem existindo mas são legado — a integração com a API/frontend ainda não foi feita (ver débito #11).
 2. **Thresholds 0.40/0.65 sem derivação** (`app/utils.py::get_decision_thresholds`) — números arbitrários. Substituídos por `p*` calculado (ADR-0002).
 3. ~~Calibração nunca medida~~ **PARCIALMENTE RESOLVIDO** (Gate 1, `scripts/camada1_baseline_e_gate1_calibracao.py`, 2026-08-04) — demonstrado empiricamente com baseline diagnóstico: undersampling infla `p̂` em +34,3 p.p. sobre a taxa real (Brier 0,202 vs. 0,068 natural), AUC praticamente idêntico (0,759/0,754/0,753 — confirma que não acusa o problema), isotônica corrige o Brier de volta a 0,068. Relatório em `reports/gate1_calibracao.md`. **Ainda falta:** a Camada 1 final (ADR-0001, com feature engineering completo) precisa incluir a etapa de recalibração no pipeline de produção — isto foi só a prova de mecanismo, não a implementação definitiva.
 4. **Premissa de margem (`M`) sem fonte.** A LGD foi ancorada em literatura (ticket 0007), mas `M` — que move `p*` ~4× mais por ponto percentual — não tinha derivação. Endereçado no ADR-0002 §2.4; **validar empiricamente na carteira antes de implementar o motor**.
 5. ~~Dispersão de `M/LGD` não medida~~ **RESOLVIDO** (ADR-0002 §2.4.1, 2026-08-04) — `scripts/gate0_dispersao_m_sobre_l.py` sobre 939k contratos reais (`previous_application.csv`): IQR de `p*` = 18,0 p.p. (6× o limiar de reprovação de 3 p.p.). Corte por observação **justificado**. Checagem cruzada com `NAME_YIELD_GROUP` valida a derivação de `m_i`. Relatório em `reports/gate0_dispersao_m_sobre_l.md`.
 6. **`EAD = AMT_CREDIT`** ignora amortização — o default raramente ocorre em `t=0`. Premissa conservadora declarada, não medida.
 7. **LGD 70–85% é estimativa de mercado internacional**, não número brasileiro — não existe LGD pública do BCB para crédito pessoal. Contrastada com o piso Basel FIRB (45%).
-8. **`tests/test_paridade.py` é do esquema antigo** — precisa ser reescrito para o esquema Home Credit antes de qualquer serving.
+8. ~~`tests/test_paridade.py` é do esquema antigo~~ **RESOLVIDO** (2026-08-04) — reescrito para o esquema Home Credit: 4 testes unitários das funções de agregação (`app/feature_engineering_home_credit.py`) + 1 teste de contrato que trava o esquema de colunas contra o `.pkl` salvo. 5/5 passando.
 9. **Dataset de mercado emergente ≠ Brasil.** A transferência é de **método**, declarada. Nunca afirmar que o cliente do dataset é brasileiro (ADR-0008).
 10. **Juiz LLM não calibrado até haver labels humanos.** Até as 100 revisões existirem, as rubricas com juiz são indicativas, não medidas (ADR-0004).
 11. **Deploy atual (Streamlit + Render) serve o modelo legado.** Enquanto a Camada 1 nova não passar na paridade, o público vê o projeto antigo — decidir se despublica ou rotula.

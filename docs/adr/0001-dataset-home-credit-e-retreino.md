@@ -52,6 +52,21 @@ Deixa de ser "a empresa fictícia PayFlow no Brasil". Passa a ser **crédito ao 
 
 ---
 
+## 3.1 Execução (2026-08-04) — Camada 1 final treinada
+
+`scripts/camada1_feature_engineering.py` agregou as 5 tabelas relacionais (bureau, previous_application, installments_payments, POS_CASH_balance, credit_card_balance) em 32 features por cliente, somadas às 122 de `application_train.csv` (152 no total). `scripts/camada1_treino.py` treinou um `HistGradientBoostingClassifier` com calibração isotônica **embutida no pipeline de produção** (não só demonstrada à parte, como no Gate 1 diagnóstico):
+
+| | AUC (teste, n=61.503) | Brier |
+|---|---|---|
+| Baseline (só `application_train`, Gate 1) | 0,7589 | 0,0678 |
+| **Camada 1 final (com features relacionais)** | **0,7757** (IC95% 0,7693–0,7821) | **0,0668** |
+
+**O ganho de +0,017 de AUC confirma a aposta do multi-hop (ADR-0007):** o histórico de bureau e comportamento de pagamento agrega sinal real além do formulário — a mesma informação que o agente vai poder consultar por conta própria na Camada 2. Reliability diagram com gap máximo de 1,1 p.p. entre `p̂` e taxa real — calibração validada, satisfazendo o pré-requisito do ADR-0002 §2.5.
+
+Artefatos: `models/camada1_home_credit_v1.pkl` (modelo) + `models/camada1_home_credit_v1_colunas.pkl` (contrato de colunas, travado por `tests/test_paridade.py`). Relatório completo em `reports/camada1_treino_final.md`.
+
+**Débitos que seguem abertos desta execução:** sem tuning de hiperparâmetros, sem seleção de features, sem validação cruzada (só um split). Ver `reports/camada1_treino_final.md` para a lista completa.
+
 ## 3. CONSEQUÊNCIAS
 
 **Positivas:**
