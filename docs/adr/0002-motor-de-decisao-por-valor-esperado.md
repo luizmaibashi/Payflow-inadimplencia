@@ -156,6 +156,37 @@ Toda a §2.1 assume que `p` é **probabilidade**, não score de ranqueamento.
 
 Relatório completo com todas as limitações declaradas: `reports/motor_decisao_backtest.md`.
 
+## 2.8 Correção do defeito: margem vira premissa global medida (2026-08-04)
+
+A auditoria de §2.7 mostrou que o proxy `AMT_ANNUITY/AMT_CREDIT` tem correlação de Spearman **negativa (−0,40)** com a margem verdadeira — inversão de ordenação, não só imprecisão. Correção aplicada:
+
+| Antes | Depois |
+|---|---|
+| Margem = `AMT_ANNUITY/AMT_CREDIT` por caso (invertida) | **Premissa global de 41,4%** — mediana **medida** com a fórmula verdadeira do Gate 0 em `Cash loans` de `previous_application` (n=312.536) |
+| Banda de indiferença ±3pp (arbitrária) | **Banda derivada** da incerteza da premissa: margem P25–P75 (26,2%–65,1%) → `p*` de **27,2% a 48,2%** |
+| `p*` mediano 6,2% | `p*` ≈ **37,1%** (Cash) / 32,7% (Revolving) |
+
+**A banda derivada implementa o §2.6 como originalmente desenhado:** a zona cinzenta passa a ser a região onde a decisão **inverte** conforme a premissa de margem adotada — decisão que depende de qual premissa você escolhe não é decisão robusta, é caso para deferir.
+
+**O que se perde, declarado:** a variação de margem por observação acaba. `p*` agora varia apenas por LGD (tipo de contrato). Isso é o **fallback documentado no §5** deste próprio ADR ("se a dispersão for estreita, usar corte global derivado pela mesma fórmula") disparando como planejado — o prazo do contrato genuinamente não existe no momento da decisão, e o princípio do ADR-0006 manda expor o disclaimer em vez de fingir uma medição.
+
+### Backtest corrigido — e uma segunda falha metodológica encontrada
+
+A 1ª versão do backtest comparava só casos que **ambas** as estratégias decidem automaticamente. Como as bandas são **aninhadas** (a do motor cai dentro da do baseline), esse filtro removia **exatamente os casos de discordância**: o delta dava zero por construção, não por medição. Corrigido para comparação sobre a carteira inteira, com a zona cinzenta em dois cenários-limite (o desfecho do humano não é observável):
+
+| Zona cinzenta tratada como | Motor | Baseline | Delta | IC95% |
+|---|---|---|---|---|
+| NEGAR | 197.394 | 198.473 | **−1.075** | [−1.548; −616] |
+| APROVAR | 198.344 | 198.019 | **+323** | [150; 491] |
+
+*(u.m./caso — unidades monetárias do dataset, não reais)*
+
+**Conclusão honesta: o motor não supera o threshold legado.** No cenário conservador ele fica **atrás** com significância. Faz sentido economicamente: com `p*` ≈ 37% contra taxa real de default de 8,1%, quase todo mundo vale a pena — e cada caso deferido-e-negado abre mão da margem de alguém que provavelmente pagaria. **O threshold legado de 0,40 estava, por acaso, próximo do ponto economicamente correto.**
+
+**O que o motor entrega, e é mensurável:** a fatia de discordância (3.090 casos, 5,0% da carteira) tem **35,3% de taxa real de default, contra 8,1% da carteira** — 4,3× mais arriscada. O motor não decide melhor sozinho, mas **isola corretamente onde a decisão é difícil**. Esse é o valor real da zona cinzenta, e define a barra quantitativa para a Camada 2: o agente precisa decidir esses 3.090 casos melhor que a faixa de −1.075 a +323 u.m./caso.
+
+**Isto revisa a conclusão anterior deste ADR** (o "delta de R$21 mil/caso a favor do motor"): aquele número era artefato do proxy defeituoso. Permanece válido apenas o achado de que **threshold fixo é frágil a mudança de calibração do modelo**.
+
 ## 3. CONSEQUÊNCIAS
 
 **Positivas:**

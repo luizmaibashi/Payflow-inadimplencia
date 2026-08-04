@@ -3,9 +3,13 @@ import pandas as pd
 import pytest
 
 from app.motor_decisao import (
+    LGD_CASH_LOAN,
+    LGD_REVOLVING,
     calcular_p_estrela,
     classificar_decisao,
+    classificar_decisao_por_limites,
     lgd_por_tipo_contrato,
+    limites_p_estrela_por_incerteza_margem,
     margem_proxy_anuidade,
     margem_via_prazo_historico_cliente,
 )
@@ -91,3 +95,33 @@ def test_classificar_decisao_vetorizado():
     p_estrela = np.array([0.20, 0.20, 0.20])
     decisao = classificar_decisao(p_hat, p_estrela, banda=0.03)
     assert list(decisao) == ["APROVAR", "ZONA_CINZENTA", "NEGAR"]
+
+
+def test_limites_por_incerteza_margem_produz_faixa_larga_e_ordenada():
+    inf, sup = limites_p_estrela_por_incerteza_margem(LGD_CASH_LOAN)
+    # margem P25=26,2% e P75=65,1% com LGD 70% -> p* de ~27% a ~48%
+    assert inf == pytest.approx(0.262 / (0.262 + 0.70), abs=1e-6)
+    assert sup == pytest.approx(0.651 / (0.651 + 0.70), abs=1e-6)
+    assert inf < sup
+    # a faixa derivada e MUITO mais larga que os +-3pp arbitrarios antigos
+    assert (sup - inf) > 0.15
+
+
+def test_limites_por_incerteza_margem_lgd_maior_estreita_a_faixa():
+    inf_cash, sup_cash = limites_p_estrela_por_incerteza_margem(LGD_CASH_LOAN)
+    inf_rev, sup_rev = limites_p_estrela_por_incerteza_margem(LGD_REVOLVING)
+    # LGD maior (pior recuperacao) empurra p* para baixo nos dois extremos
+    assert inf_rev < inf_cash
+    assert sup_rev < sup_cash
+
+
+def test_classificar_decisao_por_limites_assimetricos():
+    p_hat = np.array([0.10, 0.35, 0.60])
+    decisao = classificar_decisao_por_limites(p_hat, 0.272, 0.482)
+    assert list(decisao) == ["APROVAR", "ZONA_CINZENTA", "NEGAR"]
+
+
+def test_classificar_decisao_por_limites_borda_defere():
+    # empate exato nas bordas -> ZONA_CINZENTA (deferir, nao decidir sozinho)
+    decisao = classificar_decisao_por_limites(np.array([0.272, 0.482]), 0.272, 0.482)
+    assert list(decisao) == ["ZONA_CINZENTA", "ZONA_CINZENTA"]

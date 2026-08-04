@@ -14,17 +14,18 @@ dificuldade dos casos sorteados e da mais poder estatistico ao IC
 bootstrap, com o mesmo n para as duas pontas.
 
 Limitacoes declaradas (heranca do app/motor_decisao.py):
-- margem = margem_via_prazo_historico_cliente() - reconstroi a formula
-  do Gate 0 (anuidade*prazo/credito - 1) usando o PRAZO MEDIO REAL do
-  historico de credito do proprio cliente (94,5% de cobertura) em vez
-  da razao anuidade/credito simples (que confundia prazo com margem -
-  achado de 2026-08-04, revisao pedida pelo Luiz). Ainda e estimativa
-  (prazo de contratos ANTERIORES, nao do contrato atual), nao medicao
-  direta - mas mais fiel que o proxy generico.
-- LGD por NAME_CONTRACT_TYPE (Cash/Revolving) - unico proxy disponivel
-  neste dataset, diferente do proxy Consumer/Cash do Gate 0
-- valor realizado no caso de pagamento usa a MESMA margem como fracao
-  de AMT_CREDIT - aproximacao, nao o lucro contabil real do contrato
+- margem = PREMISSA GLOBAL DECLARADA (mediana MEDIDA de Cash loans em
+  previous_application, com a formula verdadeira do Gate 0). O prazo do
+  contrato atual nao existe no momento da decisao, entao nao ha margem
+  por observacao - problema estrutural, exposto como disclaimer em vez
+  de medicao fingida. Substitui o proxy AMT_ANNUITY/AMT_CREDIT, que a
+  auditoria de 2026-08-04 mostrou ter correlacao NEGATIVA com a margem
+  real (ADR-0002 SS2.8).
+- LGD por NAME_CONTRACT_TYPE (Cash/Revolving) - unica fonte de variacao
+  de p* por observacao que restou.
+- valor realizado no caso de pagamento usa a mesma margem como fracao
+  de AMT_CREDIT - aproximacao, nao o lucro contabil real do contrato.
+- valores em u.m. (unidades monetarias do dataset), nao em reais.
 """
 import sys
 from pathlib import Path
@@ -36,10 +37,13 @@ from sklearn.model_selection import train_test_split
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.motor_decisao import (
+    MARGEM_MEDIANA_CASH,
+    MARGEM_P25_CASH,
+    MARGEM_P75_CASH,
     calcular_p_estrela,
-    classificar_decisao,
+    classificar_decisao_por_limites,
     lgd_por_tipo_contrato,
-    margem_proxy_anuidade,
+    limites_p_estrela_por_incerteza_margem,
 )
 
 PROCESSED = Path(__file__).resolve().parents[1] / "data" / "processed"
@@ -136,28 +140,49 @@ def main():
     # principal), gerando margem negativa em 77% dos casos - economicamente
     # absurdo. Sao populacoes de contrato diferentes; um nao estima o outro.
     # Ver ADR-0002 SS2.7 e AGENTS.md debito #12.
-    margem = margem_proxy_anuidade(X_test["AMT_ANNUITY"], X_test["AMT_CREDIT"]).to_numpy()
+    # Margem: PREMISSA GLOBAL DECLARADA, medida com a formula verdadeira do
+    # Gate 0 em previous_application (Cash loans, n=312.536). Substitui o
+    # proxy AMT_ANNUITY/AMT_CREDIT, que a auditoria de 2026-08-04 mostrou ter
+    # correlacao de Spearman NEGATIVA (-0,40) com a margem real.
     lgd = lgd_por_tipo_contrato(X_test["NAME_CONTRACT_TYPE"])
+    margem = np.full(len(X_test), MARGEM_MEDIANA_CASH)
     p_estrela = calcular_p_estrela(margem, lgd)
 
-    decisao_motor = classificar_decisao(p_hat, p_estrela)
+    # Banda DERIVADA da incerteza da premissa (P25-P75 da margem), nao mais
+    # +-3pp arbitrarios - implementa o ADR-0002 SS2.6.
+    p_inf, p_sup = limites_p_estrela_por_incerteza_margem(lgd)
+
+    decisao_motor = classificar_decisao_por_limites(p_hat, p_inf, p_sup)
     decisao_baseline = classificar_baseline(p_hat)
 
     amt_credit = X_test["AMT_CREDIT"].to_numpy()
     target = y_test.to_numpy()
 
-    valor_motor = valor_realizado(decisao_motor, target, margem, lgd, amt_credit)
-    valor_baseline = valor_realizado(decisao_baseline, target, margem, lgd, amt_credit)
+    # CORRECAO METODOLOGICA (2026-08-04): a 1a versao comparava so os casos
+    # que AMBAS as estrategias decidem automaticamente. Parecia pareamento
+    # correto, mas as bandas sao ANINHADAS (a do motor cai dentro da do
+    # baseline), entao o filtro removia EXATAMENTE os casos de discordancia -
+    # o delta dava zero por construcao, nao por medicao. Comparacao correta
+    # e sobre a carteira inteira, tratando a zona cinzenta explicitamente.
+    def valor_carteira(decisao, grey_como):
+        d = decisao.copy()
+        d[(d == "ZONA_CINZENTA") | (d == "REVISAR")] = grey_como
+        return valor_realizado(d, target, margem, lgd, amt_credit)
 
-    # Comparacao PAREADA: so os casos que AMBAS as estrategias decidem
-    # automaticamente (nao caem em zona cinzenta/revisar em nenhuma delas)
-    mask_pareado = ~np.isnan(valor_motor) & ~np.isnan(valor_baseline)
-    n_pareado = mask_pareado.sum()
-    print(f"  casos decididos por ambas as estrategias (pareado): {n_pareado:,} de {len(X_test):,}")
+    # O desfecho dos casos deferidos a humano nao e observavel neste dataset,
+    # entao reportamos dois cenarios-limite em vez de assumir um.
+    valores, deltas = {}, {}
+    for grey_como in ("NEGAR", "APROVAR"):
+        vm = valor_carteira(decisao_motor, grey_como)
+        vb = valor_carteira(decisao_baseline, grey_como)
+        valores[grey_como] = (vm, vb)
+        deltas[grey_como] = bootstrap_delta(vm, vb)
 
-    delta_medio, ic_low, ic_high = bootstrap_delta(
-        valor_motor[mask_pareado], valor_baseline[mask_pareado]
-    )
+    # A fatia que de fato informa a comparacao: onde as estrategias discordam
+    discordam = decisao_motor != decisao_baseline
+    n_discordam = int(discordam.sum())
+    taxa_default_discordancia = float(target[discordam].mean()) if n_discordam else float("nan")
+    print(f"  casos em que as estrategias DISCORDAM: {n_discordam:,} de {len(X_test):,}")
 
     # Distribuicao de decisoes de cada estrategia (sobre o teste inteiro)
     dist_motor = pd.Series(decisao_motor).value_counts()
@@ -170,10 +195,21 @@ def main():
     linhas.append(f"**Teste:** n={len(X_test):,} (mesmo split de `camada1_treino.py`)\n")
 
     linhas.append("## Limitações declaradas (leia antes dos números)\n")
-    linhas.append("- **Margem** = `AMT_ANNUITY/AMT_CREDIT` — proxy de intensidade de margem, **não** a margem total sobre a vida do contrato validada no Gate 0 (essa exige `CNT_PAYMENT`, indisponível para a aplicação corrente — o prazo é decidido junto com a aprovação). **Sabidamente enviesado: confunde prazo com margem** (débito #12). Uma tentativa de corrigir isso via prazo médio histórico do cliente foi testada e **revertida** — ver seção final.")
-    linhas.append("- **LGD** por `NAME_CONTRACT_TYPE` (`Cash loans`→70%, `Revolving loans`→85%) — único proxy disponível *neste* dataset; diferente do proxy `Consumer/Cash` usado no Gate 0 (que veio de `previous_application`, com categorias diferentes).")
+    linhas.append(
+        f"- **Margem = premissa global declarada de {MARGEM_MEDIANA_CASH:.1%}** — mediana **medida** com a "
+        f"fórmula verdadeira do Gate 0 (`(anuidade×prazo − crédito)/crédito`) sobre `Cash loans` aprovados em "
+        f"`previous_application` (n=312.536), categoria que casa com ~90% de `application_train`. Aplicada como "
+        f"constante porque o prazo do contrato atual **não existe** no momento da decisão (é definido junto com "
+        f"a aprovação) — problema estrutural, exposto como disclaimer em vez de medição fingida (ADR-0006)."
+    )
+    linhas.append("- **LGD** por `NAME_CONTRACT_TYPE` (`Cash loans`→70%, `Revolving loans`→85%) — premissa declarada; é a única fonte de variação de `p*` **por observação** que restou.")
     linhas.append("- **Valor realizado ao pagar** usa a mesma margem como fração do crédito — aproximação do lucro, não o lucro contábil real (dependeria de custo de funding, indisponível).")
-    linhas.append("- **Banda de indiferença fixa** (±3pp em torno de `p*`) — simplificação; não deriva da incerteza real da estimativa de PD (débito conhecido).\n")
+    linhas.append(
+        f"- **Banda de indiferença derivada** da incerteza da premissa (margem P25={MARGEM_P25_CASH:.1%} a "
+        f"P75={MARGEM_P75_CASH:.1%}), não mais ±3pp arbitrários — implementa o ADR-0002 §2.6: a zona cinzenta "
+        f"é a região onde a decisão **inverte** conforme a premissa de margem adotada."
+    )
+    linhas.append("- **Valores em u.m. (unidades monetárias do dataset)**, não em reais — Home Credit é de mercados emergentes, moeda não identificada.\n")
 
     linhas.append("## Distribuição de decisões (teste completo, n={:,})\n".format(len(X_test)))
     linhas.append("| Estratégia | APROVAR | ZONA_CINZENTA / REVISAR | NEGAR |")
@@ -189,38 +225,70 @@ def main():
         f"{dist_baseline.get('NEGAR', 0):,} ({dist_baseline.get('NEGAR', 0)/len(X_test):.1%}) |"
     )
 
-    linhas.append(f"\n## Backtest pareado (n={n_pareado:,} — casos decididos automaticamente por AMBAS as estratégias)\n")
-    valor_medio_motor = np.nanmean(valor_motor[mask_pareado])
-    valor_medio_baseline = np.nanmean(valor_baseline[mask_pareado])
-    linhas.append(f"- Valor médio realizado por caso — **Motor (EV):** R$ {valor_medio_motor:,.2f}")
-    linhas.append(f"- Valor médio realizado por caso — **Baseline (thresholds legados):** R$ {valor_medio_baseline:,.2f}")
-    linhas.append(f"\n**Delta médio (Motor − Baseline): R$ {delta_medio:,.2f} por caso, IC95% bootstrap [R$ {ic_low:,.2f}; R$ {ic_high:,.2f}] (n_bootstrap={N_BOOTSTRAP})**\n")
-
-    if ic_low > 0:
-        veredito = "O motor de EV supera o baseline com significância — o intervalo não cruza zero."
-    elif ic_high < 0:
-        veredito = "O baseline supera o motor de EV com significância — o intervalo não cruza zero."
-    else:
-        veredito = "O intervalo cruza zero — a diferença NÃO é estatisticamente significativa com este `n`. Não afirmar que uma estratégia é melhor que a outra a partir deste backtest."
-    linhas.append(f"**Veredito:** {veredito}")
-
-    frac_acima_040 = (p_hat > RISCO_BAIXO_MAX).mean()
-    frac_acima_065 = (p_hat > RISCO_MEDIO_MAX).mean()
-    linhas.append("\n## ⚠️ Por que o delta é tão grande — investigar antes de comemorar\n")
+    linhas.append(f"\n## Backtest sobre a carteira inteira (n={len(X_test):,})\n")
     linhas.append(
-        f"Com `p̂` real calibrado (média {p_hat.mean():.1%}, batendo com a taxa real de default), "
-        f"só **{frac_acima_040:.1%}** dos casos ultrapassam 0,40 e **{frac_acima_065:.2%}** ultrapassam 0,65 "
-        f"— por isso o baseline aprova {dist_baseline.get('APROVAR', 0)/len(X_test):.0%} da carteira "
-        f"quase sem negar ou revisar nada."
+        "> **Correção metodológica (2026-08-04):** a 1ª versão comparava só os casos que **ambas** as "
+        "estratégias decidem automaticamente. Parecia pareamento correto, mas as bandas são **aninhadas** "
+        "(a do motor cai dentro da do baseline), então esse filtro removia **exatamente os casos em que as "
+        "duas discordam** — o delta dava zero por construção, não por medição.\n"
     )
     linhas.append(
-        "\n**Isto não é 'o motor de EV venceu o threshold fixo' de forma limpa.** É evidência de que "
-        "**os thresholds 0.40/0.65 foram calibrados contra a escala de `p̂` de um modelo diferente "
-        "(provavelmente não calibrado/inflado — o mesmo mecanismo do Gate 1)**. Contra um `p̂` real e "
-        "calibrado, um número fixo herdado de outra escala de probabilidade simplesmente para de fazer "
-        "sentido — não é que o motor por EV seja necessariamente superior a qualquer corte único, é que "
-        "**um corte numérico fixo é frágil a mudanças na calibração do modelo por trás dele**, e a fórmula "
-        "`p* = m/(m+ℓ)` não é (ela se recalcula a partir de premissas de negócio, não de um número decorado)."
+        "O desfecho dos casos deferidos a humano **não é observável** neste dataset, então o resultado vai "
+        "em dois cenários-limite em vez de assumir um:\n"
+    )
+    linhas.append("| Zona cinzenta tratada como | Motor (u.m./caso) | Baseline (u.m./caso) | Delta | IC95% bootstrap |")
+    linhas.append("|---|---|---|---|---|")
+    for grey_como in ("NEGAR", "APROVAR"):
+        vm, vb = valores[grey_como]
+        d, lo, hi = deltas[grey_como]
+        linhas.append(
+            f"| {grey_como} | {np.nanmean(vm):,.0f} | {np.nanmean(vb):,.0f} | **{d:,.0f}** | [{lo:,.0f}; {hi:,.0f}] |"
+        )
+
+    linhas.append("\n### Onde as estratégias de fato discordam\n")
+    linhas.append(
+        f"- Casos com decisão diferente: **{n_discordam:,}** de {len(X_test):,} (**{n_discordam/len(X_test):.1%}**)"
+    )
+    linhas.append(
+        f"- Taxa real de default nesses casos: **{taxa_default_discordancia:.1%}** "
+        f"(contra {target.mean():.1%} na carteira toda)"
+    )
+    linhas.append(
+        "\nÉ nesta fatia que a escolha de estratégia importa — e é exatamente ela que alimentaria a "
+        "Camada 2 (agente): casos que o motor manda deferir e o baseline aprovaria direto."
+    )
+
+    _, lo_n, hi_n = deltas["NEGAR"]
+    if lo_n > 0:
+        veredito = "No cenário conservador (zona cinzenta negada), o motor supera o baseline com significância."
+    elif hi_n < 0:
+        veredito = (
+            "No cenário conservador (zona cinzenta negada), o motor fica **abaixo** do baseline com "
+            "significância. Faz sentido: deferir tem custo — cada caso deferido e negado abre mão da margem "
+            "de um cliente que, na base, provavelmente pagaria. O ganho do deferral só aparece se o humano "
+            "(ou o agente) decidir melhor que a regra automática — que é justamente o que a Camada 2 precisa provar."
+        )
+    else:
+        veredito = "O intervalo cruza zero — a diferença não é estatisticamente significativa."
+    linhas.append(f"\n**Veredito:** {veredito}")
+
+    frac_acima_040 = (p_hat > RISCO_BAIXO_MAX).mean()
+    linhas.append("\n## Por que as duas estratégias se parecem tanto agora\n")
+    linhas.append(
+        f"Com a margem **medida** ({MARGEM_MEDIANA_CASH:.1%} para Cash loans), o ponto de indiferença fica em "
+        f"`p*` ≈ {calcular_p_estrela(MARGEM_MEDIANA_CASH, 0.70):.0%} — muito acima da taxa real de default "
+        f"({target.mean():.1%}). Ou seja: **com a precificação real da Home Credit, vale emprestar para quase "
+        f"todo mundo**, e o trabalho do modelo é achar a cauda pequena onde não vale. O threshold legado de "
+        f"0,40 estava, por acaso, **próximo do ponto economicamente correto** — só {frac_acima_040:.1%} dos "
+        f"casos o ultrapassam."
+    )
+    linhas.append(
+        "\n**Isto revisa a conclusão da 1ª versão deste relatório.** Lá o motor aparecia ~21 mil u.m./caso à "
+        "frente do baseline, mas aquele número vinha de um proxy de margem defeituoso — correlação de Spearman "
+        "**negativa (−0,40)** com a margem real (ADR-0002 §2.8) — que tornava o motor artificialmente "
+        "conservador. Corrigida a margem, a vantagem desaparece. **O que permanece válido** do achado anterior "
+        "é que um threshold numérico fixo é frágil a mudanças de calibração do modelo: `p* = m/(m+ℓ)` se "
+        "recalcula a partir de premissas de negócio, um número decorado não."
     )
     linhas.append("\n## Tentativa de corrigir o proxy de margem — testada e revertida (2026-08-04)\n")
     linhas.append(

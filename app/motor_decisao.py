@@ -28,11 +28,24 @@ import pandas as pd
 LGD_CASH_LOAN = 0.70   # piso da faixa declarada (ADR-0002): parcelado, recuperacao mais estruturada
 LGD_REVOLVING = 0.85   # teto da faixa declarada: revolving/cartao, recuperacao mais dificil
 
-# Banda de indiferenca em torno de p* (ADR-0002 SS2.4: a faixa de LGD
-# 70-85% move p* em ~3pp isolada). Usada como largura fixa simplificada
-# da zona cinzenta - simplificacao declarada, nao uma banda derivada da
-# incerteza real da estimativa de PD (debito, ver AGENTS.md).
-BANDA_INDIFERENCA_PP = 0.03
+# --- Premissa de margem (substitui o proxy invertido, auditoria 2026-08-04) ---
+# MEDIDA em previous_application (Cash loans aprovados, n=312.536) com a
+# formula verdadeira do Gate 0: m = (anuidade * prazo - credito) / credito.
+# Cash loans e a categoria que casa com ~90% de application_train.
+# Aplicada como PREMISSA GLOBAL DECLARADA porque o prazo do contrato atual
+# nao existe no momento da decisao (e decidido junto com a aprovacao) - o
+# problema e estrutural, entao expomos o disclaimer em vez de fingir uma
+# medicao por caso (principio do ADR-0006).
+MARGEM_MEDIANA_CASH = 0.414
+MARGEM_P25_CASH = 0.262
+MARGEM_P75_CASH = 0.651
+
+# Banda de indiferenca DERIVADA da incerteza da premissa de margem
+# (ADR-0002 SS2.6), nao mais uma largura fixa arbitraria: se a margem
+# plausivel vai de P25 a P75, entao p* vai de p*(P25) a p*(P75), e todo
+# caso nessa faixa tem a decisao INVERTIDA conforme a premissa adotada.
+# Decisao que depende de qual premissa voce escolhe nao e decisao robusta:
+# e caso para deferir a humano (Learning to Defer).
 
 
 def margem_proxy_anuidade(amt_annuity: pd.Series, amt_credit: pd.Series) -> pd.Series:
@@ -87,19 +100,49 @@ def calcular_p_estrela(margem, lgd):
     return margem / (margem + lgd)
 
 
-def classificar_decisao(p_hat, p_estrela, banda=BANDA_INDIFERENCA_PP):
-    """Classifica em APROVAR / ZONA_CINZENTA / NEGAR comparando p_hat
-    contra a banda de indiferenca em torno de p*.
+def classificar_decisao(p_hat, p_estrela, banda):
+    """Classifica em APROVAR / ZONA_CINZENTA / NEGAR usando uma banda
+    SIMETRICA de largura fixa em torno de p*.
 
-    p_hat, p_estrela: escalares ou arrays/Series do mesmo shape.
+    `banda` e obrigatoria de proposito: nao existe largura "natural" -
+    ou voce declara a sua, ou usa limites_p_estrela_por_incerteza_margem()
+    para deriva-la da incerteza da premissa (preferido).
     """
     p_hat = np.asarray(p_hat, dtype=float)
     p_estrela = np.asarray(p_estrela, dtype=float)
+    return classificar_decisao_por_limites(p_hat, p_estrela - banda, p_estrela + banda)
 
-    limite_inferior = p_estrela - banda
-    limite_superior = p_estrela + banda
+
+def limites_p_estrela_por_incerteza_margem(lgd):
+    """Faixa de p* implicada pela incerteza da premissa de margem (P25-P75
+    da margem verdadeira medida em Cash loans).
+
+    Retorna (p_estrela_inferior, p_estrela_superior).
+
+    Esta e a implementacao do ADR-0002 SS2.6: a zona cinzenta nao e uma
+    largura chutada, e a regiao onde a decisao INVERTE conforme a premissa
+    de margem adotada. Se assumir margem P25 manda negar e margem P75 manda
+    aprovar, a decisao nao e robusta a premissa - e caso para deferir.
+    """
+    lgd = np.asarray(lgd, dtype=float)
+    return (
+        calcular_p_estrela(MARGEM_P25_CASH, lgd),
+        calcular_p_estrela(MARGEM_P75_CASH, lgd),
+    )
+
+
+def classificar_decisao_por_limites(p_hat, p_estrela_inferior, p_estrela_superior):
+    """Classifica em APROVAR / ZONA_CINZENTA / NEGAR contra limites
+    explicitos (possivelmente assimetricos) de p*.
+
+    Bordas sao inclusivas na ZONA_CINZENTA: em caso de empate, deferir a
+    humano em vez de decidir automaticamente.
+    """
+    p_hat = np.asarray(p_hat, dtype=float)
+    inf = np.asarray(p_estrela_inferior, dtype=float)
+    sup = np.asarray(p_estrela_superior, dtype=float)
 
     decisao = np.full(p_hat.shape, "ZONA_CINZENTA", dtype=object)
-    decisao[p_hat < limite_inferior] = "APROVAR"
-    decisao[p_hat > limite_superior] = "NEGAR"
+    decisao[p_hat < inf] = "APROVAR"
+    decisao[p_hat > sup] = "NEGAR"
     return decisao
