@@ -145,6 +145,7 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 
 | O quê | Onde |
 |---|---|
+| **Dicionário de dados** (todas as colunas + as 32 features criadas, em PT-BR) | `docs/DICIONARIO_DADOS.md` |
 | Spec consolidada | `docs/wayfinder/refatoracao-camada-agentica/SPEC_FINAL.md` |
 | 9 tickets Wayfinder (pesquisa e decisões) | `docs/wayfinder/refatoracao-camada-agentica/` |
 | Aula — valor esperado, PD/LGD/EAD | `wiki/concepts/04_business/Valor_Esperado_Decisao_Credito.md` (base de conhecimento) |
