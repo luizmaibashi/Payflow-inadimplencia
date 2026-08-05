@@ -33,8 +33,14 @@
 - `app/motor_decisao.py` — motor de decisão por valor esperado (ADR-0002), testado em `tests/test_motor_decisao.py` (16 testes)
 - `scripts/motor_decisao_backtest.py` — backtest do motor contra o threshold legado sobre a carteira inteira, com IC bootstrap e dois cenários para a zona cinzenta; resultado em `reports/motor_decisao_backtest.md`. **Conclusão: o motor não supera o baseline** — ver ADR-0002 §2.8
 
+**Camada 2 (2026-08-05) — infraestrutura completa, LLM real pendente:**
+- `app/memo_credito.py` — contrato do parecer (teto de 8 fatos **medido**, groundedness e cegueira ao score por construção)
+- `app/ferramentas_caso.py` — 3 ferramentas de caso com trace de auditoria
+- `app/ferramenta_cenario.py` — cenário macro BCB, 1×/lote, cache + fallback declarado
+- `app/agente_underwriting.py` — orquestração multi-hop, **cliente LLM injetado** (testável sem rede)
+
 **Alvo (a construir):**
-- Camada 2 — agente de underwriting com tools de caso e de cenário (ADR-0007)
+- Adaptador de LLM real (sem SDK nem chave no ambiente hoje) + eval set
 - `docs/audit/` — auditorias pós-implementação
 - Eval set versionado + relatório com `n` e intervalo
 
