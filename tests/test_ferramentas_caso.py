@@ -99,3 +99,79 @@ def test_nenhum_campo_de_saida_carrega_o_score():
             assert proibido not in campo.lower(), (
                 f"campo '{campo}' sugere vazamento do score da Camada 1"
             )
+
+
+# --- 2a ferramenta: historico mes a mes (2o salto do multi-hop) ---
+
+def test_historico_separa_meses_em_dia_atraso_e_sem_informacao(ferramentas):
+    """'X' nao pode ser contado como mes bom - e ausencia de informacao."""
+    r = ferramentas.consultar_historico_bureau(1)
+    assert r.tem_registro is True
+    assert r.meses_observados == 3          # contrato 10 tem 2 meses, contrato 11 tem 1
+    assert r.meses_em_atraso == 1           # o STATUS '1'
+    assert r.meses_em_dia == 2
+    assert r.meses_sem_informacao == 0
+
+
+def test_historico_reporta_pior_severidade(ferramentas):
+    assert ferramentas.consultar_historico_bureau(1).pior_severidade == 1
+
+
+def test_historico_diz_ha_quanto_tempo_foi_o_ultimo_atraso(ferramentas):
+    """Distingue problema antigo ja recuperado de problema corrente."""
+    r = ferramentas.consultar_historico_bureau(1)
+    assert r.meses_desde_ultimo_atraso == 2   # MONTHS_BALANCE = -2
+
+
+def test_historico_sem_atraso_devolve_severidade_nula(ferramentas):
+    """Cliente 2 nao tem historico mensal nenhum."""
+    r = ferramentas.consultar_historico_bureau(2)
+    assert r.tem_registro is False
+    assert r.pior_severidade is None
+    assert r.meses_desde_ultimo_atraso is None
+
+
+def test_historico_conta_status_X_como_sem_informacao(tmp_path):
+    from app.ferramentas_caso import FerramentasCaso
+
+    pd.DataFrame({
+        "SK_ID_CURR": [1], "SK_ID_BUREAU": [10], "CREDIT_ACTIVE": ["Active"],
+        "CREDIT_DAY_OVERDUE": [0], "AMT_CREDIT_SUM": [1000.0],
+        "AMT_CREDIT_SUM_DEBT": [100.0],
+    }).to_csv(tmp_path / "bureau.csv", index=False)
+    pd.DataFrame({
+        "SK_ID_BUREAU": [10, 10, 10],
+        "MONTHS_BALANCE": [-1, -2, -3],
+        "STATUS": ["0", "X", "X"],
+    }).to_csv(tmp_path / "bureau_balance.csv", index=False)
+
+    r = FerramentasCaso(raw_dir=tmp_path).consultar_historico_bureau(1)
+    assert r.meses_sem_informacao == 2
+    assert r.meses_em_dia == 1
+    assert r.meses_em_atraso == 0
+    assert r.pior_severidade is None, "'X' nao pode virar atraso nem virar mes bom"
+
+
+def test_multi_hop_a_1a_ferramenta_indica_se_vale_chamar_a_2a(ferramentas):
+    """O gancho do multi-hop: o agente so desce onde ha o que ler."""
+    assert ferramentas.consultar_bureau(1).tem_historico_mensal is True
+    assert ferramentas.consultar_historico_bureau(1).tem_registro is True
+
+    assert ferramentas.consultar_bureau(2).tem_historico_mensal is False
+    assert ferramentas.consultar_historico_bureau(2).tem_registro is False
+
+
+def test_segunda_ferramenta_tambem_entra_na_trace(ferramentas):
+    ferramentas.consultar_bureau(1)
+    ferramentas.consultar_historico_bureau(1)
+    assert [c.ferramenta for c in ferramentas.trace] == [
+        "consultar_bureau", "consultar_historico_bureau"
+    ]
+
+
+def test_saida_do_historico_nao_carrega_o_score():
+    from app.ferramentas_caso import ResultadoHistoricoBureau
+
+    for campo in ResultadoHistoricoBureau.model_fields:
+        for proibido in TERMOS_PROIBIDOS_SCORE:
+            assert proibido not in campo.lower()

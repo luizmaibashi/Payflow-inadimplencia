@@ -27,7 +27,7 @@ RAW = Path(__file__).resolve().parents[1] / "data" / "raw" / "home_credit"
 
 # Status do bureau_balance que contam como atraso (0 = em dia, 1-5 = faixas
 # crescentes de dias em atraso, C = encerrado, X = sem informacao).
-STATUS_EM_ATRASO = {"1", "2", "3", "4", "5"}
+_STATUS_ATRASO = {"1", "2", "3", "4", "5"}
 
 
 class ChamadaFerramenta(BaseModel):
@@ -36,6 +36,33 @@ class ChamadaFerramenta(BaseModel):
     ferramenta: str
     argumentos: dict
     retorno: dict
+
+
+class ResultadoHistoricoBureau(BaseModel):
+    """Comportamento mes a mes nos contratos de OUTRAS instituicoes.
+
+    Separa quem atrasou uma vez de quem atrasa sempre - distincao que a
+    consulta de saldo (consultar_bureau) nao consegue fazer.
+    """
+
+    tem_registro: bool = Field(..., description="Se ha historico mensal disponivel")
+    meses_observados: int = Field(..., ge=0, description="Meses com registro")
+    meses_em_dia: int = Field(..., ge=0)
+    meses_em_atraso: int = Field(..., ge=0)
+    meses_sem_informacao: int = Field(
+        ..., ge=0,
+        description="Meses com STATUS 'X'. NAO sao meses bons - sao meses "
+        "sobre os quais nada se sabe (21% da tabela, EDA 2026-08-05)",
+    )
+    pior_severidade: int | None = Field(
+        None, ge=0, le=5,
+        description="Pior faixa de atraso ja registrada (1=1-30d ... 5=>120d)",
+    )
+    meses_desde_ultimo_atraso: int | None = Field(
+        None, ge=0,
+        description="Ha quantos meses foi o ultimo atraso. Alto = atraso "
+        "antigo e ja recuperado; baixo = problema corrente",
+    )
 
 
 class ResultadoBureau(BaseModel):
@@ -68,6 +95,7 @@ class FerramentasCaso:
         self.raw = Path(raw_dir) if raw_dir else RAW
         self._bureau: pd.DataFrame | None = None
         self._ids_com_balance: set[int] | None = None
+        self._balance: pd.DataFrame | None = None
         self.trace: list[ChamadaFerramenta] = []
 
     # --- carregamento preguicoso (so paga o custo se a tool for usada) ---
@@ -86,9 +114,14 @@ class FerramentasCaso:
 
     def _carregar_ids_com_balance(self) -> set[int]:
         if self._ids_com_balance is None:
-            bb = pd.read_csv(self.raw / "bureau_balance.csv", usecols=["SK_ID_BUREAU"])
-            self._ids_com_balance = set(bb["SK_ID_BUREAU"].unique())
+            self._ids_com_balance = set(self._carregar_balance().index.unique())
         return self._ids_com_balance
+
+    def _carregar_balance(self) -> pd.DataFrame:
+        if self._balance is None:
+            df = pd.read_csv(self.raw / "bureau_balance.csv")
+            self._balance = df.set_index("SK_ID_BUREAU").sort_index()
+        return self._balance
 
     # --- registro de auditoria ---
 
@@ -143,4 +176,59 @@ class FerramentasCaso:
             )
 
         self._registrar("consultar_bureau", {"sk_id_curr": int(sk_id_curr)}, resultado)
+        return resultado
+
+    # --- FERRAMENTA: historico mes a mes do bureau (2o salto do multi-hop) ---
+
+    def consultar_historico_bureau(self, sk_id_curr: int) -> ResultadoHistoricoBureau:
+        """Comportamento mes a mes nos contratos de outras instituicoes.
+
+        Segundo salto: so faz sentido depois de consultar_bureau() indicar
+        `tem_historico_mensal=True`. Separa quem atrasou uma vez de quem
+        atrasa sempre - e diz HA QUANTO TEMPO foi o ultimo atraso, que e a
+        diferenca entre problema antigo e problema corrente.
+        """
+        bureau = self._carregar_bureau()
+        balance = self._carregar_balance()
+
+        ids = (
+            bureau.loc[[sk_id_curr], "SK_ID_BUREAU"].tolist()
+            if sk_id_curr in bureau.index else []
+        )
+        presentes = [i for i in ids if i in balance.index]
+
+        if not presentes:
+            resultado = ResultadoHistoricoBureau(
+                tem_registro=False, meses_observados=0, meses_em_dia=0,
+                meses_em_atraso=0, meses_sem_informacao=0,
+            )
+        else:
+            hist = balance.loc[presentes]
+            status = hist["STATUS"].astype(str)
+
+            # 'C' = contrato encerrado, '0' = em dia, '1'-'5' = faixas de atraso.
+            # 'X' NAO entra como bom: e ausencia de informacao (EDA 2026-08-05).
+            sem_info = status == "X"
+            atraso = status.isin(_STATUS_ATRASO)
+            em_dia = status.isin({"0", "C"})
+
+            severidades = status[atraso].astype(int)
+            meses_atraso = hist.loc[atraso, "MONTHS_BALANCE"]
+
+            resultado = ResultadoHistoricoBureau(
+                tem_registro=True,
+                meses_observados=int(len(hist)),
+                meses_em_dia=int(em_dia.sum()),
+                meses_em_atraso=int(atraso.sum()),
+                meses_sem_informacao=int(sem_info.sum()),
+                pior_severidade=int(severidades.max()) if len(severidades) else None,
+                # MONTHS_BALANCE e negativo (meses atras); o mais recente e o maior
+                meses_desde_ultimo_atraso=(
+                    int(-meses_atraso.max()) if len(meses_atraso) else None
+                ),
+            )
+
+        self._registrar(
+            "consultar_historico_bureau", {"sk_id_curr": int(sk_id_curr)}, resultado
+        )
         return resultado
