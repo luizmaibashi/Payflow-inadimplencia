@@ -11,6 +11,8 @@ o teste de skew treino-serving):
    adicionar/remover uma coluna da engenharia de features sem atualizar
    o modelo, este teste quebra ANTES de ir para producao.
 """
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -129,3 +131,61 @@ def test_contrato_de_colunas_do_modelo_salvo_bate_com_a_engenharia_de_features(t
     assert "SK_ID_CURR" not in colunas_esperadas  # ID nao e feature de entrada
     assert "TARGET" not in colunas_esperadas  # alvo nao pode vazar como feature
     assert len(colunas_esperadas) > 100  # esquema completo (122 originais + ~30 agregadas)
+
+
+# --- Paridade da LIMPEZA entre treino e serving (adicionado 2026-08-05) ---
+#
+# Antes disto a limpeza estava COPIADA em camada1_treino.py e em
+# motor_decisao_backtest.py. Logica copiada diverge em silencio: alguem
+# corrige um lado, esquece o outro, e o modelo passa a ver no eval um dado
+# diferente do que viu no treino. Nada quebra - o numero so fica errado.
+
+def test_limpeza_anula_sentinela_de_emprego():
+    from app.limpeza_dados import SENTINELA_DIAS_EMPREGO, limpar
+
+    df = pd.DataFrame({
+        "DAYS_EMPLOYED": [-1200, SENTINELA_DIAS_EMPREGO, -3000],
+        "AMT_INCOME_TOTAL": [100.0, 200.0, 300.0],
+        "AMT_CREDIT": [1000.0, 1000.0, 1000.0],
+    })
+    limpo, contagens = limpar(df)
+    assert limpo["DAYS_EMPLOYED"].isna().sum() == 1
+    assert contagens["dias_emprego_anulados"] == 1
+
+
+def test_limpeza_anula_renda_implausivel_por_criterio_relacional():
+    """Renda ALTA e legitima; renda dezenas de vezes o credito pedido nao."""
+    from app.limpeza_dados import limpar
+
+    df = pd.DataFrame({
+        "DAYS_EMPLOYED": [-1200, -1200],
+        "AMT_INCOME_TOTAL": [900_000.0, 117_000_000.0],  # rico legitimo vs. erro
+        "AMT_CREDIT": [500_000.0, 562_491.0],
+    })
+    limpo, contagens = limpar(df)
+    assert limpo["AMT_INCOME_TOTAL"].notna().iloc[0], "renda alta legitima nao pode sumir"
+    assert limpo["AMT_INCOME_TOTAL"].isna().iloc[1], "renda implausivel deve virar nulo"
+    assert contagens["renda_anulada"] == 1
+
+
+def test_limpeza_remove_colunas_constantes():
+    from app.limpeza_dados import limpar
+
+    df = pd.DataFrame({
+        "DAYS_EMPLOYED": [-1200], "AMT_INCOME_TOTAL": [100.0], "AMT_CREDIT": [1000.0],
+        "FLAG_MOBIL": [1], "FLAG_DOCUMENT_2": [0], "EXT_SOURCE_2": [0.5],
+    })
+    limpo, contagens = limpar(df)
+    assert "FLAG_MOBIL" not in limpo.columns
+    assert "EXT_SOURCE_2" in limpo.columns, "coluna util nao pode ser removida"
+    assert contagens["colunas_constantes_removidas"] == 2
+
+
+def test_treino_e_backtest_usam_A_MESMA_funcao_de_limpeza():
+    """Guarda contra a duplicacao voltar. Se este teste quebrar, NAO copie
+    a logica - importe de app.limpeza_dados nos dois lados."""
+    raiz = Path(__file__).resolve().parents[1]
+    for script in ("scripts/camada1_treino.py", "scripts/motor_decisao_backtest.py"):
+        codigo = (raiz / script).read_text(encoding="utf-8")
+        assert "from app.limpeza_dados import limpar" in codigo, f"{script} nao importa"
+        assert "replace(365243" not in codigo, f"{script} tem copia da limpeza"

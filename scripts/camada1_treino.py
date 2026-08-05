@@ -26,6 +26,8 @@ from sklearn.model_selection import train_test_split
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from app.limpeza_dados import limpar  # noqa: E402
+
 PROCESSED = Path(__file__).resolve().parents[1] / "data" / "processed"
 MODELS = Path(__file__).resolve().parents[1] / "models"
 REPORTS = Path(__file__).resolve().parents[1] / "reports"
@@ -37,7 +39,8 @@ N_BOOTSTRAP = 1000
 
 def carregar():
     df = pd.read_parquet(PROCESSED / "camada1_features_train.parquet")
-    df["DAYS_EMPLOYED"] = df["DAYS_EMPLOYED"].replace(365243, np.nan)
+    df, contagens = limpar(df)
+    print(f"  limpeza EDA: {contagens}")
 
     y = df["TARGET"]
     X = df.drop(columns=["TARGET", "SK_ID_CURR"])

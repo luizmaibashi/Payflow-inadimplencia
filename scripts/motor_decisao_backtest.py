@@ -36,6 +36,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from app.limpeza_dados import limpar
 from app.motor_decisao import (
     MARGEM_MEDIANA_CASH,
     MARGEM_P25_CASH,
@@ -63,7 +64,7 @@ def recriar_split():
     random_state, mesmos parametros) para obter o mesmo X_test/y_test
     sobre o qual o AUC/Brier da Camada 1 final foram reportados."""
     df = pd.read_parquet(PROCESSED / "camada1_features_train.parquet")
-    df["DAYS_EMPLOYED"] = df["DAYS_EMPLOYED"].replace(365243, np.nan)
+    df, _ = limpar(df)   # MESMA funcao do treino - paridade treino-serving
 
     y = df["TARGET"]
     X = df.drop(columns=["TARGET", "SK_ID_CURR"])
