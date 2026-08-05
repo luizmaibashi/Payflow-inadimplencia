@@ -13,6 +13,7 @@ o teste de skew treino-serving):
 """
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -189,3 +190,31 @@ def test_treino_e_backtest_usam_A_MESMA_funcao_de_limpeza():
         codigo = (raiz / script).read_text(encoding="utf-8")
         assert "from app.limpeza_dados import limpar" in codigo, f"{script} nao importa"
         assert "replace(365243" not in codigo, f"{script} tem copia da limpeza"
+
+
+def test_parcela_nunca_paga_nao_pode_contar_como_em_dia():
+    """Regressao do defeito achado na EDA relacional (2026-08-05).
+
+    Parcela sem DAYS_ENTRY_PAYMENT e uma parcela NUNCA PAGA. Como
+    atraso_dias vira NaN e `NaN > 0` e False, ela sumia da contagem de
+    atraso - quem nunca pagou era contado igual a quem pagou em dia.
+    Clientes assim tem 18,14% de default contra 8,04% do resto.
+    """
+    from app.feature_engineering_home_credit import agregar_installments
+
+    inst = pd.DataFrame({
+        "SK_ID_CURR": [1, 1, 2, 2],
+        "NUM_INSTALMENT_NUMBER": [1, 2, 1, 2],
+        "DAYS_INSTALMENT": [-60.0, -30.0, -60.0, -30.0],
+        # cliente 1: pagou as duas em dia | cliente 2: pagou uma, NUNCA pagou a outra
+        "DAYS_ENTRY_PAYMENT": [-62.0, -31.0, -62.0, np.nan],
+        "AMT_INSTALMENT": [100.0, 100.0, 100.0, 100.0],
+        "AMT_PAYMENT": [100.0, 100.0, 100.0, np.nan],
+    })
+    out = agregar_installments(inst).set_index("SK_ID_CURR")
+
+    assert out.loc[1, "n_parcelas_nunca_pagas"] == 0
+    assert out.loc[2, "n_parcelas_nunca_pagas"] == 1, "parcela nunca paga tem que ser contada"
+    assert out.loc[2, "frac_parcelas_nunca_pagas"] == pytest.approx(0.5)
+    # o sinal precisa DISTINGUIR os dois clientes - antes da correcao eram iguais
+    assert out.loc[1, "n_parcelas_nunca_pagas"] != out.loc[2, "n_parcelas_nunca_pagas"]

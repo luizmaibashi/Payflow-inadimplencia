@@ -76,6 +76,21 @@ def agregar_installments(installments: pd.DataFrame) -> pd.DataFrame:
     df = installments.copy()
     df["atraso_dias"] = df["DAYS_ENTRY_PAYMENT"] - df["DAYS_INSTALMENT"]
     df["pagou_a_menor"] = df["AMT_PAYMENT"] < df["AMT_INSTALMENT"]
+
+    # DEFEITO CORRIGIDO (EDA das tabelas relacionais, 2026-08-05): parcela SEM
+    # data de pagamento e uma parcela NUNCA PAGA - o sinal mais forte de
+    # inadimplencia que existe. Mas `atraso_dias` vira NaN, e `NaN > 0` e
+    # False: ela sumia da contagem de atraso. Mesma coisa em `pagou_a_menor`
+    # (`NaN < x` e False). Ou seja, quem nunca pagou era contado como quem
+    # pagou em dia.
+    #
+    # Sao 2.905 parcelas em 1.249 clientes - poucos, mas com default de
+    # 18,14% contra 8,04% do resto da base (2,26x mais arriscados).
+    #
+    # Vira feature PROPRIA em vez de virar "atraso muito grande": nunca pagar
+    # e categoricamente diferente de pagar atrasado, e fundir os dois perderia
+    # justamente a distincao que carrega o sinal.
+    df["nunca_pagou"] = df["DAYS_ENTRY_PAYMENT"].isna()
     df["deficit_pct"] = np.where(
         df["AMT_INSTALMENT"] > 0,
         (df["AMT_INSTALMENT"] - df["AMT_PAYMENT"]) / df["AMT_INSTALMENT"],
@@ -89,8 +104,14 @@ def agregar_installments(installments: pd.DataFrame) -> pd.DataFrame:
         atraso_max_dias=("atraso_dias", "max"),
         n_parcelas_pagas_a_menor=("pagou_a_menor", "sum"),
         deficit_pagamento_medio_pct=("deficit_pct", "mean"),
+        n_parcelas_nunca_pagas=("nunca_pagou", "sum"),
     ).reset_index()
 
+    out["frac_parcelas_nunca_pagas"] = np.where(
+        out["n_parcelas_historico"] > 0,
+        out["n_parcelas_nunca_pagas"] / out["n_parcelas_historico"],
+        np.nan,
+    )
     out["frac_parcelas_atrasadas"] = np.where(
         out["n_parcelas_historico"] > 0, out["n_parcelas_atrasadas"] / out["n_parcelas_historico"], np.nan
     )
