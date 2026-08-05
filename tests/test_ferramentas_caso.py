@@ -175,3 +175,100 @@ def test_saida_do_historico_nao_carrega_o_score():
     for campo in ResultadoHistoricoBureau.model_fields:
         for proibido in TERMOS_PROIBIDOS_SCORE:
             assert proibido not in campo.lower()
+
+
+# --- 3a ferramenta: pagamentos na propria Home Credit ---
+
+@pytest.fixture
+def ferramentas_pag(tmp_path, ferramentas):
+    """Reaproveita os CSVs de bureau e acrescenta parcelas.
+
+    Cliente 1: 3 parcelas, uma adiantada, uma atrasada, uma NUNCA PAGA.
+    Cliente 2: 2 parcelas, ambas em dia.
+    Cliente 3: sem historico.
+    """
+    import pandas as pd
+    pd.DataFrame({
+        "SK_ID_CURR":         [1, 1, 1, 2, 2],
+        "DAYS_INSTALMENT":    [-90.0, -60.0, -30.0, -90.0, -60.0],
+        "DAYS_ENTRY_PAYMENT": [-95.0, -50.0, None, -92.0, -61.0],
+        "AMT_INSTALMENT":     [100.0, 100.0, 100.0, 200.0, 200.0],
+        "AMT_PAYMENT":        [100.0, 80.0, None, 200.0, 200.0],
+    }).to_csv(ferramentas.raw / "installments_payments.csv", index=False)
+    return ferramentas
+
+
+def test_parcela_nunca_paga_e_contada_separada_de_atraso(ferramentas_pag):
+    """O sinal mais forte da base nao pode se misturar com 'pagou atrasado'."""
+    r = ferramentas_pag.consultar_pagamentos(1)
+    assert r.n_parcelas == 3
+    assert r.n_nunca_pagas == 1
+    assert r.n_pagas_com_atraso == 1, "a que atrasou 10 dias; a nunca paga nao conta aqui"
+
+
+def test_atraso_medio_negativo_significa_pagamento_adiantado(ferramentas_pag):
+    r = ferramentas_pag.consultar_pagamentos(2)
+    assert r.atraso_medio_dias is not None and r.atraso_medio_dias < 0
+    assert r.n_pagas_com_atraso == 0
+    assert r.n_nunca_pagas == 0
+
+
+def test_reporta_ha_quanto_tempo_foi_o_ultimo_atraso(ferramentas_pag):
+    """Mesma logica da tool 2: distingue problema antigo de corrente."""
+    r = ferramentas_pag.consultar_pagamentos(1)
+    assert r.dias_desde_ultimo_atraso == 60
+
+
+def test_detecta_pagamento_a_menor_e_calcula_deficit(ferramentas_pag):
+    r = ferramentas_pag.consultar_pagamentos(1)
+    assert r.n_pagas_a_menor == 1
+    assert r.deficit_medio_pct == pytest.approx(0.10)   # (0 + 0.2) / 2
+
+
+def test_cliente_sem_parcelas_devolve_ausencia_nao_erro(ferramentas_pag):
+    r = ferramentas_pag.consultar_pagamentos(3)
+    assert r.tem_registro is False
+    assert r.n_parcelas == 0
+    assert r.atraso_medio_dias is None
+
+
+def test_pagamentos_entram_na_trace(ferramentas_pag):
+    ferramentas_pag.consultar_pagamentos(1)
+    assert ferramentas_pag.trace[-1].ferramenta == "consultar_pagamentos"
+
+
+def test_saida_de_pagamentos_nao_carrega_o_score():
+    from app.ferramentas_caso import ResultadoPagamentosHomeCredit
+
+    for campo in ResultadoPagamentosHomeCredit.model_fields:
+        for proibido in TERMOS_PROIBIDOS_SCORE:
+            assert proibido not in campo.lower()
+
+
+def test_pagar_a_maior_nao_vira_deficit_negativo(tmp_path):
+    """Regressao: media misturava falta de pagamento com quitacao antecipada.
+
+    Em caso real isso produziu deficit_medio_pct = -4919%, numero que o
+    agente nao teria como interpretar. Ha parcela na base paga 194 mil
+    vezes o valor devido.
+    """
+    from app.ferramentas_caso import FerramentasCaso
+
+    pd.DataFrame({"SK_ID_CURR": [1], "SK_ID_BUREAU": [10], "CREDIT_ACTIVE": ["Closed"],
+                  "CREDIT_DAY_OVERDUE": [0], "AMT_CREDIT_SUM": [1.0],
+                  "AMT_CREDIT_SUM_DEBT": [0.0]}).to_csv(tmp_path / "bureau.csv", index=False)
+    pd.DataFrame({"SK_ID_BUREAU": [10], "MONTHS_BALANCE": [-1],
+                  "STATUS": ["0"]}).to_csv(tmp_path / "bureau_balance.csv", index=False)
+    pd.DataFrame({
+        "SK_ID_CURR":         [1, 1],
+        "DAYS_INSTALMENT":    [-60.0, -30.0],
+        "DAYS_ENTRY_PAYMENT": [-60.0, -30.0],
+        "AMT_INSTALMENT":     [100.0, 100.0],
+        "AMT_PAYMENT":        [50.0, 5000.0],   # pagou metade | quitou antecipado
+    }).to_csv(tmp_path / "installments_payments.csv", index=False)
+
+    r = FerramentasCaso(raw_dir=tmp_path).consultar_pagamentos(1)
+    assert r.deficit_medio_pct == pytest.approx(0.25), "sem piso daria -24,25"
+    assert r.deficit_medio_pct >= 0
+    assert r.n_pagas_a_maior == 1
+    assert r.n_pagas_a_menor == 1

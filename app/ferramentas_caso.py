@@ -65,6 +65,52 @@ class ResultadoHistoricoBureau(BaseModel):
     )
 
 
+
+class ResultadoPagamentosHomeCredit(BaseModel):
+    """Comportamento de pagamento em contratos ANTERIORES da propria casa.
+
+    Diferenca para as tools de bureau: la e o que outros bancos reportaram;
+    aqui e o que a propria Home Credit VIU acontecer, parcela a parcela.
+    E o registro mais direto que existe - nao e proxy de capacidade de
+    pagamento, e o pagamento.
+    """
+
+    tem_registro: bool = Field(..., description="Se ha historico de parcelas")
+    n_parcelas: int = Field(..., ge=0, description="Parcelas ja processadas")
+    n_nunca_pagas: int = Field(
+        ..., ge=0,
+        description="Parcelas SEM pagamento registrado. Sinal mais forte que "
+        "existe: clientes com isso dao calote em 18,1% contra 8,0% do resto "
+        "(EDA 2026-08-05). Nao confundir com 'paga em atraso'",
+    )
+    n_pagas_com_atraso: int = Field(..., ge=0)
+    n_pagas_a_menor: int = Field(
+        ..., ge=0, description="Pagou menos que o devido - aperto de caixa"
+    )
+    atraso_medio_dias: float | None = Field(
+        None, description="Media de dias de atraso. NEGATIVO = paga adiantado "
+        "(a mediana da base e -9,5 dias)"
+    )
+    pior_atraso_dias: int | None = Field(None, description="Maior atraso ja registrado")
+    dias_desde_ultimo_atraso: int | None = Field(
+        None, ge=0,
+        description="Ha quantos dias foi o ultimo atraso. Baixo = problema "
+        "corrente; alto = ja recuperado",
+    )
+    deficit_medio_pct: float | None = Field(
+        None, ge=0.0,
+        description="% medio do valor da parcela que FALTOU pagar. Piso em "
+        "zero: pagar a MAIS nao e deficit negativo, e outra coisa (quitacao "
+        "antecipada) - misturar os dois produzia media sem sentido, tipo "
+        "-4919% (achado ao rodar em dado real, 2026-08-05)",
+    )
+    n_pagas_a_maior: int = Field(
+        0, ge=0,
+        description="Parcelas pagas ACIMA do devido - tipicamente quitacao "
+        "antecipada. Fica em campo proprio para nao contaminar o deficit",
+    )
+
+
 class ResultadoBureau(BaseModel):
     """Retrato do cliente em OUTRAS instituicoes financeiras."""
 
@@ -96,6 +142,7 @@ class FerramentasCaso:
         self._bureau: pd.DataFrame | None = None
         self._ids_com_balance: set[int] | None = None
         self._balance: pd.DataFrame | None = None
+        self._parcelas: pd.DataFrame | None = None
         self.trace: list[ChamadaFerramenta] = []
 
     # --- carregamento preguicoso (so paga o custo se a tool for usada) ---
@@ -122,6 +169,18 @@ class FerramentasCaso:
             df = pd.read_csv(self.raw / "bureau_balance.csv")
             self._balance = df.set_index("SK_ID_BUREAU").sort_index()
         return self._balance
+
+    def _carregar_parcelas(self) -> pd.DataFrame:
+        if self._parcelas is None:
+            df = pd.read_csv(
+                self.raw / "installments_payments.csv",
+                usecols=[
+                    "SK_ID_CURR", "DAYS_INSTALMENT", "DAYS_ENTRY_PAYMENT",
+                    "AMT_INSTALMENT", "AMT_PAYMENT",
+                ],
+            )
+            self._parcelas = df.set_index("SK_ID_CURR").sort_index()
+        return self._parcelas
 
     # --- registro de auditoria ---
 
@@ -231,4 +290,62 @@ class FerramentasCaso:
         self._registrar(
             "consultar_historico_bureau", {"sk_id_curr": int(sk_id_curr)}, resultado
         )
+        return resultado
+
+    # --- FERRAMENTA: pagamentos na propria Home Credit ---
+
+    def consultar_pagamentos(self, sk_id_curr: int) -> ResultadoPagamentosHomeCredit:
+        """Como o cliente pagou os contratos ANTERIORES desta casa.
+
+        Todas as outras tools sao proxy de capacidade de pagamento. Esta e
+        o registro do pagamento em si - o que ele fez, nao o que declarou.
+        """
+        par = self._carregar_parcelas()
+        linhas = par.loc[[sk_id_curr]] if sk_id_curr in par.index else par.iloc[0:0]
+
+        if linhas.empty:
+            resultado = ResultadoPagamentosHomeCredit(
+                tem_registro=False, n_parcelas=0, n_nunca_pagas=0,
+                n_pagas_com_atraso=0, n_pagas_a_menor=0,
+            )
+        else:
+            nunca_pagou = linhas["DAYS_ENTRY_PAYMENT"].isna()
+            atraso = linhas["DAYS_ENTRY_PAYMENT"] - linhas["DAYS_INSTALMENT"]
+            atrasadas = atraso > 0
+
+            # deficit so faz sentido onde houve parcela com valor E pagamento
+            devido = linhas["AMT_INSTALMENT"]
+            pago = linhas["AMT_PAYMENT"]
+            valido = (devido > 0) & pago.notna()
+            # Piso em zero: pagar a MAIS nao e "deficit negativo". Sem isso a
+            # media misturava falta de pagamento com quitacao antecipada e
+            # produzia numeros absurdos (visto -4919% em caso real; ha parcela
+            # paga 194 mil vezes o valor devido). 1,3% das parcelas da base.
+            deficit = ((devido - pago) / devido).where(valido).clip(lower=0)
+
+            venc_atrasadas = linhas.loc[atrasadas, "DAYS_INSTALMENT"]
+
+            resultado = ResultadoPagamentosHomeCredit(
+                tem_registro=True,
+                n_parcelas=int(len(linhas)),
+                n_nunca_pagas=int(nunca_pagou.sum()),
+                n_pagas_com_atraso=int(atrasadas.sum()),
+                n_pagas_a_menor=int((pago < devido).sum()),
+                atraso_medio_dias=(
+                    float(atraso.mean()) if atraso.notna().any() else None
+                ),
+                pior_atraso_dias=(
+                    int(atraso.max()) if atraso.notna().any() else None
+                ),
+                # DAYS_INSTALMENT e negativo (dias atras); o mais recente e o maior
+                dias_desde_ultimo_atraso=(
+                    int(-venc_atrasadas.max()) if len(venc_atrasadas) else None
+                ),
+                deficit_medio_pct=(
+                    float(deficit.mean()) if deficit.notna().any() else None
+                ),
+                n_pagas_a_maior=int((pago > devido).sum()),
+            )
+
+        self._registrar("consultar_pagamentos", {"sk_id_curr": int(sk_id_curr)}, resultado)
         return resultado
