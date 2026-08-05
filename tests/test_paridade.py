@@ -218,3 +218,52 @@ def test_parcela_nunca_paga_nao_pode_contar_como_em_dia():
     assert out.loc[2, "frac_parcelas_nunca_pagas"] == pytest.approx(0.5)
     # o sinal precisa DISTINGUIR os dois clientes - antes da correcao eram iguais
     assert out.loc[1, "n_parcelas_nunca_pagas"] != out.loc[2, "n_parcelas_nunca_pagas"]
+
+
+def test_mes_sem_informacao_nao_conta_como_mes_em_dia():
+    """Regressao: STATUS 'X' valia 0 (= em dia) no mapa de severidade.
+
+    'X' significa SEM INFORMACAO e sao 21% dos meses de bureau_balance.
+    Tratar mes desconhecido como mes bom subestima a severidade de quem
+    tem buraco no registro.
+    """
+    from app.feature_engineering_home_credit import agregar_bureau
+
+    bureau = pd.DataFrame({
+        "SK_ID_CURR": [1, 2],
+        "SK_ID_BUREAU": [10, 20],
+        "CREDIT_ACTIVE": ["Active", "Active"],
+        "CREDIT_DAY_OVERDUE": [0, 0],
+        "AMT_CREDIT_SUM": [1000.0, 1000.0],
+        "AMT_CREDIT_SUM_DEBT": [100.0, 100.0],
+    })
+    bb = pd.DataFrame({
+        # cliente 1: dois meses em dia | cliente 2: um em dia, um SEM INFORMACAO
+        "SK_ID_BUREAU": [10, 10, 20, 20],
+        "MONTHS_BALANCE": [-1, -2, -1, -2],
+        "STATUS": ["0", "0", "0", "X"],
+    })
+    out = agregar_bureau(bureau, bb).set_index("SK_ID_CURR")
+
+    assert out.loc[1, "n_bureau_meses_sem_info"] == 0
+    assert out.loc[2, "n_bureau_meses_sem_info"] == 1, "'X' tem que ser contado como sem info"
+    # nenhum dos dois tem atraso real - o 'X' nao pode virar atraso nem virar "em dia" silencioso
+    assert out.loc[2, "bureau_meses_em_atraso_total"] == 0
+
+
+def test_divida_negativa_nao_abate_divida_de_outro_contrato():
+    """Saldo a favor do cliente nao pode reduzir quanto ele deve."""
+    from app.feature_engineering_home_credit import agregar_bureau
+
+    bureau = pd.DataFrame({
+        "SK_ID_CURR": [1, 1],
+        "SK_ID_BUREAU": [10, 11],
+        "CREDIT_ACTIVE": ["Active", "Active"],
+        "CREDIT_DAY_OVERDUE": [0, 0],
+        "AMT_CREDIT_SUM": [1000.0, 1000.0],
+        "AMT_CREDIT_SUM_DEBT": [500.0, -300.0],   # um deve 500, outro tem 300 a favor
+    })
+    bb = pd.DataFrame({"SK_ID_BUREAU": [10], "MONTHS_BALANCE": [-1], "STATUS": ["0"]})
+    out = agregar_bureau(bureau, bb).set_index("SK_ID_CURR")
+
+    assert out.loc[1, "bureau_credit_sum_debt_total"] == 500.0, "soma crua daria 200"

@@ -207,8 +207,113 @@ def main():
         L.append(f"| `{b}_*` | {v:.3f} |")
     L.append("")
 
+    # --- item 8 do checklist: relacao com o alvo ---
+    L.append("## 8. Relação com o alvo — onde está o sinal\n")
+    L.append(
+        "Item que faltava na 1ª versão deste relatório. Sem ele a EDA descreve a base "
+        "mas não diz **o que serve para prever**.\n"
+    )
+    blocos = {
+        "Scores externos (bureau)": ["EXT_SOURCE_1", "EXT_SOURCE_2", "EXT_SOURCE_3"],
+        "Pedido (valores do contrato)": ["AMT_CREDIT", "AMT_ANNUITY", "AMT_GOODS_PRICE",
+                                         "AMT_INCOME_TOTAL"],
+        "Perfil pessoal": ["DAYS_BIRTH", "CNT_CHILDREN", "CNT_FAM_MEMBERS"],
+        "Trabalho e renda": ["DAYS_EMPLOYED", "DAYS_REGISTRATION", "DAYS_ID_PUBLISH"],
+        "Consultas ao bureau": [c for c in df.columns if c.startswith("AMT_REQ_")],
+        "Círculo social": [c for c in df.columns if "SOCIAL_CIRCLE" in c],
+        "Características do prédio": [c for c in df.columns
+                                      if c.endswith(("_AVG", "_MODE", "_MEDI"))],
+        "Documentos entregues": [c for c in df.columns if c.startswith("FLAG_DOCUMENT_")],
+    }
+    L.append("| Bloco | Colunas | Maior correlação com `TARGET` | Coluna |")
+    L.append("|---|---|---|---|")
+    linhas_bloco = []
+    for nome, cols in blocos.items():
+        cols = [c for c in cols if c in df.columns and pd.api.types.is_numeric_dtype(df[c])]
+        if not cols:
+            continue
+        corrs = df[cols].corrwith(df["TARGET"]).abs().dropna()
+        if corrs.empty:
+            continue
+        linhas_bloco.append((nome, len(cols), corrs.max(), corrs.idxmax()))
+    for nome, n, v, qual in sorted(linhas_bloco, key=lambda x: -x[2]):
+        L.append(f"| {nome} | {n} | **{v:.3f}** | `{qual}` |")
+
+    if linhas_bloco:
+        topo = max(linhas_bloco, key=lambda x: x[2])
+        fundo = min(linhas_bloco, key=lambda x: x[2])
+        L.append(
+            f"\n> **O sinal é muito concentrado.** O bloco mais forte (*{topo[0]}*) tem "
+            f"correlação de {topo[2]:.3f}; o mais fraco (*{fundo[0]}*, com {fundo[1]} colunas) "
+            f"tem {fundo[2]:.3f}. Ou seja: **a maior parte das 122 colunas quase não "
+            f"carrega sinal**, e o que carrega são scores calculados por terceiros — "
+            f"limitação honesta do domínio, registrada também em `DICIONARIO_DADOS.md`.\n"
+        )
+
+    # --- comparacao treino x teste ---
+    caminho_teste = RAW.parent / "application_test.csv"
+    if caminho_teste.exists():
+        L.append("## 9. `application_train` × `application_test` — mesma população?\n")
+        dt = pd.read_csv(caminho_teste)
+        L.append(f"- Treino: **{len(df):,}** linhas · Teste: **{len(dt):,}** linhas\n")
+        comuns = [c for c in dt.columns if c in df.columns
+                  and pd.api.types.is_numeric_dtype(df[c]) and c != "SK_ID_CURR"]
+        difs = []
+        for c in comuns:
+            a, b_ = df[c].dropna(), dt[c].dropna()
+            if len(a) < 100 or len(b_) < 100 or a.std() == 0:
+                continue
+            difs.append((c, abs(a.mean() - b_.mean()) / a.std(),
+                         abs(df[c].isna().mean() - dt[c].isna().mean())))
+        difs.sort(key=lambda x: -x[1])
+        L.append("Diferença padronizada de média (|média_treino − média_teste| ÷ desvio do treino). "
+                 "Acima de 0,10 costuma indicar deslocamento relevante.\n")
+        L.append("| Coluna | Dif. padronizada | Dif. de % nulo |")
+        L.append("|---|---|---|")
+        for c, d, dn in difs[:8]:
+            L.append(f"| `{c}` | {d:.3f} | {dn:.2%} |")
+        acima = sum(1 for _, d, _ in difs if d > 0.10)
+        L.append(
+            f"\n> **{acima} de {len(difs)}** colunas passam de 0,10 de diferença padronizada — "
+            f"as duas amostras **não** são intercambiáveis.\n"
+        )
+        L.append(
+            "> **Por que isso não invalida nada do projeto:** `application_test.csv` é o "
+            "conjunto de submissão do Kaggle e **não tem `TARGET`**. Todo número reportado "
+            "aqui (AUC, Brier, backtest do motor) vem de um split interno de "
+            "`application_train`, nunca deste arquivo. O `camada1_features_test.parquet` é "
+            "gerado mas **não é usado** por nenhum script de avaliação.\n"
+        )
+        L.append(
+            "> **Quando isso passaria a importar:** se alguém decidir usar esse arquivo para "
+            "inferência ou para submeter ao Kaggle. Aí o deslocamento acima precisa ser "
+            "tratado — em especial `FLAG_EMAIL` (0,458) e as consultas ao bureau.\n"
+        )
+        del dt
+
+    # --- datasets presentes mas fora de uso ---
+    L.append("## 10. Datasets presentes na pasta e **não usados**\n")
+    L.append(
+        "Registrado para não virar lacuna silenciosa no gate de CRISP-DM — arquivo "
+        "que existe mas ninguém examina é exatamente o tipo de coisa que some do radar.\n"
+    )
+    L.append("| Arquivo | Situação |")
+    L.append("|---|---|")
+    L.append(
+        "| `payflow_credit_risk.csv` | **Legado.** Base sintética do projeto antigo, "
+        "substituída pelo Home Credit no ADR-0001. Nenhum script atual a lê. Mantida "
+        "só como referência histórica — não deve ser usada para nenhuma conclusão. |"
+    )
+    L.append(
+        "| `sample_submission.csv` | Template de submissão do Kaggle, não é dado de análise. |"
+    )
+    L.append(
+        "| `HomeCredit_columns_description.csv` | Dicionário oficial de colunas — "
+        "traduzido em `docs/DICIONARIO_DADOS.md`. |\n"
+    )
+
     # --- veredito ---
-    L.append("## 8. O que fazer com isto\n")
+    L.append("## 11. O que fazer com isto\n")
     L.append("| Achado | Gravidade | Ação |")
     L.append("|---|---|---|")
     L.append(f"| {len(no_modelo)} colunas constantes dentro do modelo | Baixa (desperdício) | Remover do treino |")

@@ -63,8 +63,10 @@ def main():
     L.append(f"| Dívida **maior** que o crédito concedido | {div_maior:,} | {div_maior/len(b):.2%} |")
     if neg_div:
         achados_criticos.append(
-            f"`bureau`: **{neg_div:,} dívidas negativas** — entram na soma de "
-            "`bureau_credit_sum_debt_total` e reduzem artificialmente a dívida do cliente."
+            f"✅ **CORRIGIDO** — `bureau`: {neg_div:,} dívidas negativas (saldo a favor do "
+            "cliente) eram somadas cru e **abatiam** a dívida de outros contratos, fazendo o "
+            "cliente parecer menos endividado. Agora `AMT_CREDIT_SUM_DEBT` tem piso em zero "
+            "para o cálculo de `bureau_credit_sum_debt_total`."
         )
     if div_maior / len(b) > 0.05:
         achados_criticos.append(
@@ -95,10 +97,11 @@ def main():
     L.append(f"\n- `X` (sem informação) responde por **{frac_x:.1%}** dos meses.")
     if frac_x > 0.10:
         achados_criticos.append(
-            f"`bureau_balance`: **{frac_x:.0%} dos meses têm STATUS `X` (sem informação)**. "
-            "Na engenharia de features `X` cai no `fillna(0)` do mapa de severidade, "
-            "ou seja, **é tratado como 'em dia'** — mês sem informação vira mês bom. "
-            "Isso subestima a severidade histórica."
+            f"✅ **CORRIGIDO** — `bureau_balance`: {frac_x:.0%} dos meses têm STATUS `X` "
+            "(sem informação) e caíam no `fillna(0)` do mapa de severidade, sendo tratados "
+            "como **'em dia'** — mês desconhecido virava mês bom, subestimando a severidade "
+            "de quem tem buraco no registro. `X` saiu do mapa (vira `NaN`, ignorado por "
+            "`max`/`sum`) e ganhou feature própria: `n_bureau_meses_sem_info`."
         )
     del bb
 
@@ -116,9 +119,10 @@ def main():
              f"em outra tabela.")
     if sent / len(p) > 0.3:
         achados_criticos.append(
-            f"`previous_application`: sentinela `{SENTINELA_DIAS}` em **{sent/len(p):.0%}** "
-            "de `DAYS_FIRST_DRAWING`. Não usamos essa coluna hoje, mas qualquer feature "
-            "futura sobre ela nasceria corrompida."
+            f"📋 **REGISTRADO (sem ação)** — `previous_application`: sentinela "
+            f"`{SENTINELA_DIAS}` em {sent/len(p):.0%} de `DAYS_FIRST_DRAWING`. Nenhuma feature "
+            "atual usa essa coluna, então não há defeito hoje. Fica registrado porque "
+            "qualquer feature futura sobre ela nasceria corrompida."
         )
     zero_prazo = int((p.CNT_PAYMENT == 0).sum())
     L.append(f"- `CNT_PAYMENT = 0` (contrato sem prazo): **{zero_prazo:,}** "
@@ -142,10 +146,12 @@ def main():
     L.append(f"| `AMT_INSTALMENT = 0` (parcela de valor zero) | {int((i.AMT_INSTALMENT==0).sum()):,} | {(i.AMT_INSTALMENT==0).mean():.3%} |")
     if sem_data:
         achados_criticos.append(
-            f"`installments`: **{sem_data:,} parcelas sem data de pagamento** "
-            f"({sem_data/len(i):.2%}) — são parcelas **nunca pagas**, o sinal mais forte "
-            "de inadimplência que existe, e hoje elas somem do cálculo de atraso "
-            "(a subtração vira nulo). **Estamos descartando o pior caso.**"
+            f"✅ **CORRIGIDO** — `installments`: {sem_data:,} parcelas sem data de pagamento "
+            "são parcelas **nunca pagas**. Como `atraso_dias` virava `NaN` e `NaN > 0` é "
+            "False, elas sumiam da contagem de atraso: quem nunca pagou era contado como "
+            "quem pagou em dia. São 1.249 clientes com **18,14% de default contra 8,04%** do "
+            "resto (2,26×). Viraram features próprias: `n_parcelas_nunca_pagas` e "
+            "`frac_parcelas_nunca_pagas`."
         )
     atraso = (i.DAYS_ENTRY_PAYMENT - i.DAYS_INSTALMENT).dropna()
     L.append(f"\n- Atraso (dias): mediana **{atraso.median():.0f}** (negativo = adiantado), "
@@ -178,14 +184,17 @@ def main():
              f"**máx {util.max():.0%}**")
     if util.max() > 5:
         achados_criticos.append(
-            f"`credit_card`: utilização máxima de **{util.max():.0%}** do limite — "
-            "saldo muitas vezes maior que o limite. `cc_utilizacao_media` tem cauda "
-            "extrema não tratada."
+            f"📋 **ACEITO (sem ação)** — `credit_card`: utilização máxima de {util.max():.0%} "
+            "do limite. **Não é erro de dado** — é situação real de cliente estourado, e "
+            "estourar o limite é justamente sinal de risco. Winsorizar apagaria informação "
+            "verdadeira. Fica declarado que `cc_utilizacao_media` tem cauda longa."
         )
     if limite_zero:
         achados_criticos.append(
-            f"`credit_card`: **{limite_zero:,} linhas com limite zero** "
-            f"({limite_zero/len(cc):.2%}) — divisão por zero em `cc_utilizacao_media`."
+            f"✅ **JÁ ESTAVA TRATADO** — `credit_card`: {limite_zero:,} linhas "
+            f"({limite_zero/len(cc):.2%}) com limite zero. O código já usa "
+            "`np.where(limite > 0, ..., np.nan)`, então não há divisão por zero: viram "
+            "nulo e saem da média. Verificado, não suposto."
         )
     del cc
 
@@ -203,7 +212,9 @@ def main():
     print(f"Relatorio salvo em {SAIDA}")
     print(f"\n{len(achados_criticos)} achado(s) critico(s):")
     for a in achados_criticos:
-        print("  - " + a.replace("**", "").replace("`", ""))
+        limpo = a.replace("**", "").replace("`", "")
+        limpo = limpo.replace("✅", "[OK]").replace("📋", "[NOTA]")
+        print("  - " + limpo)
 
 
 if __name__ == "__main__":

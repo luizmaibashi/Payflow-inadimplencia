@@ -99,9 +99,9 @@
 
 ## Achados que exigem decisão
 
-- `bureau`: **8,418 dívidas negativas** — entram na soma de `bureau_credit_sum_debt_total` e reduzem artificialmente a dívida do cliente.
-- `bureau_balance`: **21% dos meses têm STATUS `X` (sem informação)**. Na engenharia de features `X` cai no `fillna(0)` do mapa de severidade, ou seja, **é tratado como 'em dia'** — mês sem informação vira mês bom. Isso subestima a severidade histórica.
-- `previous_application`: sentinela `365243` em **56%** de `DAYS_FIRST_DRAWING`. Não usamos essa coluna hoje, mas qualquer feature futura sobre ela nasceria corrompida.
-- `installments`: **2,905 parcelas sem data de pagamento** (0.02%) — são parcelas **nunca pagas**, o sinal mais forte de inadimplência que existe, e hoje elas somem do cálculo de atraso (a subtração vira nulo). **Estamos descartando o pior caso.**
-- `credit_card`: utilização máxima de **1178%** do limite — saldo muitas vezes maior que o limite. `cc_utilizacao_media` tem cauda extrema não tratada.
-- `credit_card`: **753,823 linhas com limite zero** (19.63%) — divisão por zero em `cc_utilizacao_media`.
+- ✅ **CORRIGIDO** — `bureau`: 8,418 dívidas negativas (saldo a favor do cliente) eram somadas cru e **abatiam** a dívida de outros contratos, fazendo o cliente parecer menos endividado. Agora `AMT_CREDIT_SUM_DEBT` tem piso em zero para o cálculo de `bureau_credit_sum_debt_total`.
+- ✅ **CORRIGIDO** — `bureau_balance`: 21% dos meses têm STATUS `X` (sem informação) e caíam no `fillna(0)` do mapa de severidade, sendo tratados como **'em dia'** — mês desconhecido virava mês bom, subestimando a severidade de quem tem buraco no registro. `X` saiu do mapa (vira `NaN`, ignorado por `max`/`sum`) e ganhou feature própria: `n_bureau_meses_sem_info`.
+- 📋 **REGISTRADO (sem ação)** — `previous_application`: sentinela `365243` em 56% de `DAYS_FIRST_DRAWING`. Nenhuma feature atual usa essa coluna, então não há defeito hoje. Fica registrado porque qualquer feature futura sobre ela nasceria corrompida.
+- ✅ **CORRIGIDO** — `installments`: 2,905 parcelas sem data de pagamento são parcelas **nunca pagas**. Como `atraso_dias` virava `NaN` e `NaN > 0` é False, elas sumiam da contagem de atraso: quem nunca pagou era contado como quem pagou em dia. São 1.249 clientes com **18,14% de default contra 8,04%** do resto (2,26×). Viraram features próprias: `n_parcelas_nunca_pagas` e `frac_parcelas_nunca_pagas`.
+- 📋 **ACEITO (sem ação)** — `credit_card`: utilização máxima de 1178% do limite. **Não é erro de dado** — é situação real de cliente estourado, e estourar o limite é justamente sinal de risco. Winsorizar apagaria informação verdadeira. Fica declarado que `cc_utilizacao_media` tem cauda longa.
+- ✅ **JÁ ESTAVA TRATADO** — `credit_card`: 753,823 linhas (19.63%) com limite zero. O código já usa `np.where(limite > 0, ..., np.nan)`, então não há divisão por zero: viram nulo e saem da média. Verificado, não suposto.

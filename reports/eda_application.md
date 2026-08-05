@@ -14,26 +14,26 @@
 
 ## 2. 🔴 Colunas que não distinguem ninguém
 
-**16 colunas** têm um único valor em mais de 99.5% das linhas — não separam cliente bom de ruim. **16 delas estão dentro do modelo treinado.**
+**16 colunas** têm um único valor em mais de 99.5% das linhas — não separam cliente bom de ruim. **0 delas estão dentro do modelo treinado.**
 
 | Coluna | Valor dominante | Frequência | No modelo? |
 |---|---|---|---|
-| `FLAG_MOBIL` | `1` | 100.00% | sim |
-| `FLAG_DOCUMENT_12` | `0` | 100.00% | sim |
-| `FLAG_DOCUMENT_10` | `0` | 100.00% | sim |
-| `FLAG_DOCUMENT_2` | `0` | 100.00% | sim |
-| `FLAG_DOCUMENT_4` | `0` | 99.99% | sim |
-| `FLAG_DOCUMENT_7` | `0` | 99.98% | sim |
-| `FLAG_DOCUMENT_17` | `0` | 99.97% | sim |
-| `FLAG_DOCUMENT_21` | `0` | 99.97% | sim |
-| `FLAG_DOCUMENT_20` | `0` | 99.95% | sim |
-| `FLAG_DOCUMENT_19` | `0` | 99.94% | sim |
-| `FLAG_DOCUMENT_15` | `0` | 99.88% | sim |
-| `FLAG_CONT_MOBILE` | `1` | 99.81% | sim |
-| `FLAG_DOCUMENT_14` | `0` | 99.71% | sim |
-| `FLAG_DOCUMENT_13` | `0` | 99.65% | sim |
-| `FLAG_DOCUMENT_9` | `0` | 99.61% | sim |
-| `FLAG_DOCUMENT_11` | `0` | 99.61% | sim |
+| `FLAG_MOBIL` | `1` | 100.00% | não |
+| `FLAG_DOCUMENT_12` | `0` | 100.00% | não |
+| `FLAG_DOCUMENT_10` | `0` | 100.00% | não |
+| `FLAG_DOCUMENT_2` | `0` | 100.00% | não |
+| `FLAG_DOCUMENT_4` | `0` | 99.99% | não |
+| `FLAG_DOCUMENT_7` | `0` | 99.98% | não |
+| `FLAG_DOCUMENT_17` | `0` | 99.97% | não |
+| `FLAG_DOCUMENT_21` | `0` | 99.97% | não |
+| `FLAG_DOCUMENT_20` | `0` | 99.95% | não |
+| `FLAG_DOCUMENT_19` | `0` | 99.94% | não |
+| `FLAG_DOCUMENT_15` | `0` | 99.88% | não |
+| `FLAG_CONT_MOBILE` | `1` | 99.81% | não |
+| `FLAG_DOCUMENT_14` | `0` | 99.71% | não |
+| `FLAG_DOCUMENT_13` | `0` | 99.65% | não |
+| `FLAG_DOCUMENT_9` | `0` | 99.61% | não |
+| `FLAG_DOCUMENT_11` | `0` | 99.61% | não |
 
 ## 3. Ausência disfarçada de categoria
 
@@ -98,11 +98,61 @@ Cada medida de prédio aparece em três versões. Medindo a correlação **míni
 | `LANDAREA_*` | 0.974 |
 | `BASEMENTAREA_*` | 0.973 |
 
-## 8. O que fazer com isto
+## 8. Relação com o alvo — onde está o sinal
+
+Item que faltava na 1ª versão deste relatório. Sem ele a EDA descreve a base mas não diz **o que serve para prever**.
+
+| Bloco | Colunas | Maior correlação com `TARGET` | Coluna |
+|---|---|---|---|
+| Scores externos (bureau) | 3 | **0.179** | `EXT_SOURCE_3` |
+| Perfil pessoal | 3 | **0.078** | `DAYS_BIRTH` |
+| Trabalho e renda | 3 | **0.051** | `DAYS_ID_PUBLISH` |
+| Documentos entregues | 20 | **0.044** | `FLAG_DOCUMENT_3` |
+| Características do prédio | 43 | **0.044** | `FLOORSMAX_AVG` |
+| Pedido (valores do contrato) | 4 | **0.040** | `AMT_GOODS_PRICE` |
+| Círculo social | 4 | **0.032** | `DEF_30_CNT_SOCIAL_CIRCLE` |
+| Consultas ao bureau | 6 | **0.020** | `AMT_REQ_CREDIT_BUREAU_YEAR` |
+
+> **O sinal é muito concentrado.** O bloco mais forte (*Scores externos (bureau)*) tem correlação de 0.179; o mais fraco (*Consultas ao bureau*, com 6 colunas) tem 0.020. Ou seja: **a maior parte das 122 colunas quase não carrega sinal**, e o que carrega são scores calculados por terceiros — limitação honesta do domínio, registrada também em `DICIONARIO_DADOS.md`.
+
+## 9. `application_train` × `application_test` — mesma população?
+
+- Treino: **307,511** linhas · Teste: **48,744** linhas
+
+Diferença padronizada de média (|média_treino − média_teste| ÷ desvio do treino). Acima de 0,10 costuma indicar deslocamento relevante.
+
+| Coluna | Dif. padronizada | Dif. de % nulo |
+|---|---|---|
+| `FLAG_EMAIL` | 0.458 | 0.00% |
+| `AMT_REQ_CREDIT_BUREAU_QRT` | 0.354 | 1.09% |
+| `AMT_REQ_CREDIT_BUREAU_MON` | 0.282 | 1.09% |
+| `AMT_GOODS_PRICE` | 0.205 | 0.09% |
+| `AMT_CREDIT` | 0.204 | 0.00% |
+| `FLAG_DOCUMENT_3` | 0.169 | 0.00% |
+| `AMT_ANNUITY` | 0.160 | 0.05% |
+| `AMT_REQ_CREDIT_BUREAU_WEEK` | 0.154 | 1.09% |
+
+> **10 de 104** colunas passam de 0,10 de diferença padronizada — as duas amostras **não** são intercambiáveis.
+
+> **Por que isso não invalida nada do projeto:** `application_test.csv` é o conjunto de submissão do Kaggle e **não tem `TARGET`**. Todo número reportado aqui (AUC, Brier, backtest do motor) vem de um split interno de `application_train`, nunca deste arquivo. O `camada1_features_test.parquet` é gerado mas **não é usado** por nenhum script de avaliação.
+
+> **Quando isso passaria a importar:** se alguém decidir usar esse arquivo para inferência ou para submeter ao Kaggle. Aí o deslocamento acima precisa ser tratado — em especial `FLAG_EMAIL` (0,458) e as consultas ao bureau.
+
+## 10. Datasets presentes na pasta e **não usados**
+
+Registrado para não virar lacuna silenciosa no gate de CRISP-DM — arquivo que existe mas ninguém examina é exatamente o tipo de coisa que some do radar.
+
+| Arquivo | Situação |
+|---|---|
+| `payflow_credit_risk.csv` | **Legado.** Base sintética do projeto antigo, substituída pelo Home Credit no ADR-0001. Nenhum script atual a lê. Mantida só como referência histórica — não deve ser usada para nenhuma conclusão. |
+| `sample_submission.csv` | Template de submissão do Kaggle, não é dado de análise. |
+| `HomeCredit_columns_description.csv` | Dicionário oficial de colunas — traduzido em `docs/DICIONARIO_DADOS.md`. |
+
+## 11. O que fazer com isto
 
 | Achado | Gravidade | Ação |
 |---|---|---|
-| 16 colunas constantes dentro do modelo | Baixa (desperdício) | Remover do treino |
+| 0 colunas constantes dentro do modelo | Baixa (desperdício) | Remover do treino |
 | Renda de 117 milhões | **Alta (corrompe razões)** | Decidir: teto, remoção ou manter declarado |
 | ~28 colunas redundantes | Baixa | Manter uma versão por grupo |
 | 41 colunas com >50% nulo | Média | Avaliar remoção em bloco |

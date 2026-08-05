@@ -14,30 +14,48 @@ Convencao de nulos (regra de dados, sem imputacao injustificada):
 import numpy as np
 import pandas as pd
 
-# Severidade da coluna STATUS de bureau_balance: 'C'=quitado, 'X'=desconhecido,
-# '0'=sem atraso, '1'..'5'=faixas crescentes de dias em atraso (documentacao HC).
-_STATUS_SEVERIDADE = {"C": 0, "X": 0, "0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5}
+# Severidade da coluna STATUS de bureau_balance: 'C'=quitado, '0'=sem atraso,
+# '1'..'5'=faixas crescentes de dias em atraso (documentacao HC).
+#
+# 'X' NAO ESTA AQUI de proposito (corrigido em 2026-08-05, EDA relacional).
+# Antes ele valia 0, igual a "em dia" - mas 'X' significa SEM INFORMACAO, e
+# sao 21% de todos os meses da tabela. Tratar mes desconhecido como mes bom
+# subestima sistematicamente a severidade historica de quem tem buraco no
+# registro. Fora do mapa, 'X' vira NaN e e ignorado por max()/sum(), que e a
+# afirmacao correta: nao sabemos o que houve naquele mes.
+_STATUS_SEVERIDADE = {"C": 0, "0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5}
 
 
 def agregar_bureau(bureau: pd.DataFrame, bureau_balance: pd.DataFrame) -> pd.DataFrame:
     """Historico de credito em OUTRAS instituicoes (bureau externo)."""
     bb = bureau_balance.copy()
-    bb["severidade"] = bb["STATUS"].map(_STATUS_SEVERIDADE).fillna(0)
+    # sem fillna(0): STATUS fora do mapa (isto e, 'X') tem que ficar NaN
+    bb["severidade"] = bb["STATUS"].map(_STATUS_SEVERIDADE)
+    bb["mes_sem_informacao"] = bb["severidade"].isna()
     bb_agg = bb.groupby("SK_ID_BUREAU").agg(
         bureau_balance_max_severidade=("severidade", "max"),
         bureau_balance_meses_em_atraso=("severidade", lambda s: (s > 0).sum()),
+        bureau_balance_meses_sem_info=("mes_sem_informacao", "sum"),
     ).reset_index()
 
     b = bureau.merge(bb_agg, on="SK_ID_BUREAU", how="left")
+
+    # Divida NEGATIVA (8.418 linhas, EDA relacional 2026-08-05) significa saldo
+    # a favor do cliente, nao divida. Somada cru, ela ABATE a divida de outros
+    # contratos e faz o cliente parecer menos endividado do que esta. Piso em
+    # zero: para "quanto este cliente deve", credito a favor conta como zero,
+    # nao como divida negativa.
+    b["divida_nao_negativa"] = b["AMT_CREDIT_SUM_DEBT"].clip(lower=0)
 
     out = b.groupby("SK_ID_CURR").agg(
         n_bureau_contratos=("SK_ID_BUREAU", "count"),
         n_bureau_ativos=("CREDIT_ACTIVE", lambda s: (s == "Active").sum()),
         n_bureau_atrasados_hoje=("CREDIT_DAY_OVERDUE", lambda s: (s > 0).sum()),
         bureau_credit_sum_total=("AMT_CREDIT_SUM", "sum"),
-        bureau_credit_sum_debt_total=("AMT_CREDIT_SUM_DEBT", "sum"),
+        bureau_credit_sum_debt_total=("divida_nao_negativa", "sum"),
         bureau_max_severidade_historica=("bureau_balance_max_severidade", "max"),
         bureau_meses_em_atraso_total=("bureau_balance_meses_em_atraso", "sum"),
+        n_bureau_meses_sem_info=("bureau_balance_meses_sem_info", "sum"),
     ).reset_index()
 
     out["frac_bureau_ativos"] = np.where(

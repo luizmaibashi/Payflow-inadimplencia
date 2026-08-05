@@ -16,8 +16,8 @@
 
 | Estratégia | APROVAR | ZONA_CINZENTA / REVISAR | NEGAR |
 |---|---|---|---|
-| Motor (EV) | 59,360 (96.5%) | 1,809 (2.9%) | 334 (0.5%) |
-| Baseline (thresholds legados) | 60,451 (98.3%) | 1,001 (1.6%) | 51 (0.1%) |
+| Motor (EV) | 58,980 (95.9%) | 2,102 (3.4%) | 421 (0.7%) |
+| Baseline (thresholds legados) | 60,781 (98.8%) | 693 (1.1%) | 29 (0.0%) |
 
 ## Backtest sobre a carteira inteira (n=61,503)
 
@@ -27,13 +27,13 @@ O desfecho dos casos deferidos a humano **não é observável** neste dataset, e
 
 | Zona cinzenta tratada como | Motor (u.m./caso) | Baseline (u.m./caso) | Delta | IC95% bootstrap |
 |---|---|---|---|---|
-| NEGAR | 198,406 | 198,602 | **-202** | [-515; 124] |
-| APROVAR | 198,354 | 198,096 | **255** | [79; 425] |
+| NEGAR | 198,193 | 198,473 | **-279** | [-666; 111] |
+| APROVAR | 198,386 | 198,045 | **337** | [147; 531] |
 
 ### Onde as estratégias de fato discordam
 
-- Casos com decisão diferente: **2,092** de 61,503 (**3.4%**)
-- Taxa real de default nesses casos: **38.6%** (contra 8.1% na carteira toda)
+- Casos com decisão diferente: **2,494** de 61,503 (**4.1%**)
+- Taxa real de default nesses casos: **37.7%** (contra 8.1% na carteira toda)
 
 É nesta fatia que a escolha de estratégia importa — e é exatamente ela que alimentaria a Camada 2 (agente): casos que o motor manda deferir e o baseline aprovaria direto.
 
@@ -41,7 +41,7 @@ O desfecho dos casos deferidos a humano **não é observável** neste dataset, e
 
 ## Por que as duas estratégias se parecem tanto agora
 
-Com a margem **medida** (41.4% para Cash loans), o ponto de indiferença fica em `p*` ≈ 37% — muito acima da taxa real de default (8.1%). Ou seja: **com a precificação real da Home Credit, vale emprestar para quase todo mundo**, e o trabalho do modelo é achar a cauda pequena onde não vale. O threshold legado de 0,40 estava, por acaso, **próximo do ponto economicamente correto** — só 1.7% dos casos o ultrapassam.
+Com a margem **medida** (41.4% para Cash loans), o ponto de indiferença fica em `p*` ≈ 37% — muito acima da taxa real de default (8.1%). Ou seja: **com a precificação real da Home Credit, vale emprestar para quase todo mundo**, e o trabalho do modelo é achar a cauda pequena onde não vale. O threshold legado de 0,40 estava, por acaso, **próximo do ponto economicamente correto** — só 1.2% dos casos o ultrapassam.
 
 **Isto revisa a conclusão da 1ª versão deste relatório.** Lá o motor aparecia ~21 mil u.m./caso à frente do baseline, mas aquele número vinha de um proxy de margem defeituoso — correlação de Spearman **negativa (−0,40)** com a margem real (ADR-0002 §2.8) — que tornava o motor artificialmente conservador. Corrigida a margem, a vantagem desaparece. **O que permanece válido** do achado anterior é que um threshold numérico fixo é frágil a mudanças de calibração do modelo: `p* = m/(m+ℓ)` se recalcula a partir de premissas de negócio, um número decorado não.
 
