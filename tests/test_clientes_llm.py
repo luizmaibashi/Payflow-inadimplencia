@@ -6,6 +6,7 @@ Qualidade de julgamento do modelo e objeto de eval (ADR-0004).
 """
 import json
 import sys
+import types
 from pathlib import Path
 
 import pytest
@@ -14,10 +15,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.agente_underwriting import AcaoChamarFerramenta, AcaoConcluir  # noqa: E402
 from app.clientes_llm import (  # noqa: E402
+    TETO_ESPERA_TOTAL_S,
     ClienteGemini,
     ClienteGroq,
     DependenciaAusente,
+    FalhaProvider,
     RespostaLLMInvalida,
+    _chamar_com_retry,
+    _contabilizar_tokens,
+    _delay_sugerido,
     _parse_resposta,
     _prompt_sistema,
 )
@@ -120,3 +126,180 @@ def test_prompt_sistema_nao_menciona_score():
     prompt = _prompt_sistema(FERRAMENTAS).lower()
     for termo in ("p_default", "probabilidade de default", "camada1", "p_estrela"):
         assert termo not in prompt
+
+
+# --- Retry (debito #20) ---
+#
+# Politica derivada da medicao do piloto de 2026-08-06, nao de precaucao.
+# Nenhum teste aqui dorme de verdade: time.sleep e substituido por um registro
+# das esperas pedidas, o que deixa a POLITICA visivel no assert.
+
+class _Http(Exception):
+    """Dublê de erro de SDK com status HTTP."""
+
+    def __init__(self, code, mensagem="falhou"):
+        super().__init__(mensagem)
+        self.code = code
+
+
+@pytest.fixture
+def esperas(monkeypatch):
+    registro = []
+    monkeypatch.setattr("app.clientes_llm.time.sleep", registro.append)
+    monkeypatch.setattr("app.clientes_llm.random.uniform", lambda a, b: 1.0)
+    return registro
+
+
+def test_sucesso_na_primeira_nao_espera(esperas):
+    assert _chamar_com_retry(lambda: "ok", max_tentativas=3) == ("ok", 1)
+    assert esperas == []
+
+
+def test_erro_transitorio_e_retentado_ate_suceder(esperas):
+    tentativas = []
+
+    def instavel():
+        tentativas.append(1)
+        if len(tentativas) < 3:
+            raise _Http(429, "rate limit")
+        return "ok"
+
+    assert _chamar_com_retry(instavel, max_tentativas=3) == ("ok", 3)
+    assert len(esperas) == 2, "duas falhas, duas esperas"
+
+
+def test_resposta_invalida_nao_e_retentada(esperas):
+    """O ponto mais sutil da politica: JSON fora do contrato e QUALIDADE do
+    gerador, metrica que o ADR-0004 quer medir. Retentar por baixo dos panos
+    transformaria a metrica em ruido invisivel."""
+    chamadas = []
+
+    def sempre_invalida():
+        chamadas.append(1)
+        raise RespostaLLMInvalida("memo nao bateu com o contrato")
+
+    with pytest.raises(RespostaLLMInvalida):
+        _chamar_com_retry(sempre_invalida, max_tentativas=5)
+
+    assert len(chamadas) == 1, "nao pode retentar erro de contrato"
+    assert esperas == []
+
+
+@pytest.mark.parametrize("status", [400, 401, 403, 404, 422])
+def test_erro_permanente_falha_rapido(status, esperas):
+    """Chave errada nao melhora com espera - retentar so atrasa a mensagem util."""
+    chamadas = []
+
+    def permanente():
+        chamadas.append(1)
+        raise _Http(status)
+
+    with pytest.raises(FalhaProvider, match="permanente"):
+        _chamar_com_retry(permanente, max_tentativas=5)
+
+    assert len(chamadas) == 1
+    assert esperas == []
+
+
+@pytest.mark.parametrize("status", [408, 429, 500, 503])
+def test_status_que_oscila_e_retentado(status, esperas):
+    with pytest.raises(FalhaProvider, match="2 tentativa"):
+        _chamar_com_retry(lambda: (_ for _ in ()).throw(_Http(status)), max_tentativas=2)
+    assert len(esperas) == 1
+
+
+def test_espera_o_que_o_provider_mandou(esperas):
+    """O 429 do Gemini traz 'Please retry in 39.6s'. Essa e a unica fonte que
+    sabe quando a janela de quota reabre - backoff cego chutaria."""
+    erro = _Http(429, "quota exceeded. Please retry in 12.5s. more text")
+    with pytest.raises(FalhaProvider):
+        _chamar_com_retry(lambda: (_ for _ in ()).throw(erro), max_tentativas=2)
+
+    assert esperas == [12.5]
+
+
+def test_delay_sugerido_le_atributo_estruturado_antes_do_texto():
+    class ComRetryDelay(Exception):
+        retry_delay = type("D", (), {"seconds": 39})()
+
+    assert _delay_sugerido(ComRetryDelay()) == 39.0
+    assert _delay_sugerido(Exception("sem dica nenhuma")) is None
+
+
+def test_contador_de_tentativas_nunca_fica_menor_que_chamadas(monkeypatch, esperas):
+    """Regressao do bug visto no piloto de 2026-08-06.
+
+    `n_chamadas` subia antes da chamada e `tentativas_gastas` so depois, entao
+    chamada que MORRIA incrementava um e nao o outro - o relatorio imprimia
+    "-1 retries". Numero negativo denuncia; o perigoso e que com uma mistura
+    diferente de sucesso e falha a conta ficaria positiva e ERRADA, sem nada
+    apontando para o problema.
+    """
+    class _Modelo:
+        def generate_content(self, contexto):
+            raise _Http(429, "Please retry in 1s.")
+
+    class _FakeGenAI:
+        @staticmethod
+        def configure(**kw):
+            pass
+
+        @staticmethod
+        def GenerativeModel(*a, **kw):
+            return _Modelo()
+
+    # `import google.generativeai as genai` precisa das DUAS coisas: a entrada
+    # em sys.modules e o atributo no pacote pai.
+    pacote_google = types.ModuleType("google")
+    pacote_google.generativeai = _FakeGenAI
+    monkeypatch.setitem(sys.modules, "google", pacote_google)
+    monkeypatch.setitem(sys.modules, "google.generativeai", _FakeGenAI)
+
+    cliente = ClienteGemini(api_key="chave-de-teste", max_tentativas=2)
+    with pytest.raises(FalhaProvider):
+        cliente.proxima_acao("contexto", FERRAMENTAS)
+
+    assert cliente.n_chamadas == 1
+    assert cliente.tentativas_gastas == 2
+    assert cliente.tentativas_gastas >= cliente.n_chamadas, "retries nao pode dar negativo"
+
+
+# --- Contabilidade de tokens (custo medido, nao estimado) ---
+
+def test_conta_thinking_separado_da_saida_visivel():
+    """`thoughts_token_count` e cobrado como output e NAO aparece no texto.
+    Estimativa por contagem de caracteres nao tem como enxerga-lo."""
+    uso = types.SimpleNamespace(
+        prompt_token_count=500, candidates_token_count=200,
+        thoughts_token_count=1500, total_token_count=2200)
+    tokens = _contabilizar_tokens(types.SimpleNamespace(usage_metadata=uso))
+
+    assert tokens == {"input": 500, "output": 200, "thinking": 1500,
+                      "total": 2200, "medido": 1}
+
+
+def test_resposta_sem_telemetria_marca_nao_medido():
+    """O erro perigoso: lote sem uso reportado virar 'custo zero' no relatorio.
+    `medido=0` e o que permite o report dizer NAO MEDIDO em vez de R$ 0,00."""
+    tokens = _contabilizar_tokens(types.SimpleNamespace())
+
+    assert tokens["total"] == 0
+    assert tokens["medido"] == 0, "sem isso, ausencia de dado vira ausencia de custo"
+
+
+def test_le_o_formato_do_groq_tambem():
+    """Groq/OpenAI usam prompt_tokens/completion_tokens."""
+    uso = types.SimpleNamespace(prompt_tokens=300, completion_tokens=120)
+    tokens = _contabilizar_tokens(types.SimpleNamespace(usage=uso))
+
+    assert (tokens["input"], tokens["output"]) == (300, 120)
+    assert tokens["total"] == 420, "sem total_tokens, soma os componentes"
+
+
+def test_teto_de_espera_total_e_controle_de_custo(esperas):
+    """Sem teto, um provider em quota zerada prenderia o lote indefinidamente."""
+    erro = _Http(429, "Please retry in 45s.")
+    with pytest.raises(FalhaProvider, match="teto de espera"):
+        _chamar_com_retry(lambda: (_ for _ in ()).throw(erro), max_tentativas=10)
+
+    assert sum(esperas) <= TETO_ESPERA_TOTAL_S
