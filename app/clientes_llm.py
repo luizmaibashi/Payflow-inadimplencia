@@ -144,6 +144,12 @@ def _contabilizar_tokens(resposta) -> dict[str, int]:
     saida = _campo("candidates_token_count", "completion_tokens")
     pensamento = _campo("thoughts_token_count", "reasoning_tokens")
     total = _campo("total_token_count", "total_tokens")
+    # SDK v1beta (google-generativeai, EOL) nao popula thoughts_token_count -
+    # o pensamento existe e e cobrado, so nao aparece com esse nome. Sinal:
+    # total > input+output+thinking. Resíduo cobre esse buraco sem quebrar o
+    # Groq, onde total_tokens = prompt+completion e o resíduo da zero.
+    if total > entrada + saida + pensamento:
+        pensamento = total - entrada - saida
     return {
         "input": entrada,
         "output": saida,
@@ -212,7 +218,17 @@ def _prompt_sistema(ferramentas: dict[str, str]) -> str:
         '     "informacao_faltante": ["<string>"]\n'
         "   }}\n\n"
         "Ferramentas disponiveis:\n"
-        f"{lista_ferramentas}\n"
+        f"{lista_ferramentas}\n\n"
+        "Regra sobre DEFERIR (achado medido em 2026-08-06: revisor humano aceitou "
+        "1 de 6 DEFERIR do piloto, rejeitou os outros 5 pelo mesmo motivo):\n"
+        "- So use DEFERIR se a informacao que falta puder ser obtida por UMA DAS "
+        "FERRAMENTAS LISTADAS ACIMA e essa ferramenta ainda nao foi chamada.\n"
+        "- Nenhuma ferramenta deste sistema fornece comprovacao de renda, situacao "
+        "de emprego ou patrimonio. NUNCA cite isso em informacao_faltante - nao ha "
+        "como suprir, entao deferir por essa razao so transfere trabalho sem ganho.\n"
+        "- Se bureau e pagamentos ja foram consultados e ambos confirmam ausencia "
+        "total de historico (nao 'nao verificado' - CONFIRMADO vazio), decida "
+        "APROVAR ou NEGAR com o que voce tem. Nao deferir so porque o historico e vazio.\n"
     )
 
 

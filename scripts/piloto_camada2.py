@@ -168,6 +168,13 @@ def main():
             reg.update(
                 n_chamadas=len(r.trace),
                 ferramentas=[c.ferramenta for c in r.trace],
+                # Retorno bruto das tools - sem isso o humano nao tem como
+                # checar groundedness numero-a-numero, so a MECANICA (a tool
+                # foi chamada). validar_groundedness() valida so a segunda.
+                trace=[
+                    {"ferramenta": c.ferramenta, "argumentos": c.argumentos, "retorno": c.retorno}
+                    for c in r.trace
+                ],
                 erro=r.erro,
                 violacoes_trajetoria=r.violacoes_trajetoria,
                 memo=r.memo.model_dump(mode="json") if r.memo else None,

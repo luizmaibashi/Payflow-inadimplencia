@@ -120,6 +120,15 @@ def test_sdk_ausente_da_mensagem_com_o_comando_de_instalacao(cliente, sdk, monke
         cliente()
 
 
+def test_prompt_sistema_proibe_deferir_por_dado_inobtenivel():
+    """Achado medido no piloto de 2026-08-06: revisor humano aceitou 1 de 6
+    DEFERIR, rejeitou os outros 5 - todos citavam renda/emprego/patrimonio em
+    informacao_faltante, que nenhuma ferramenta deste sistema fornece."""
+    prompt = _prompt_sistema(FERRAMENTAS).lower()
+    assert "renda" in prompt and "emprego" in prompt and "patrimonio" in prompt
+    assert "deferir" in prompt
+
+
 def test_prompt_sistema_nao_menciona_score():
     """Cegueira ao score (ADR-0003 SS2.1): o adaptador nao pode reintroduzir
     o vocabulario do modelo no prompt."""
@@ -276,6 +285,30 @@ def test_conta_thinking_separado_da_saida_visivel():
 
     assert tokens == {"input": 500, "output": 200, "thinking": 1500,
                       "total": 2200, "medido": 1}
+
+
+def test_thinking_por_residuo_quando_sdk_nao_reporta_campo():
+    """SDK v1beta (google-generativeai, EOL) nao popula thoughts_token_count -
+    o pensamento existe e e cobrado, so nao aparece com esse nome. Achado no
+    piloto de 2026-08-06: total_token_count trazia 44.550 contra 26.062 de
+    input+output somados, 41% do custo invisivel ate esta correcao."""
+    uso = types.SimpleNamespace(
+        prompt_token_count=500, candidates_token_count=200,
+        total_token_count=2200)  # sem thoughts_token_count
+    tokens = _contabilizar_tokens(types.SimpleNamespace(usage_metadata=uso))
+
+    assert tokens == {"input": 500, "output": 200, "thinking": 1500,
+                      "total": 2200, "medido": 1}
+
+
+def test_groq_nao_ganha_thinking_fantasma_por_residuo():
+    """Groq: total_tokens = prompt+completion exato, sem pensamento oculto.
+    O residuo tem que dar zero aqui, nao inventar thinking que nao existe."""
+    uso = types.SimpleNamespace(prompt_tokens=300, completion_tokens=120,
+                                 total_tokens=420)
+    tokens = _contabilizar_tokens(types.SimpleNamespace(usage=uso))
+
+    assert tokens["thinking"] == 0
 
 
 def test_resposta_sem_telemetria_marca_nao_medido():
