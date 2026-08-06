@@ -39,8 +39,14 @@
 - `app/ferramenta_cenario.py` — cenário macro BCB, 1×/lote, cache + fallback declarado
 - `app/agente_underwriting.py` — orquestração multi-hop, **cliente LLM injetado** (testável sem rede)
 
+**Adaptadores de LLM (2026-08-05) — ADR-0009:**
+- `app/clientes_llm.py` — `ClienteGemini` (gerador padrão) e `ClienteGroq` (gerador **alternativo**, família Llama). Saída JSON garantida pelo provider, temperatura 0, import do SDK lazy. Testado em `tests/test_clientes_llm.py` (12 testes, zero rede)
+- `app/config.py` — ponto único de `load_dotenv` + `exigir_chave`, para os 4 entrypoints do projeto. Testado em `tests/test_config.py` (4 testes)
+- `requirements-llm.txt` — SDKs separados: a suíte de 109 testes roda **sem** SDK e **sem** chave
+- ⚠️ **O juiz do ADR-0004 ainda NÃO existe.** `ClienteGroq` implementa `proxima_acao` (contrato do gerador); o juiz avalia rubricas binárias sobre memo pronto — contrato diferente, módulo próprio, a construir (débito #19)
+
 **Alvo (a construir):**
-- Adaptador de LLM real (sem SDK nem chave no ambiente hoje) + eval set
+- Juiz LLM (rubricas binárias do ADR-0004) + eval set
 - `docs/audit/` — auditorias pós-implementação
 - Eval set versionado + relatório com `n` e intervalo
 
@@ -113,6 +119,7 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 | 0006 | Padrão de rigor herdado do `stable-treasury` | Accepted |
 | 0007 | Duas famílias de ferramentas do agente: caso e cenário | Accepted |
 | 0008 | Cenário macro brasileiro entra pela LGD, como stress declarado | Accepted |
+| 0009 | Adaptadores de LLM: saída JSON estruturada, import lazy, config centralizada | Accepted |
 
 ---
 
@@ -136,6 +143,8 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 16. ~~**Banda de indiferença do motor (±3pp) é largura fixa simplificada**~~ **RESOLVIDO** (ADR-0002 §2.8) — banda agora **derivada** da incerteza da premissa de margem (P25–P75 → `p*` de 27,2% a 48,2%), implementando o §2.6: a zona cinzenta é a região onde a decisão inverte conforme a premissa adotada. **Débito remanescente:** ainda não incorpora a incerteza da *estimativa* de PD por caso, só a da premissa de margem.
 17. 🟡 **O efeito do cenário macro é 5× menor que a nossa própria incerteza de premissa.** Medido em 2026-08-05: a faixa de SELIC benigna→estressada move `p*` em **4,4pp** (37,2% → 32,8%), enquanto a incerteza da margem sozinha abre a zona cinzenta em **21,0pp** (27,2%–48,2%). A ferramenta de cenário passa na condição de existência do ADR-0008 (move um corte, não é decoração), mas **a afirmação honesta é "o macro desloca o centro dentro de uma faixa muito maior de desconhecimento nosso"** — não "o cenário macro muda materialmente nossas decisões". Não vender além disso em README, deck ou entrevista. Só se inverte se a margem virar medição por caso (hoje bloqueada, ver débito #14).
 18. 🟡 **As âncoras de estresse do cenário (SELIC 10% → 15%) são premissa declarada, não medição.** Não existe no dataset (mercado emergente anonimizado) nem em série pública brasileira uma ligação medida entre SELIC e taxa de recuperação de crédito pessoal. A **direção** tem fundamento econômico (juro alto aperta devedor e derruba garantia → recuperação piora); a **magnitude** é escolha nossa. Ver `app/ferramenta_cenario.py`.
+19. 🔴 **O juiz do ADR-0004 não existe no código** (2026-08-05). `ClienteGroq` foi criado com a chave destinada ao juiz, mas implementa `proxima_acao` — o contrato do **gerador**. O juiz avalia rubricas **binárias** sobre um memo pronto (`julgar(memo, trace) → veredito`): contrato diferente, módulo próprio. Sem ele, nenhuma rubrica com juiz roda, e o débito #10 (calibração do juiz contra labels humanos) fica bloqueado a montante. Ver ADR-0009 §2.5.
+20. 🟡 **Adaptador de LLM sem retry, timeout ou controle de custo** (ADR-0009 §3). Falha de rede transitória derruba um lote inteiro; memo inválido = caso perdido, sem segunda tentativa. **Decisão consciente de medir antes de implementar:** a taxa real de falha e de memo inválido sai da primeira rodada dos ~120 casos da zona cinzenta. Política de retry escolhida sem dado é chute.
 
 ---
 

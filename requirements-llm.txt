@@ -1,0 +1,13 @@
+# SDKs de LLM da Camada 2 (app/clientes_llm.py) — instalacao SEPARADA de proposito.
+#
+# A Camada 2 foi construida e testada SEM LLM: o `ClienteLLM` e injetado, e os
+# 103 testes rodam com dubles deterministicos. Manter estes pacotes fora do
+# requirements.txt preserva isso — CI e teste nao precisam de SDK nem de chave.
+#
+# Instalar so quando for rodar contra provider real:
+#   pip install -r requirements-llm.txt
+#
+# Requer .env na raiz com GEMINI_API_KEY e GROQ_API_KEY (ver .env.example).
+
+google-generativeai>=0.8.0   # agente que gera o parecer
+groq>=0.11.0                 # juiz (familia diferente: evita self-enhancement bias)
