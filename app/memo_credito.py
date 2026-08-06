@@ -32,7 +32,20 @@ TERMOS_PROIBIDOS_SCORE = (
 )
 
 # Teto de fatos por memo. NAO e chute: veio de medir importancia por
-# permutacao nos 2.780 casos da zona cinzenta (2026-08-05). O sinal la e
+# permutacao nos 2.780 casos da zona cinzenta (2026-08-05).
+#
+# DIVERGENCIA NAO RESOLVIDA (2026-08-06): ao materializar a zona cinzenta em
+# disco pela primeira vez (scripts/zona_cinzenta_universo.py), ela mediu
+# 2.102 casos - nao 2.780. Um terceiro numero (2.494) circulava no Context
+# Bridge. Os tres saem do MESMO modelo e do MESMO split, entao pelo menos
+# dois estao errados e nao se sabe quais. O numero acima fica como foi
+# registrado em vez de ser reescrito: a medicao de importancia rodou sobre
+# ALGUM conjunto naquele dia, e trocar o `n` a posteriori inventaria uma
+# procedencia que nao existe. A conclusao (sinal ESPALHADO, nao concentrado)
+# nao depende do `n` exato; o `n` citado, sim, precisa ser refeito antes de
+# ir para deck ou README. Debito registrado no AGENTS.md.
+#
+# O sinal la e
 # ESPALHADO, nao concentrado - top 3 = 43%, top 8 = 63%, top 15 = 81%.
 # Como nao existe "os 3 fatos que explicam tudo", qualquer teto deixa
 # informacao na mesa e a escolha vira custo de leitura, nao de sinal:
