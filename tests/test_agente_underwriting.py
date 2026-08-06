@@ -22,9 +22,10 @@ from app.agente_underwriting import (  # noqa: E402
     montar_contexto_inicial,
     preparar_lote,
     validar_groundedness,
+    validar_trajetoria,
 )
 from app.ferramenta_cenario import FerramentaCenario  # noqa: E402
-from app.ferramentas_caso import FerramentasCaso  # noqa: E402
+from app.ferramentas_caso import ChamadaFerramenta, FerramentasCaso  # noqa: E402
 from app.memo_credito import (  # noqa: E402
     CenarioAssumido,
     FatorCliente,
@@ -166,7 +167,15 @@ def test_retorno_da_ferramenta_entra_no_contexto_da_proxima_decisao(ferramentas,
     ])
     AgenteUnderwriting(ferramentas, cenario, llm).analisar(1)
 
-    assert "consultar_bureau" not in llm.contextos_vistos[0]
+    # A asercao mira o RETORNO registrado, nao o nome da ferramenta. Ate
+    # 2026-08-06 ela testava `"consultar_bureau" not in contextos_vistos[0]`,
+    # que funcionava so por acidente: o prompt inicial nao nomeava as tools.
+    # Quando ele passou a nomea-las (conserto do defeito de trajetoria), o
+    # proxy quebrou sem que a propriedade testada mudasse. `[consultar_bureau(`
+    # e o marcador com que analisar() anexa um retorno ao contexto - so aparece
+    # depois da chamada acontecer, que e exatamente o que se quer provar.
+    assert "[consultar_bureau(" not in llm.contextos_vistos[0]
+    assert "[consultar_bureau(" in llm.contextos_vistos[1]
     assert "tem_historico_mensal" in llm.contextos_vistos[1]
 
 
@@ -191,6 +200,83 @@ def test_ferramenta_inexistente_nao_derruba_a_analise(ferramentas, cenario):
 
     assert r.memo is not None
     assert "ERRO" in llm.contextos_vistos[1]
+
+
+# --- Trajectory efficiency (rubrica #4 do ADR-0004, REGISTRADA nao eliminatoria) ---
+#
+# Regressao do defeito medido no piloto de 2026-08-06 (caso 344012): o agente
+# chamou UMA tool, deferiu, e listou como faltante uma informacao que
+# consultar_pagamentos entrega. Ver validar_trajetoria().
+
+def _chamada(nome, **retorno):
+    return ChamadaFerramenta(ferramenta=nome, argumentos={"sk_id_curr": 1}, retorno=retorno)
+
+
+def _memo_deferir(fontes):
+    return _memo(fontes=fontes, recomendacao=Recomendacao.DEFERIR,
+                 informacao_faltante=["historico de pagamentos nesta instituicao"])
+
+
+def test_deferir_sem_consultar_pagamentos_e_violacao():
+    """O defeito exato do caso 344012."""
+    trace = [_chamada("consultar_bureau", tem_historico_mensal=False)]
+    violacoes = validar_trajetoria(_memo_deferir(("consultar_bureau",)), trace)
+
+    assert len(violacoes) == 1
+    assert "consultar_pagamentos" in violacoes[0]
+
+
+def test_deferir_apos_consultar_as_sempre_aplicaveis_nao_e_violacao():
+    trace = [_chamada("consultar_bureau", tem_historico_mensal=False),
+             _chamada("consultar_pagamentos")]
+    assert validar_trajetoria(_memo_deferir(("consultar_bureau",)), trace) == []
+
+
+def test_aprovar_ou_negar_sem_esgotar_ferramentas_nao_e_violacao():
+    """A regra vale so para DEFERIR: decidir com menos informacao e uma
+    escolha legitima; ALEGAR FALTA do que nao se buscou e que nao e."""
+    trace = [_chamada("consultar_bureau", tem_historico_mensal=True)]
+    for rec in (Recomendacao.APROVAR, Recomendacao.NEGAR):
+        assert validar_trajetoria(_memo(recomendacao=rec), trace) == []
+
+
+def test_deferir_ignorando_historico_disponivel_e_violacao():
+    trace = [_chamada("consultar_bureau", tem_historico_mensal=True),
+             _chamada("consultar_pagamentos")]
+    violacoes = validar_trajetoria(_memo_deferir(("consultar_bureau",)), trace)
+
+    assert len(violacoes) == 1
+    assert "consultar_historico_bureau" in violacoes[0]
+
+
+def test_nao_chamar_historico_inexistente_nao_e_violacao():
+    """O 2o salto e CONDICIONAL. Cobra-lo sempre penalizaria o agente por
+    respeitar o desenho do multi-hop (ADR-0007)."""
+    trace = [_chamada("consultar_bureau", tem_historico_mensal=False),
+             _chamada("consultar_pagamentos")]
+    assert validar_trajetoria(_memo_deferir(("consultar_bureau",)), trace) == []
+
+
+def test_violacao_de_trajetoria_nao_barra_o_memo(ferramentas, cenario):
+    """NAO e eliminatoria - so groundedness e (ADR-0004 SS2.2). O memo volta
+    com a violacao registrada, para o eval contar e o humano julgar."""
+    llm = LLMComRoteiro([
+        AcaoChamarFerramenta("consultar_bureau", {"sk_id_curr": 1}),
+        AcaoConcluir(memo=_memo_deferir(("consultar_bureau",))),
+    ])
+    r = AgenteUnderwriting(ferramentas, cenario, llm).analisar(1)
+
+    assert r.memo is not None, "trajetoria ruim nao pode barrar o memo"
+    assert r.erro is None
+    assert r.violacoes_trajetoria, "mas a violacao tem que ficar registrada"
+
+
+def test_prompt_manda_apurar_antes_de_concluir(cenario):
+    """Metade do conserto e mecanica (validar_trajetoria); a outra metade e
+    instruir o gerador a nao cair no defeito."""
+    contexto = montar_contexto_inicial(1, cenario).lower()
+    assert "consultar_pagamentos" in contexto
+    assert "deferir so vale" in contexto
 
 
 # --- Cenario e do lote, nao do cliente (ADR-0008) ---
