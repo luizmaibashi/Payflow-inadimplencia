@@ -1,0 +1,583 @@
+{
+  "gerado_em": "2026-08-07T18:44:41.810Z",
+  "n_total": 87,
+  "n_julgados": 24,
+  "labels": [
+    {
+      "sk_id_curr": 295370,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tem_registro - true\ntem_registro - true\ntem_registro - true\n",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "meses em dia 5 =5 ; nenhum contrato em atraso 0 = 0 ; atraso_medio_dias\n-21.6667 = - 21.6667 ; \nO último atraso registrado nos pagamentos desta casa ocorreu há 481 dias = 481 ; o pior atraso foi de 17 = 17 ; \ntudo esta batendo.",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 207475,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo esta correto.",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "todas as informações do memo batem com os dados brutos.\n",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem o cliente nao tem o historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 238067,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo esta batendo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "todas as informações batem do memo e dados brutos",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 181390,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": null,
+        "evidencia": "tudo esta batendo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem o cliente nao tem o historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 292411,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "esta batendo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "esta batendo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem o cliente nao tem o historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 117727,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "esta tudo ",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem o cliente nao tem o historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 368123,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo esta batendo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem o cliente nao tem o historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 417173,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo esta batendo ",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem o cliente nao tem o historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 358801,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo esta batendo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem o cliente nao tem o historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 252397,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo esta batendo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 398836,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "Sim, porem nao existe historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 268561,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 381595,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "Nenhuma das 57 parcelas anteriores nesta casa foi totalmente não paga. - acredito que isso esta errado, verifique por favor",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "Sim, porem nao existe historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 285827,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "Sim, porem nao existe historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 302315,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 183280,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "Sim, porem nao existe historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 173954,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "Sim, porem nao existe historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 187682,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "Sim, porem nao existe historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 282047,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo esta batendo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 128369,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "é defensavel porem esse caso pode ser analisado melhor e possivelmnete ser aprovado. precisaria de mais inforamções",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "Sim, porem nao existe historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 169111,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": " Sim, porem nao existe historico de pagamento",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 374802,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 326137,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "sim, porem é necesario analisar essa utilização de crédito em outras instituições é alta (84%) ao longo do tempo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 264603,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "aqui é um caso onde podemos analisar realmente esse cliente e aprová-lo.\n",
+        "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    }
+  ]
+}
