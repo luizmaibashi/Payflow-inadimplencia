@@ -23,4 +23,17 @@ pip-delete-this-directory.txt
 data/raw/home_credit/
 
 # Features processadas (~45MB, regeneravel via scripts/camada1_feature_engineering.py)
-data/processed/
+# Padrao com /* (nao data/processed/) DE PROPOSITO: o git nao entra em
+# diretorio excluido, entao a excecao com ! abaixo so funciona se o que esta
+# excluido for o CONTEUDO, nao a pasta.
+data/processed/*
+
+# EXCECAO: saida de LLM NAO e regeneravel, apesar de morar em data/processed/.
+# Medido em 2026-08-08: rodar piloto_camada2.py de novo com o MESMO --seed 42,
+# mesma zona cinzenta (2.102 casos) e temperatura 0 produziu memos DIFERENTES —
+# 86 validos em vez de 87, e 2 casos rotulados FALHA passaram a recomendar
+# APROVAR. Feature engineering e regeneravel (mesmo CSV -> mesmo parquet);
+# memo de LLM nao e. Como os labels humanos de data/labels/ descrevem ESTES
+# memos, versiona-los junto e o que mantem o par label<->memo de pe (mesma
+# causa raiz do debito #28, por outra porta). 194KB.
+!data/processed/piloto_camada2_memos.jsonl

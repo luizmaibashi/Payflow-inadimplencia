@@ -1,7 +1,7 @@
 {
-  "gerado_em": "2026-08-07T18:44:41.810Z",
+  "gerado_em": "2026-08-08T17:51:32.718866Z",
   "n_total": 87,
-  "n_julgados": 24,
+  "n_julgados": 87,
   "labels": [
     {
       "sk_id_curr": 295370,
@@ -83,7 +83,7 @@
         "categoria_falha": ""
       },
       "task_completion": {
-        "veredito": null,
+        "veredito": "OK",
         "evidencia": "tudo esta batendo",
         "categoria_falha": ""
       },
@@ -566,6 +566,1518 @@
         "veredito": "FALHA",
         "evidencia": "aqui é um caso onde podemos analisar realmente esse cliente e aprová-lo.\n",
         "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 259658,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "sim todos existem.",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "todos sao defensaveis",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "Sim , porem esta sem historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 322471,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "sim todos existem",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "sim todos defensaveis",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim ,  porem sem historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 151927,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo existe,",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 126645,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo existe",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem nao tem historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 166661,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "sim existe",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "sim tudo bateq",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem nao tem historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 204244,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 399190,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tuod cert",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem nao tem historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 350878,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo abte",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem nao tem historico, se tivesse poderiamos mudar a decisao",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 303376,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim, porem nao existe historico, se tivesse era cabine nova analise",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 243962,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 342044,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo existe",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim porem nao tem historico, se tivesse poderia ser uma decisao diferente",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 179697,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo existe",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim porem nao tem historico, se tivesse poderia ser uma decisao diferente",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 371141,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim porem nao tem historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 260691,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "Sim , porem nao tem historico, se tivesse poderia ser outra decisao",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 226146,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim ,porem nao tem historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 192195,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 189743,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo ccerto",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "nao tem historico, poderia mudar a decisao se tivesse",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 132315,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "acredito que o cliente pode ter melhorado sua reputacao e responsabilidade em honrar, nos ultimos meses",
+        "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 310188,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "esse cliente pode ser um cliente bom e pagador",
+        "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "sim porem faltou historico, se tivesse nesse caso pdoeria ajudar ainda mais na decisao ou mudar a direcao",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 333067,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "sim",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "sim , porem esse e um cliente a ser monitorado e notificado ",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "precisavamos do historico nesse caso",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 143212,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 435752,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou histroico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 353468,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "claramente um cliente bom pagador que teve um atraso ha muito tempo, e hoje deixa tudo em dia",
+        "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou histroico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 382461,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "e um cliente bom pagador hoje e nao citou um fato importante, faz mais de 1000 dias do ultimo atraso",
+        "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 384981,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "passa, mas e um cliente a ser observado e reavaliado novamenete daqui um tempo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 386823,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "tudo correto",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 379149,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "cliente bom que paga. nunca deixou de pagar, paga em media com antecedencia,",
+        "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 410339,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "bate tudo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "nao tem historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 244626,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo ccerto",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 153799,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "claramente um bom pagador, cliente nao possui parcelas nunca pagas, faz mais de 800 dias da ultima vez que atrasou e paga adiantado em media",
+        "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 148582,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 235776,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou histroico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 115682,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo ccerto",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historicio",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 454998,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico, que pdoeria mudar a decisao",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 109117,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 279711,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 351105,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 212372,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 199386,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo abte",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico, e poderia mudar a decisao se tivesse",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 280852,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 235261,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou hitorico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 325723,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico e poderia mudar a decisao se tivesse",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 173034,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 113011,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo ",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 348835,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 396189,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "se tivesse historico poderia ser outra decsisao",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 240344,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "aparentemente ele e um bom pagador para nos, mas precisa ser notificado pois teve um atraso a menos de 40 dias, mas sempre paga adiantadso em media e nao possui nenhuma nunca paga conosco",
+        "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 169869,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 246975,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 299680,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 161761,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 219448,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "claramente um bom pagador, nunca deixou de pagar, paga adiantado em media e faz mais de 150 dias do ultimo atraso.",
+        "categoria_falha": "recomendacao_ignora_fato"
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 224770,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico e poderia se r outra decisao se tivesse\n",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 100525,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "FALHA",
+        "evidencia": "claramente um bom pagador, nunca deixou honrar com com o pagamento,faz mais de 750 dias do ultimo atraso, e paga em media adiantado",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 205320,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tude certo ",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate ",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico ",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 101080,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo ",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate ",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 449188,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "sim ,pelo fato de ja ter 92% do seu credito ja compromissado, alto indicio de ser indimplente",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 185701,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo ",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 111985,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "sim, cliente pode nunca ter deixado de pagar, porem ja tem 99% do credito comprometido. alta chance de ser inadimplente",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 108447,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 185233,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 340715,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "tudo certo",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "tudo bate",
+        "categoria_falha": ""
+      },
+      "trajectory": {
+        "veredito": "OK",
+        "evidencia": "faltou historico",
+        "categoria_falha": ""
+      },
+      "cegueira_score": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "nota_geral": ""
+    },
+    {
+      "sk_id_curr": 331720,
+      "groundedness": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
+      },
+      "task_completion": {
+        "veredito": "OK",
+        "evidencia": "",
+        "categoria_falha": ""
       },
       "trajectory": {
         "veredito": "OK",

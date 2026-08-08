@@ -9,29 +9,30 @@
 
 | Desfecho | k | proporcao | IC95% (Wilson) |
 |---|---|---|---|
-| `ok` | 87 | 87.0% | [79.0%; 92.2%] |
-| `memo_invalido` | 13 | 13.0% | [7.8%; 21.0%] |
+| `ok` | 86 | 86.0% | [77.9%; 91.5%] |
+| `memo_invalido` | 9 | 9.0% | [4.8%; 16.2%] |
+| `teto` | 5 | 5.0% | [2.2%; 11.2%] |
 
-**Latencia por caso:** mediana 18.7s, total 32.4 min
-**Custo de transporte:** 544 pedidos ao gerador custaram 544 idas ao provider (**0 retries**). A diferenca e a taxa de falha bruta que o backoff absorve - sem ela, o `erro_provider` abaixo subestima a instabilidade real.
+**Latencia por caso:** mediana 17.3s, total 30.6 min
+**Custo de transporte:** 540 pedidos ao gerador custaram 540 idas ao provider (**0 retries**). A diferenca e a taxa de falha bruta que o backoff absorve - sem ela, o `erro_provider` abaixo subestima a instabilidade real.
 **Chamadas de ferramenta por caso:** mediana 2, max 3
 
 ## Custo medido
 
-Uso reportado pelo provider em 544 resposta(s) (a contagem e medida; so a conversao em dolar e premissa da tabela de gemini consultada em 2026-08-06).
+Uso reportado pelo provider em 540 resposta(s) (a contagem e medida; so a conversao em dolar e premissa da tabela de gemini consultada em 2026-08-06).
 
 | | tokens |
 |---|---|
-| input | 557,772 |
-| output (visivel) | 60,869 |
-| thinking (cobrado como output) | 313,192 |
-| **total** | **931,833** |
+| input | 552,495 |
+| output (visivel) | 59,164 |
+| thinking (cobrado como output) | 311,303 |
+| **total** | **922,962** |
 
-**Custo deste lote:** US$ 1.1025 (**US$ 0.0110 por caso**, n=100)
+**Custo deste lote:** US$ 1.0919 (**US$ 0.0109 por caso**, n=100)
 
-**Projecao para o projeto inteiro** (450 execucoes de caso: piloto + eval set de 150-200 do ADR-0004 §2.5 + 2a rodada + folga): **US$ 4.96** no `gemini-2.5-flash`.
+**Projecao para o projeto inteiro** (450 execucoes de caso: piloto + eval set de 150-200 do ADR-0004 §2.5 + 2a rodada + folga): **US$ 4.91** no `gemini-2.5-flash`.
 
-Razao thinking/saida visivel: **5.1x** - e o multiplicador que estimativa por contagem de caracteres nao consegue enxergar, e que domina a conta nos modelos 2.5.
+Razao thinking/saida visivel: **5.3x** - e o multiplicador que estimativa por contagem de caracteres nao consegue enxergar, e que domina a conta nos modelos 2.5.
 
 > ⚠️ **Leia os intervalos, nao as proporcoes.** Com n desta ordem, o IC de Wilson e largo o bastante para que a estimativa pontual nao sustente decisao de politica sozinha (ADR-0004 §2.5). O piloto serve para detectar falha GROSSA de encanamento, nao para calibrar taxa fina.
 
