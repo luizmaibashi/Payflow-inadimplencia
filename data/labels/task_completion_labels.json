@@ -1691,9 +1691,9 @@
         "categoria_falha": ""
       },
       "task_completion": {
-        "veredito": "OK",
-        "evidencia": "",
-        "categoria_falha": ""
+        "veredito": "FALHA",
+        "evidencia": "aparentemente ele e um bom pagador para nos, mas precisa ser notificado pois teve um atraso a menos de 40 dias, mas sempre paga adiantadso em media e nao possui nenhuma nunca paga conosco",
+        "categoria_falha": "recomendacao_ignora_fato"
       },
       "trajectory": {
         "veredito": "OK",
