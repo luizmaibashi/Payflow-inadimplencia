@@ -20,6 +20,7 @@ from app.ferramentas_caso import ChamadaFerramenta  # noqa: E402
 from app.juiz_camada2 import (  # noqa: E402
     ResultadoJuizTaskCompletion,
     VeredictoTaskCompletion,
+    _prompt_sistema_juiz,
     _prompt_usuario_juiz,
     julgar_task_completion,
 )
@@ -135,3 +136,40 @@ def test_prompt_usuario_sem_trace_nao_quebra():
     prompt = _prompt_usuario_juiz(_memo(), [])
 
     assert "nenhuma chamada" in prompt
+
+
+# --- Criterio do ADR-0011 no prompt do juiz ---------------------------------
+# Estes testes existem porque o criterio vive numa STRING: sem eles, apagar um
+# limiar do prompt nao quebra nada e o juiz passa a medir outra coisa em
+# silencio - exatamente o modo de falha que a calibracao de 2026-08-08 achou.
+
+
+@pytest.mark.parametrize("limiar", ["80%", "30 dias", "15%", "90"])
+def test_prompt_sistema_cita_os_limiares_do_adr_0011(limiar):
+    assert limiar in _prompt_sistema_juiz()
+
+
+def test_prompt_sistema_separa_grave_de_agravante():
+    prompt = _prompt_sistema_juiz()
+
+    assert "SINAIS GRAVES" in prompt
+    assert "AGRAVANTES" in prompt
+    assert "2+ AGRAVANTES" in prompt
+
+
+def test_prompt_sistema_proibe_contagem_de_pesos():
+    """Regressao do achado de 2026-08-08: contar favoravel/desfavoravel mede a
+    REDACAO do memo (o agente escolhe os rotulos), nao o risco do cliente."""
+    prompt = _prompt_sistema_juiz().lower()
+
+    assert "nao conte quantos fatores" in prompt
+    assert "mede a redacao" in prompt
+
+
+def test_prompt_sistema_diz_que_deficit_sozinho_nao_nega():
+    """Decisão de fronteira do ADR-0011 §2.2.1 — pagar a menor cronicamente é
+    caso de limite menor, não de recusa."""
+    prompt = _prompt_sistema_juiz().lower()
+
+    assert "cronica" in prompt
+    assert "limite menor" in prompt
