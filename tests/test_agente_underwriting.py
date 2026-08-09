@@ -22,6 +22,7 @@ from app.agente_underwriting import (  # noqa: E402
     montar_contexto_inicial,
     preparar_lote,
     validar_groundedness,
+    validar_groundedness_numerica,
     validar_trajetoria,
 )
 from app.ferramenta_cenario import FerramentaCenario  # noqa: E402
@@ -65,7 +66,8 @@ def _memo(fontes=("consultar_bureau",), recomendacao=Recomendacao.NEGAR, **kw):
     ]
     while len(fatores) < 3:
         fatores.append(FatorCliente(
-            fato=f"fato extra {len(fatores)}", fonte_tool=fontes[0], peso=Peso.NEUTRO))
+            fato="fato extra de preenchimento, sem numero",
+            fonte_tool=fontes[0], peso=Peso.NEUTRO))
     return MemoCredito(
         cliente_id="1", recomendacao=recomendacao, fatores_cliente=fatores,
         cenario_assumido=CenarioAssumido(lgd=0.78, fonte="BCB SGS 432"), **kw)
@@ -141,6 +143,76 @@ def test_fato_citando_ferramenta_chamada_e_aceito(ferramentas, cenario):
 
     assert r.memo is not None and r.erro is None
     assert validar_groundedness(r.memo, r.trace) == []
+
+
+# --- Groundedness NUMERICA (debito #26): o valor citado bate com a ferramenta? ---
+# validar_groundedness so confere que a FERRAMENTA foi chamada - um fato pode
+# citar uma tool real e ainda assim inventar o numero. NAO eliminatoria (mesmo
+# tratamento de validar_trajetoria): e heuristica de texto livre, tem falso
+# positivo por formatacao (47% vs 0.47), entao registra para o eval contar,
+# nao bloqueia o memo.
+
+def test_numero_do_fato_bate_com_retorno_inteiro():
+    trace = [_chamada("consultar_bureau", n_contratos=3)]
+    memo = _memo(fontes=("consultar_bureau",))
+    memo.fatores_cliente[0].fato = "cliente tem 3 contratos em outras instituicoes"
+
+    assert validar_groundedness_numerica(memo, trace) == []
+
+
+def test_numero_do_fato_bate_com_retorno_em_percentual():
+    """utilizacao vem como fracao (0.4712) na ferramenta; o memo escreve em
+    percentual (47.1%) - as duas escalas tem que casar."""
+    trace = [_chamada("consultar_bureau", utilizacao=0.4712)]
+    memo = _memo(fontes=("consultar_bureau",))
+    memo.fatores_cliente[0].fato = "utilizacao de credito em 47.1%"
+
+    assert validar_groundedness_numerica(memo, trace) == []
+
+
+def test_numero_inventado_e_sinalizado():
+    trace = [_chamada("consultar_bureau", n_contratos=3, utilizacao=0.20)]
+    memo = _memo(fontes=("consultar_bureau",))
+    memo.fatores_cliente[0].fato = "cliente tem 7 contratos em outras instituicoes"
+
+    suspeitos = validar_groundedness_numerica(memo, trace)
+
+    assert len(suspeitos) == 1
+    assert "7" in suspeitos[0]
+
+
+def test_fato_sem_numero_nao_e_avaliado():
+    trace = [_chamada("consultar_bureau", n_contratos=3)]
+    memo = _memo(fontes=("consultar_bureau",))
+    memo.fatores_cliente[0].fato = "cliente possui historico de bureau"
+
+    assert validar_groundedness_numerica(memo, trace) == []
+
+
+def test_fato_de_ferramenta_orfa_nao_duplica_achado_de_validar_groundedness():
+    """Fonte inexistente na trace ja e pego por validar_groundedness (que e
+    eliminatoria) - a checagem numerica nao precisa (e nao deve) repetir."""
+    trace = []
+    memo = _memo(fontes=("consultar_bureau",))
+    memo.fatores_cliente[0].fato = "cliente tem 3 contratos"
+
+    assert validar_groundedness_numerica(memo, trace) == []
+
+
+def test_analisar_registra_suspeita_numerica_sem_bloquear_o_memo(ferramentas, cenario):
+    """Registrada, nao eliminatoria: numero suspeito nao derruba o memo -
+    mesmo contrato de violacoes_trajetoria."""
+    memo = _memo(fontes=("consultar_bureau",))
+    memo.fatores_cliente[0].fato = "cliente tem 999 contratos em outras instituicoes"
+    llm = LLMComRoteiro([
+        AcaoChamarFerramenta("consultar_bureau", {"sk_id_curr": 1}),
+        AcaoConcluir(memo=memo),
+    ])
+    r = AgenteUnderwriting(ferramentas, cenario, llm).analisar(1)
+
+    assert r.memo is not None and r.erro is None
+    assert len(r.suspeitos_groundedness_numerica) == 1
+    assert "999" in r.suspeitos_groundedness_numerica[0]
 
 
 # --- Multi-hop e teto de chamadas (ADR-0007) ---

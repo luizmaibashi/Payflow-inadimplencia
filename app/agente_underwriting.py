@@ -18,6 +18,7 @@ Vazamento pela FILA tambem conta: se os casos chegarem ordenados por risco,
 a posicao na fila vira o score. Por isso `preparar_lote` embaralha.
 """
 import random
+import re
 from dataclasses import dataclass, field
 from typing import Protocol
 
@@ -86,6 +87,10 @@ class ResultadoAnalise:
     # implementacao do que ja foi decidido. Memo com violacao continua sendo
     # devolvido - o eval conta, o humano julga.
     violacoes_trajetoria: list[str] = field(default_factory=list)
+    # Debito #26. Tambem REGISTRADA, nao eliminatoria - e heuristica de texto
+    # livre (o agente escolhe como escrever o numero), diferente da
+    # groundedness de ferramenta acima, que e exata e por isso eliminatoria.
+    suspeitos_groundedness_numerica: list[str] = field(default_factory=list)
 
 
 def montar_contexto_inicial(sk_id_curr: int, cenario: CenarioMacro) -> str:
@@ -127,6 +132,82 @@ def validar_groundedness(memo: MemoCredito, trace: list[ChamadaFerramenta]) -> l
     return [
         f.fonte_tool for f in memo.fatores_cliente if f.fonte_tool not in chamadas
     ]
+
+
+_NUMERO_RE = re.compile(r"-?\d+(?:[.,]\d+)?")
+
+# Tolerancia absoluta pra casar numero do texto com numero do retorno. Cobre
+# arredondamento de exibicao (17.83 vs "17.8%"), nao cobre erro real (digito
+# trocado ou numero de outro campo custuma diferir por mais que isso).
+_TOLERANCIA_NUMERICA = 0.5
+
+
+def _numeros_do_texto(texto: str) -> list[float]:
+    return [float(n.replace(",", ".")) for n in _NUMERO_RE.findall(texto)]
+
+
+def _numeros_do_retorno(retorno: dict) -> list[float]:
+    """Valores numericos folha do retorno de uma ferramenta.
+
+    bool e subclasse de int em Python - filtrado explicitamente, senao
+    tem_registro=True vira o numero 1.0 e gera falso match.
+    """
+    return [
+        float(v) for v in retorno.values()
+        if isinstance(v, (int, float)) and not isinstance(v, bool)
+    ]
+
+
+def _bate(numero_fato: float, numeros_retorno: list[float]) -> bool:
+    """O memo pode citar o numero na escala do dado (0.4712) ou em percentual
+    (47.1) - campos como `utilizacao` sao fracao 0-1 na ferramenta mas viram
+    percentual em linguagem de negocio. Testa as duas escalas."""
+    for n in numeros_retorno:
+        candidatos = {n}
+        if 0 <= n <= 1:
+            candidatos.add(n * 100)
+        if any(abs(numero_fato - c) <= _TOLERANCIA_NUMERICA for c in candidatos):
+            return True
+    return False
+
+
+def validar_groundedness_numerica(
+    memo: MemoCredito, trace: list[ChamadaFerramenta]
+) -> list[str]:
+    """O NUMERO citado no fato aparece no retorno da ferramenta apontada?
+
+    Debito #26: validar_groundedness confere so que a FERRAMENTA foi
+    chamada - um fato pode citar uma tool real e inventar o valor. Esta
+    checagem cobre a outra metade, mas e HEURISTICA de texto livre (o
+    agente escolhe como escrever o numero), nao eliminatoria como a
+    groundedness de ferramenta - por isso so registra, mesmo tratamento de
+    validar_trajetoria.
+
+    Fato sem numero (ex.: "cliente possui historico de bureau") nao entra
+    na checagem - nao ha o que verificar. Fato cuja fonte nao esta na trace
+    tambem nao entra - isso ja e pego (e eliminatorio) por
+    validar_groundedness; repetir aqui duplicaria o achado.
+    """
+    retornos_por_tool: dict[str, list[float]] = {}
+    for c in trace:
+        retornos_por_tool.setdefault(c.ferramenta, []).extend(
+            _numeros_do_retorno(c.retorno)
+        )
+
+    suspeitos = []
+    for f in memo.fatores_cliente:
+        numeros_retorno = retornos_por_tool.get(f.fonte_tool)
+        if not numeros_retorno:
+            continue
+        sem_match = [
+            n for n in _numeros_do_texto(f.fato) if not _bate(n, numeros_retorno)
+        ]
+        if sem_match:
+            suspeitos.append(
+                f"fato {f.fato!r} cita {sem_match} nao encontrado no retorno "
+                f"de {f.fonte_tool}"
+            )
+    return suspeitos
 
 
 def validar_trajetoria(memo: MemoCredito, trace: list[ChamadaFerramenta]) -> list[str]:
@@ -229,6 +310,9 @@ class AgenteUnderwriting:
                     memo=acao.memo,
                     trace=trace,
                     violacoes_trajetoria=validar_trajetoria(acao.memo, trace),
+                    suspeitos_groundedness_numerica=validar_groundedness_numerica(
+                        acao.memo, trace
+                    ),
                 )
 
             try:
