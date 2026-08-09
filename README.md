@@ -5,16 +5,7 @@
 <h1 align="center">📊 PayFlow — Previsão de Risco de Crédito</h1>
 
 <p align="center">
-  <strong>Projeto de portfólio | Deploy em produção ativo</strong>
-</p>
-
-<p align="center">
-  <a href="https://payflow-inadimplencia-pdve4qkbja5woxpdpzbvbw.streamlit.app/" target="_blank">
-    <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white"/>
-  </a>
-  <a href="https://payflow-inadimplencia.onrender.com/docs" target="_blank">
-    <img src="https://img.shields.io/badge/⚡%20API%20Docs-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white"/>
-  </a>
+  <strong>Projeto de portfólio | V2 em construção sobre dado real (Home Credit) — V1 abaixo é o registro histórico da fase com dado sintético</strong>
 </p>
 
 <p align="center">
@@ -28,21 +19,21 @@
 
 ---
 
-Projeto de Data Science desenvolvido durante a **Pós-Tech AI SCIENTIST (FIAP)** e evoluído para um sistema de produção completo com **MLOps Nível 1**. A documentação acompanha não só o *como*, mas o **porquê** de cada decisão — incluindo os erros, correções e a jornada de um notebook até uma API em produção na nuvem.
+## 🚧 Estado atual (2026-08-08)
 
-| Componente | URL |
+A **V2** reconstrói a Camada 1 sobre dado real com outcome de default ([Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk)) e adiciona uma camada agêntica de underwriting (LLM) com avaliação formal — juiz calibrado, ADRs documentando cada decisão de risco (11 até aqui, [`docs/adr/`](docs/adr/)), débitos técnicos numerados e vivos ([`AGENTS.md`](AGENTS.md)).
+
+**O que já está medido na V2:** modelo treinado sobre dado real (AUC 0,776, IC95%), zona cinzenta isolada (2.102 casos, 4,3× a taxa de default da carteira), agente com juiz LLM calibrado contra rubrica explícita ([ADR-0011](docs/adr/0011-criterio-de-task-completion.md)).
+
+**O que ainda falta — a contribuição central do projeto:** o backtest que mede se as recomendações do agente separam risco real de fato, com `n` suficiente para significar algo (`scripts/backtest_camada2.py`, débito em aberto).
+
+**Demo ao vivo:** os links abaixo (Streamlit + API) ainda apontam para a **V1**, descrita na íntegra logo a seguir — é o projeto original, funcional, mas com as limitações que a seção seguinte assume abertamente. A V2 ainda não tem deploy próprio.
+
+| Componente (V1) | URL |
 |---|---|
 | 🎯 **Simulador (Frontend)** | [payflow-inadimplencia.streamlit.app](https://payflow-inadimplencia-pdve4qkbja5woxpdpzbvbw.streamlit.app/) |
 | ⚡ **API REST (Backend)** | [payflow-inadimplencia.onrender.com](https://payflow-inadimplencia.onrender.com) |
 | 📖 **Documentação da API** | [/docs (Swagger)](https://payflow-inadimplencia.onrender.com/docs) |
-
----
-
-## 🚧 Estado atual — projeto em reconstrução (2026-08-04)
-
-Tudo abaixo desta seção descreve a **versão 1**, treinada sobre dado **sintético** de uma empresa fictícia. Ela continua no ar e continua sendo um registro honesto do que foi aprendido — mas está sendo **substituída**, não estendida.
-
-A versão 2 reconstrói a Camada 1 sobre dado real com outcome de default ([Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk)) e adiciona uma camada agêntica de underwriting com avaliação formal. As decisões estão registradas em [`docs/adr/`](docs/adr/) (8 ADRs) e a linguagem do domínio em [`AGENTS.md`](AGENTS.md).
 
 ## 🔎 O que este projeto assume abertamente
 
@@ -247,7 +238,7 @@ Payflow-inadimplencia/
 │   ├── modelo_payflow_v1.pkl
 │   └── colunas_modelo.pkl
 ├── reports/figures/
-├── Dockerfile            # Container da API (Render)
+├── Dockerfile.api        # Container da API (Render)
 ├── Dockerfile.front      # Container do Frontend (Streamlit)
 ├── docker-compose.yml    # Orquestração local
 ├── render.yaml           # IaC: Deploy declarativo no Render

@@ -13,7 +13,7 @@ O texto de `evidencia_juiz` so existe para as discordancias (era o unico
 campo que o relatorio da primeira rodada imprimia). Concordancias ficam com
 evidencia vazia - nao inventar.
 
-Uso: python scripts/_reconstruir_vereditos.py
+Uso: python scripts/reconstruir_vereditos_2026-08-08.py
 """
 import json
 from datetime import datetime, timezone
@@ -100,7 +100,7 @@ def main() -> None:
         "fonte_memos": "data/processed/piloto_camada2_memos.jsonl (2026-08-08)",
         "procedencia": (
             "Rodada 1 de 2026-08-08 (75/75 sem erro), transcrita da saida de "
-            "console por scripts/_reconstruir_vereditos.py - o cache de "
+            "console por scripts/reconstruir_vereditos_2026-08-08.py - o cache de "
             "vereditos so passou a existir depois dela, e a cota diaria do "
             "Groq (100k TPD) foi consumida na mesma rodada. Matriz conferida "
             "por assert contra o relatorio original: TP=4 FN=4 TN=60 FP=7. "

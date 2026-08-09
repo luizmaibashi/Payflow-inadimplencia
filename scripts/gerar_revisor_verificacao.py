@@ -18,7 +18,7 @@ binarias. Motivo de existir: a rodada de 2026-08-08 regerou os memos e o par
 label<->memo se desfez (debito #30) - os labels de ontem descrevem memos que
 nao existem mais.
 
-Uso: python scripts/_gerar_revisor_verificacao.py
+Uso: python scripts/gerar_revisor_verificacao.py
 Saida: scripts/_revisor_verificacao.html (temporario, nao versionar)
 """
 import json
