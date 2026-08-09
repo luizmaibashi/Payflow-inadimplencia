@@ -173,3 +173,17 @@ def test_prompt_sistema_diz_que_deficit_sozinho_nao_nega():
 
     assert "cronica" in prompt
     assert "limite menor" in prompt
+
+
+def test_prompt_sistema_proibe_segunda_camada_de_analise():
+    """Regressao do debito #32 (2026-08-09): juiz identificava corretamente
+    um sinal grave (que sozinho basta pelo ADR-0011 SS2.1) e mesmo assim
+    marcava FALHA depois de ponderar outros fatores ("mas o historico e
+    bom demais para negar") - reintroduzia o julgamento implicito que o
+    ADR-0011 existe para eliminar. O prompt precisa proibir essa segunda
+    camada explicitamente."""
+    prompt = _prompt_sistema_juiz().lower()
+
+    assert "unico criterio" in prompt
+    assert "pare ai" in prompt
+    assert "nao existe segunda camada" in prompt
