@@ -1,9 +1,22 @@
-"""Gera o HTML de VERIFICACAO dos labels contra os memos versionados.
+"""Gera a tela de verificacao de TASK COMPLETION contra os memos versionados.
 
-Nao e o revisor original (rotulagem do zero): cada caso ja vem com o label
-anterior do Luiz pre-preenchido, e a tarefa e CONFIRMAR ou CORRIGIR contra o
-memo de hoje. Existe porque a rodada de 2026-08-08 regerou os memos e o par
-label<->memo se desfez parcialmente (ver .gitignore, debito #30).
+UMA rubrica so, de proposito. O juiz de app/juiz_camada2.py avalia Task
+Completion e mais nada; calibra-lo (debito #10) exige ground truth dessa
+rubrica e de nenhuma outra. As outras tres do ADR-0004 nao precisam de
+humano nesta passada:
+
+  - groundedness: mecanica (validar_groundedness). Memo com fonte_tool
+    orfa nem chega a existir - o agente devolve erro e memo=None. Todo
+    memo neste arquivo ja passou.
+  - trajectory:   mecanica (validar_trajetoria). O resultado por caso esta
+    em `violacoes_trajetoria` no proprio registro.
+  - cegueira ao score: garantida por construcao (MemoCredito tem
+    extra="forbid" e nenhum campo de score) e guardada por teste.
+
+Isso derruba o trabalho humano de 4 rubricas x 86 casos para 86 decisoes
+binarias. Motivo de existir: a rodada de 2026-08-08 regerou os memos e o par
+label<->memo se desfez (debito #30) - os labels de ontem descrevem memos que
+nao existem mais.
 
 Uso: python scripts/_gerar_revisor_verificacao.py
 Saida: scripts/_revisor_verificacao.html (temporario, nao versionar)
@@ -17,7 +30,7 @@ MEMOS = RAIZ / "data" / "processed" / "piloto_camada2_memos.jsonl"
 SAIDA = RAIZ / "scripts" / "_revisor_verificacao.html"
 
 
-TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
+TEMPLATE = r"""<title>Task Completion - verificacao payflow</title>
 <style>
   :root {
     --bg: #eef2f0;
@@ -60,19 +73,15 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font-body);
-    font-size: 15px;
-    line-height: 1.5;
+    background: var(--bg); color: var(--ink);
+    font-family: var(--font-body); font-size: 15px; line-height: 1.5;
     -webkit-tap-highlight-color: transparent;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 0 0 96px; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 0 150px; }
 
   header.top {
     position: sticky; top: 0; z-index: 20;
-    background: var(--bg);
-    border-bottom: 1px solid var(--line);
+    background: var(--bg); border-bottom: 1px solid var(--line);
     padding: 10px 16px 12px;
   }
   .top-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -86,44 +95,58 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
   .progress { height: 4px; border-radius: 2px; background: var(--line); margin-top: 10px; overflow: hidden; }
   .progress > i { display: block; height: 100%; background: var(--accent); transition: width .25s ease; }
 
-  main { padding: 18px 16px 0; }
+  main { padding: 16px 16px 0; }
 
-  .case-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
-  .case-id { font-family: var(--font-display); font-size: 26px; font-variant-numeric: tabular-nums; }
-  .case-id span { color: var(--ink-soft); font-size: 14px; font-family: var(--font-body); display: block; margin-bottom: 2px; }
+  .pergunta {
+    background: var(--accent-soft); color: var(--accent-ink);
+    padding: 12px 14px; border-radius: 10px; font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .pergunta b { font-weight: 700; }
+
+  .case-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+  .case-id { font-family: var(--font-display); font-size: 24px; font-variant-numeric: tabular-nums; }
+  .case-id span { color: var(--ink-soft); font-size: 13px; font-family: var(--font-body); display: block; }
   .badges { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
   .badge {
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
     padding: 3px 8px; border-radius: 20px; font-weight: 600; white-space: nowrap;
   }
-  .badge.rec-APROVAR { background: var(--ok-soft); color: var(--ok); }
-  .badge.rec-NEGAR { background: var(--falha-soft); color: var(--falha); }
-  .badge.rec-DEFERIR { background: var(--elim-soft); color: var(--elim); }
   .badge.novo { background: var(--accent-soft); color: var(--accent-ink); }
   .badge.atencao { background: var(--elim-soft); color: var(--elim); }
   .badge.violacao { background: var(--elim-soft); color: var(--elim); }
 
+  .rec {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 12px 14px; border-radius: 10px; margin-bottom: 12px;
+    font-family: var(--font-display); font-size: 22px; font-weight: 600;
+  }
+  .rec small {
+    font-family: var(--font-body); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .06em; opacity: .75;
+  }
+  .rec.r-APROVAR { background: var(--ok-soft); color: var(--ok); }
+  .rec.r-NEGAR { background: var(--falha-soft); color: var(--falha); }
+  .rec.r-DEFERIR { background: var(--elim-soft); color: var(--elim); }
+
   section.block {
-    background: var(--bg-card);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    margin-bottom: 12px;
-    overflow: hidden;
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 10px; margin-bottom: 12px; overflow: hidden;
   }
-  .block-h {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px; cursor: pointer; user-select: none;
-    border-bottom: 1px solid transparent;
-  }
-  .block-h.open { border-bottom-color: var(--line); }
+  .block-h { padding: 9px 14px; border-bottom: 1px solid var(--line); }
   .block-h h2 {
-    margin: 0; font-size: 12px; text-transform: uppercase;
+    margin: 0; font-size: 11px; text-transform: uppercase;
     letter-spacing: 0.06em; color: var(--ink-soft); font-weight: 600;
   }
-  .chev { font-size: 11px; color: var(--ink-soft); transition: transform .15s ease; }
-  .block-h.open .chev { transform: rotate(90deg); }
-  .block-body { padding: 4px 14px 14px; display: none; }
-  .block-body.open { display: block; }
+  .block-body { padding: 10px 14px 14px; }
+
+  .fato { display: flex; gap: 8px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; }
+  .fato:first-child { border-top: none; padding-top: 0; }
+  .peso-mark { flex: none; width: 16px; text-align: center; font-weight: 700; font-family: var(--font-mono); }
+  .peso-favoravel .peso-mark { color: var(--ok); }
+  .peso-desfavoravel .peso-mark { color: var(--falha); }
+  .peso-neutro .peso-mark { color: var(--ink-soft); }
+  .fato-src { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
 
   .tool { margin-bottom: 10px; }
   .tool:last-child { margin-bottom: 0; }
@@ -133,70 +156,44 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
     border-radius: 5px; margin-bottom: 5px;
   }
   .kv {
-    font-family: var(--font-mono); font-size: 12.5px; color: var(--ink);
+    font-family: var(--font-mono); font-size: 12.5px;
     background: var(--bg-raised); border-radius: 7px; padding: 8px 10px;
     display: grid; grid-template-columns: auto 1fr; gap: 2px 10px;
     font-variant-numeric: tabular-nums; overflow-x: auto;
   }
   .kv b { color: var(--ink-soft); font-weight: 400; }
 
-  .fato { display: flex; gap: 8px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; }
-  .fato:first-of-type { border-top: none; }
-  .peso-mark { flex: none; width: 18px; text-align: center; font-weight: 700; font-family: var(--font-mono); }
-  .peso-favoravel .peso-mark { color: var(--ok); }
-  .peso-desfavoravel .peso-mark { color: var(--falha); }
-  .peso-neutro .peso-mark { color: var(--ink-soft); }
-  .fato-src { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
   .faltante { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; }
   .faltante-title { color: var(--ink-soft); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
 
-  /* Label anterior: referencia, nao campo editavel */
-  .anterior { background: var(--bg-raised); border-left: 3px solid var(--accent); }
-  .anterior .linha-rubrica {
-    display: flex; gap: 8px; align-items: baseline; padding: 5px 0;
-    border-top: 1px solid var(--line); font-size: 13px;
+  .anterior-nota {
+    font-size: 12.5px; color: var(--ink-soft); font-style: italic;
+    padding: 8px 12px; border-left: 3px solid var(--line);
+    background: var(--bg-raised); border-radius: 0 8px 8px 0; margin-bottom: 12px;
   }
-  .anterior .linha-rubrica:first-child { border-top: none; }
-  .anterior .rub-nome { flex: none; width: 116px; color: var(--ink-soft); font-size: 12px; }
-  .anterior .rub-v { font-weight: 700; font-size: 12px; }
-  .anterior .rub-v.v-OK { color: var(--ok); }
-  .anterior .rub-v.v-FALHA { color: var(--falha); }
-  .anterior .rub-v.v-null { color: var(--elim); }
-  .anterior .rub-ev { color: var(--ink-soft); font-style: italic; }
+  .anterior-nota b { font-style: normal; color: var(--ink); }
 
-  .rubrica { border-top: 1px solid var(--line); padding: 14px 0 0; margin-top: 14px; }
-  .rubrica:first-child { border-top: none; padding-top: 0; margin-top: 0; }
-  .rubrica-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
-  .rubrica-h h3 { margin: 0; font-size: 14.5px; font-weight: 600; }
-  .rubrica-h .elim-tag { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--elim); font-weight: 700; }
-  .rubrica-q { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 10px; }
-
-  .toggle { display: flex; gap: 8px; margin-bottom: 10px; }
-  .toggle button {
-    flex: 1; padding: 9px 0; border-radius: 8px; border: 1px solid var(--line);
-    background: var(--bg-raised); color: var(--ink-soft); font-size: 13px;
-    font-weight: 600; cursor: pointer; font-family: inherit;
+  .decisao { display: flex; gap: 10px; margin-bottom: 10px; }
+  .decisao button {
+    flex: 1; padding: 16px 0; border-radius: 10px; border: 2px solid var(--line);
+    background: var(--bg-card); color: var(--ink-soft);
+    font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
   }
-  .toggle button.sel-ok { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
-  .toggle button.sel-falha { background: var(--falha-soft); color: var(--falha); border-color: var(--falha); }
+  .decisao button.sel-ok { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+  .decisao button.sel-falha { background: var(--falha-soft); color: var(--falha); border-color: var(--falha); }
 
+  .campos-falha { display: none; }
+  .campos-falha.show { display: block; }
   label.field-label {
     display: block; font-size: 11px; text-transform: uppercase;
     letter-spacing: .05em; color: var(--ink-soft); margin: 8px 0 4px;
   }
   textarea, select {
     width: 100%; border: 1px solid var(--line); border-radius: 8px;
-    background: var(--bg-raised); color: var(--ink); font-family: var(--font-body);
-    font-size: 13.5px; padding: 8px 10px;
+    background: var(--bg-raised); color: var(--ink);
+    font-family: var(--font-body); font-size: 13.5px; padding: 8px 10px;
   }
-  textarea { resize: vertical; min-height: 52px; }
-
-  .btn-confirmar {
-    width: 100%; padding: 12px 0; border-radius: 8px; border: 1px solid var(--accent);
-    background: var(--accent); color: #fff; font-size: 14px; font-weight: 600;
-    cursor: pointer; margin-bottom: 12px; font-family: inherit;
-  }
-  .btn-confirmar.feito { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+  textarea { resize: vertical; min-height: 60px; }
 
   nav.bottom {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
@@ -221,15 +218,9 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
     font-variant-numeric: tabular-nums; cursor: pointer; padding: 0; font-family: inherit;
   }
   .jump button.done { background: var(--accent-soft); color: var(--accent-ink); border-color: var(--accent); }
-  .jump button.novo { border-color: var(--elim); }
+  .jump button.falha { background: var(--falha-soft); color: var(--falha); border-color: var(--falha); }
   .jump button.current { outline: 2px solid var(--accent); outline-offset: 1px; }
   .jump-toggle { padding: 8px 16px 0; font-size: 12px; color: var(--accent); cursor: pointer; user-select: none; }
-
-  .aviso {
-    margin: 14px 16px 0; padding: 12px 14px; border-radius: 10px;
-    background: var(--accent-soft); color: var(--accent-ink); font-size: 13px;
-  }
-  .aviso b { font-variant-numeric: tabular-nums; }
 
   .toast {
     position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%) translateY(8px);
@@ -253,7 +244,7 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
   }
   .sheet h2 { margin: 0; font-size: 15px; }
   .sheet p { margin: 0; font-size: 12.5px; color: var(--ink-soft); }
-  .sheet textarea { flex: 1; min-height: 220px; font-family: var(--font-mono); font-size: 11.5px; white-space: pre; overflow: auto; }
+  .sheet textarea { flex: 1; min-height: 200px; font-family: var(--font-mono); font-size: 11.5px; white-space: pre; overflow: auto; }
   .sheet-actions { display: flex; gap: 8px; }
   .sheet-actions button {
     flex: 1; border-radius: 8px; border: 1px solid var(--line); background: var(--bg-raised);
@@ -270,13 +261,11 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
 <div class="wrap">
   <header class="top">
     <div class="top-row">
-      <div class="brand">Verificacao de labels<small>payflow &middot; memos de 2026-08-08</small></div>
+      <div class="brand">Task Completion<small>payflow &middot; memos de 2026-08-08</small></div>
       <div class="count" id="count">1 / __N_TOTAL__</div>
     </div>
     <div class="progress"><i id="progressBar" style="width:0%"></i></div>
   </header>
-
-  <div class="aviso" id="aviso"></div>
 
   <div class="jump-toggle" id="jumpToggle">ver todos os casos &#9662;</div>
   <div class="jump" id="jump" style="display:none"></div>
@@ -286,7 +275,7 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
 
 <nav class="bottom">
   <div class="nav-row">
-    <button class="btn-prev" id="btnPrev">&larr; Anterior</button>
+    <button class="btn-prev" id="btnPrev">&larr;</button>
     <button class="btn-export" id="btnExport" title="Exportar JSON">&#8681;</button>
     <button class="btn-next primary" id="btnNext">Proximo &rarr;</button>
   </div>
@@ -297,7 +286,7 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
 <div class="overlay" id="overlay">
   <div class="sheet">
     <button class="sheet-close" id="sheetClose">fechar &#10005;</button>
-    <h2>Labels verificados</h2>
+    <h2>Labels de Task Completion</h2>
     <p>Toque em <strong>copiar</strong> e cole numa mensagem para o Claude.</p>
     <textarea id="sheetText" readonly></textarea>
     <div class="sheet-actions">
@@ -312,19 +301,9 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
 (function () {
   "use strict";
   var CASOS = JSON.parse(document.getElementById("casos-data").textContent);
-  var STORAGE_KEY = "payflow_verificacao_labels_v1";
-  var RUBRICAS = [
-    { id: "groundedness", nome: "Groundedness", elim: true,
-      q: "Todo numero citado nos fatos existe mesmo nos dados brutos da ferramenta?" },
-    { id: "task_completion", nome: "Task Completion", elim: false,
-      q: "A recomendacao e defensavel pelos fatos listados? Se nao, qual fato ela ignorou?" },
-    { id: "trajectory", nome: "Trajectory", elim: false,
-      q: "O agente consultou as ferramentas que precisava antes de concluir?" },
-    { id: "cegueira_score", nome: "Cegueira ao score", elim: false,
-      q: "O memo cita score/probabilidade/modelo? (deveria ser cego a isso)" }
-  ];
-  var CATEGORIAS = ["", "recomendacao_ignora_fato", "numero_nao_existe", "fato_sem_fonte",
-                    "deferir_por_dado_inobtenivel", "cita_score", "outro"];
+  var STORAGE_KEY = "payflow_task_completion_v2";
+  var CATEGORIAS = ["recomendacao_ignora_fato", "deferir_por_dado_inobtenivel",
+                    "recomendacao_sem_base", "outro"];
 
   var idx = 0;
   var labels = carregar();
@@ -339,245 +318,147 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
   function salvar() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(labels)); } catch (e) {}
   }
-  function registro(skId) {
+  function reg(skId) {
     var k = String(skId);
-    if (!labels[k]) {
-      labels[k] = { sk_id_curr: skId, groundedness: null, task_completion: null,
-                    trajectory: null, cegueira_score: null, nota_geral: "" };
-    }
+    if (!labels[k]) labels[k] = { veredito: null, evidencia: "", categoria_falha: "" };
     return labels[k];
   }
-  function completo(skId) {
-    var lbl = labels[String(skId)];
-    if (!lbl) return false;
-    return RUBRICAS.every(function (r) { return lbl[r.id] && lbl[r.id].veredito; });
+  function feito(skId) {
+    var l = labels[String(skId)];
+    return !!(l && l.veredito);
   }
   function toast(msg) {
     var el = document.getElementById("toast");
     el.textContent = msg;
     el.classList.add("show");
-    setTimeout(function () { el.classList.remove("show"); }, 1600);
+    setTimeout(function () { el.classList.remove("show"); }, 1500);
   }
   function esc(s) {
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
   }
-  function bloco(titulo, conteudoHtml, aberto) {
-    var open = aberto ? " open" : "";
-    return '<section class="block">' +
-      '<div class="block-h' + open + '" data-toggle="1"><h2>' + titulo + '</h2>' +
-      '<span class="chev">&#9656;</span></div>' +
-      '<div class="block-body' + open + '">' + conteudoHtml + "</div></section>";
-  }
 
-  function htmlMemo(caso) {
+  function render() {
+    var caso = CASOS[idx];
+    var r = reg(caso.sk_id_curr);
     var m = caso.memo;
     var simbolo = { favoravel: "+", desfavoravel: "−", neutro: "·" };
+
+    var badges = "";
+    if (!caso.label_anterior) badges += '<span class="badge novo">caso novo</span>';
+    if (caso.era_falha) badges += '<span class="badge atencao">era FALHA</span>';
+    if (caso.grupo === 2) badges += '<span class="badge atencao">OK suspeito</span>';
+    if (caso.violacoes_trajetoria.length) badges += '<span class="badge violacao">violacao trajetoria</span>';
+
     var fatos = m.fatores_cliente.map(function (f) {
       return '<div class="fato peso-' + esc(f.peso) + '">' +
         '<span class="peso-mark">' + simbolo[f.peso] + "</span>" +
         "<span>" + esc(f.fato) +
-        '<span class="fato-src">fonte: ' + esc(f.fonte_tool) + "</span></span></div>";
+        '<span class="fato-src">' + esc(f.fonte_tool) + "</span></span></div>";
     }).join("");
+
     var faltante = "";
     if (m.informacao_faltante && m.informacao_faltante.length) {
-      faltante = '<div class="faltante"><div class="faltante-title">Informacao faltante declarada</div>' +
+      faltante = '<div class="faltante"><div class="faltante-title">Diz que faltou apurar</div>' +
         m.informacao_faltante.map(function (i) { return "&bull; " + esc(i); }).join("<br>") + "</div>";
     }
-    var cen = '<div class="faltante"><div class="faltante-title">Cenario assumido</div>' +
-      "Perda em caso de calote: " + Math.round(m.cenario_assumido.lgd * 100) + "% " +
-      '<span class="fato-src">' + esc(m.cenario_assumido.fonte) + "</span></div>";
-    return fatos + cen + faltante;
-  }
 
-  function htmlTrace(caso) {
-    return caso.trace.map(function (c) {
+    var trace = caso.trace.map(function (c) {
       var linhas = Object.keys(c.retorno).map(function (k) {
         return "<b>" + esc(k) + "</b><span>" + esc(JSON.stringify(c.retorno[k])) + "</span>";
       }).join("");
       return '<div class="tool"><div class="tool-name">' + esc(c.ferramenta) + "</div>" +
         '<div class="kv">' + linhas + "</div></div>";
     }).join("");
-  }
 
-  function htmlAnterior(caso) {
-    var a = caso.label_anterior;
-    if (!a) return "";
-    var linhas = RUBRICAS.map(function (r) {
-      var v = a[r.id] || {};
-      var val = v.veredito == null ? "sem veredito" : v.veredito;
-      var cls = v.veredito == null ? "v-null" : "v-" + v.veredito;
-      var ev = v.evidencia ? ' <span class="rub-ev">&mdash; ' + esc(v.evidencia) + "</span>" : "";
-      return '<div class="linha-rubrica"><span class="rub-nome">' + r.nome + "</span>" +
-        '<span><span class="rub-v ' + cls + '">' + val + "</span>" + ev + "</span></div>";
-    }).join("");
-    return linhas;
-  }
-
-  function htmlRubricas(caso) {
-    var reg = registro(caso.sk_id_curr);
-    return RUBRICAS.map(function (r) {
-      var atual = reg[r.id] || {};
-      var v = atual.veredito;
-      var opts = CATEGORIAS.map(function (c) {
-        var sel = atual.categoria_falha === c ? " selected" : "";
-        return '<option value="' + c + '"' + sel + ">" + (c || "(sem categoria)") + "</option>";
-      }).join("");
-      return '<div class="rubrica" data-rub="' + r.id + '">' +
-        '<div class="rubrica-h"><h3>' + r.nome + "</h3>" +
-        (r.elim ? '<span class="elim-tag">eliminatoria</span>' : "") + "</div>" +
-        '<div class="rubrica-q">' + r.q + "</div>" +
-        '<div class="toggle">' +
-        '<button data-set="OK" class="' + (v === "OK" ? "sel-ok" : "") + '">OK</button>' +
-        '<button data-set="FALHA" class="' + (v === "FALHA" ? "sel-falha" : "") + '">FALHA</button>' +
-        "</div>" +
-        '<label class="field-label">Evidencia (nomeie o fato e o numero)</label>' +
-        "<textarea data-ev>" + esc(atual.evidencia || "") + "</textarea>" +
-        '<label class="field-label">Categoria da falha</label>' +
-        "<select data-cat>" + opts + "</select>" +
-        "</div>";
-    }).join("");
-  }
-
-  function render() {
-    var caso = CASOS[idx];
-    var reg = registro(caso.sk_id_curr);
-    var novo = !caso.label_anterior;
-    var atencao = caso.label_anterior &&
-      caso.label_anterior.task_completion &&
-      caso.label_anterior.task_completion.veredito === "FALHA";
-
-    var badges = '<span class="badge rec-' + esc(caso.memo.recomendacao) + '">' +
-      esc(caso.memo.recomendacao) + "</span>";
-    if (novo) badges += '<span class="badge novo">novo</span>';
-    if (atencao) badges += '<span class="badge atencao">era FALHA</span>';
-    if (caso.violacoes_trajetoria && caso.violacoes_trajetoria.length) {
-      badges += '<span class="badge violacao">violacao trajetoria</span>';
-    }
-
-    var html =
-      '<div class="case-head"><div class="case-id"><span>cliente</span>' +
-      caso.sk_id_curr + "</div>" +
-      '<div class="badges">' + badges + "</div></div>";
-
-    html += bloco("Memo de hoje &mdash; recomenda " + esc(caso.memo.recomendacao),
-                  htmlMemo(caso), true);
-    html += bloco("Dados brutos das ferramentas (" + caso.trace.length + ")",
-                  htmlTrace(caso), false);
-
+    var anterior = "";
     if (caso.label_anterior) {
-      html += '<section class="block anterior">' +
-        '<div class="block-h open" data-toggle="1"><h2>Seu label anterior (memo de ontem)</h2>' +
-        '<span class="chev">&#9656;</span></div>' +
-        '<div class="block-body open">' + htmlAnterior(caso) + "</div></section>";
-      html += '<button class="btn-confirmar' + (completo(caso.sk_id_curr) ? " feito" : "") +
-        '" id="btnConfirmar">' +
-        (completo(caso.sk_id_curr) ? "✓ verificado" : "Confirmar label anterior") +
-        "</button>";
+      var a = caso.label_anterior;
+      anterior = '<div class="anterior-nota">Ontem voce disse <b>' +
+        (a.veredito || "sem veredito") + "</b>" +
+        (a.evidencia ? ": &ldquo;" + esc(a.evidencia) + "&rdquo;" : "") +
+        " &mdash; mas sobre um memo diferente, regerado desde entao.</div>";
     }
 
-    html += '<section class="block"><div class="block-body open" style="display:block">' +
-      htmlRubricas(caso) +
-      '<label class="field-label">Nota geral (opcional)</label>' +
-      '<textarea id="notaGeral">' + esc(reg.nota_geral || "") + "</textarea>" +
-      "</div></section>";
+    var opts = CATEGORIAS.map(function (c) {
+      return '<option value="' + c + '"' + (r.categoria_falha === c ? " selected" : "") + ">" + c + "</option>";
+    }).join("");
 
-    var main = document.getElementById("main");
-    main.innerHTML = html;
+    document.getElementById("main").innerHTML =
+      '<div class="pergunta">A recomendacao abaixo e <b>defensavel</b> pelos fatos que o proprio agente levantou?' +
+      '<br><span style="font-size:12px;opacity:.8">por que este caso caiu aqui: ' + esc(caso.motivo) + "</span></div>" +
+      '<div class="case-head"><div class="case-id"><span>cliente</span>' + caso.sk_id_curr +
+      '</div><div class="badges">' + badges + "</div></div>" +
+      '<div class="rec r-' + esc(m.recomendacao) + '"><small>recomenda</small>' + esc(m.recomendacao) + "</div>" +
+      anterior +
+      '<section class="block"><div class="block-h"><h2>Fatos que o agente citou</h2></div>' +
+      '<div class="block-body">' + fatos + faltante + "</div></section>" +
+      '<section class="block"><div class="block-h"><h2>Dados brutos das ferramentas</h2></div>' +
+      '<div class="block-body">' + trace + "</div></section>" +
+      '<div class="decisao">' +
+      '<button data-set="OK" class="' + (r.veredito === "OK" ? "sel-ok" : "") + '">Defensavel</button>' +
+      '<button data-set="FALHA" class="' + (r.veredito === "FALHA" ? "sel-falha" : "") + '">FALHA</button>' +
+      "</div>" +
+      '<div class="campos-falha' + (r.veredito === "FALHA" ? " show" : "") + '" id="camposFalha">' +
+      '<label class="field-label">Qual fato a recomendacao ignorou? (cite o numero)</label>' +
+      "<textarea id=\"ev\">" + esc(r.evidencia) + "</textarea>" +
+      '<label class="field-label">Categoria</label>' +
+      '<select id="cat">' + opts + "</select></div>";
 
     document.getElementById("count").textContent = (idx + 1) + " / " + CASOS.length;
-    var feitos = CASOS.filter(function (c) { return completo(c.sk_id_curr); }).length;
-    document.getElementById("progressBar").style.width =
-      (feitos / CASOS.length * 100).toFixed(1) + "%";
+    var n = CASOS.filter(function (c) { return feito(c.sk_id_curr); }).length;
+    document.getElementById("progressBar").style.width = (n / CASOS.length * 100).toFixed(1) + "%";
     document.getElementById("btnPrev").disabled = idx === 0;
 
-    ligarEventos(caso);
+    ligar(caso);
     renderJump();
     window.scrollTo({ top: 0, behavior: "instant" });
   }
 
-  function ligarEventos(caso) {
-    var reg = registro(caso.sk_id_curr);
+  function ligar(caso) {
+    var r = reg(caso.sk_id_curr);
+    var ev = document.getElementById("ev");
+    var cat = document.getElementById("cat");
+    var campos = document.getElementById("camposFalha");
+    var botoes = document.querySelectorAll("[data-set]");
 
-    Array.prototype.forEach.call(document.querySelectorAll('[data-toggle]'), function (h) {
-      h.addEventListener("click", function () {
-        h.classList.toggle("open");
-        h.nextElementSibling.classList.toggle("open");
+    Array.prototype.forEach.call(botoes, function (btn) {
+      btn.addEventListener("click", function () {
+        var v = btn.getAttribute("data-set");
+        r.veredito = v;
+        botoes[0].className = v === "OK" ? "sel-ok" : "";
+        botoes[1].className = v === "FALHA" ? "sel-falha" : "";
+        if (v === "FALHA") {
+          campos.classList.add("show");
+          if (!r.categoria_falha) { r.categoria_falha = cat.value; }
+        } else {
+          campos.classList.remove("show");
+          r.evidencia = "";
+          r.categoria_falha = "";
+          ev.value = "";
+        }
+        salvar();
+        renderJump();
+        document.getElementById("progressBar").style.width =
+          (CASOS.filter(function (c) { return feito(c.sk_id_curr); }).length / CASOS.length * 100).toFixed(1) + "%";
+        // OK segue sozinho para o proximo: e o caminho de 67 dos 86 casos.
+        if (v === "OK" && idx < CASOS.length - 1) { idx++; render(); }
       });
     });
 
-    Array.prototype.forEach.call(document.querySelectorAll(".rubrica"), function (bloco) {
-      var rid = bloco.getAttribute("data-rub");
-      var ev = bloco.querySelector("[data-ev]");
-      var cat = bloco.querySelector("[data-cat]");
-
-      function grava(veredito) {
-        reg[rid] = {
-          veredito: veredito,
-          evidencia: ev.value.trim(),
-          categoria_falha: cat.value
-        };
-        salvar();
-      }
-
-      Array.prototype.forEach.call(bloco.querySelectorAll("[data-set]"), function (btn) {
-        btn.addEventListener("click", function () {
-          var v = btn.getAttribute("data-set");
-          bloco.querySelectorAll("[data-set]")[0].className = v === "OK" ? "sel-ok" : "";
-          bloco.querySelectorAll("[data-set]")[1].className = v === "FALHA" ? "sel-falha" : "";
-          grava(v);
-          atualizarConfirmar(caso);
-        });
-      });
-      ev.addEventListener("input", function () {
-        if (reg[rid] && reg[rid].veredito) grava(reg[rid].veredito);
-      });
-      cat.addEventListener("change", function () {
-        if (reg[rid] && reg[rid].veredito) grava(reg[rid].veredito);
-      });
-    });
-
-    var nota = document.getElementById("notaGeral");
-    nota.addEventListener("input", function () { reg.nota_geral = nota.value; salvar(); });
-
-    var btnC = document.getElementById("btnConfirmar");
-    if (btnC) {
-      btnC.addEventListener("click", function () {
-        var a = caso.label_anterior;
-        RUBRICAS.forEach(function (r) {
-          var v = a[r.id] || {};
-          reg[r.id] = {
-            // veredito null no label antigo vira OK so se o humano confirmar
-            // explicitamente depois - aqui copia o que existia, inclusive null
-            veredito: v.veredito,
-            evidencia: v.evidencia || "",
-            categoria_falha: v.categoria_falha || ""
-          };
-        });
-        reg.nota_geral = a.nota_geral || "";
-        salvar();
-        toast("label anterior copiado");
-        render();
-      });
-    }
-  }
-
-  function atualizarConfirmar(caso) {
-    var btn = document.getElementById("btnConfirmar");
-    if (!btn) return;
-    if (completo(caso.sk_id_curr)) {
-      btn.className = "btn-confirmar feito";
-      btn.textContent = "✓ verificado";
-    }
+    ev.addEventListener("input", function () { r.evidencia = ev.value; salvar(); });
+    cat.addEventListener("change", function () { r.categoria_falha = cat.value; salvar(); });
   }
 
   function renderJump() {
     var jump = document.getElementById("jump");
+    if (jump.style.display === "none") return;
     jump.innerHTML = CASOS.map(function (c, i) {
+      var l = labels[String(c.sk_id_curr)];
       var cls = [];
-      if (completo(c.sk_id_curr)) cls.push("done");
-      if (!c.label_anterior) cls.push("novo");
+      if (l && l.veredito === "OK") cls.push("done");
+      if (l && l.veredito === "FALHA") cls.push("falha");
       if (i === idx) cls.push("current");
       return '<button class="' + cls.join(" ") + '" data-i="' + i + '">' + (i + 1) + "</button>";
     }).join("");
@@ -591,22 +472,38 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
 
   function exportar() {
     var lista = CASOS.map(function (c) {
-      return labels[String(c.sk_id_curr)] || {
-        sk_id_curr: c.sk_id_curr, groundedness: null, task_completion: null,
-        trajectory: null, cegueira_score: null, nota_geral: ""
+      var l = labels[String(c.sk_id_curr)] || { veredito: null, evidencia: "", categoria_falha: "" };
+      return {
+        sk_id_curr: c.sk_id_curr,
+        task_completion: {
+          veredito: l.veredito,
+          evidencia: l.evidencia || "",
+          categoria_falha: l.categoria_falha || ""
+        },
+        // Mecanicas: NAO julgadas por humano nesta passada. Vem dos
+        // validadores que ja rodaram no pipeline.
+        groundedness: { veredito: "OK", evidencia: "mecanico: validar_groundedness", categoria_falha: "" },
+        trajectory: {
+          veredito: c.violacoes_trajetoria.length ? "FALHA" : "OK",
+          evidencia: c.violacoes_trajetoria.join("; ") || "mecanico: validar_trajetoria",
+          categoria_falha: c.violacoes_trajetoria.length ? "trajetoria_incompleta" : ""
+        },
+        cegueira_score: { veredito: "OK", evidencia: "mecanico: schema MemoCredito extra=forbid", categoria_falha: "" },
+        nota_geral: ""
       };
     });
     var out = {
       gerado_em: new Date().toISOString(),
-      fonte_memos: "data/processed/piloto_camada2_memos.jsonl (2026-08-08)",
+      fonte_memos: "data/processed/piloto_camada2_memos.jsonl (2026-08-08, versionado)",
+      rubrica_humana: "task_completion",
+      // PARCIAL de proposito: so os casos que exigiam humano. Os demais
+      // reaproveitam o label de 2026-08-07 e sao mesclados no lado do Claude.
+      escopo: "revisao_parcial",
       n_total: CASOS.length,
-      n_julgados: lista.filter(function (l) {
-        return RUBRICAS.every(function (r) { return l[r.id] && l[r.id].veredito; });
-      }).length,
+      n_julgados: lista.filter(function (l) { return l.task_completion.veredito; }).length,
       labels: lista
     };
-    var texto = JSON.stringify(out, null, 2);
-    document.getElementById("sheetText").value = texto;
+    document.getElementById("sheetText").value = JSON.stringify(out, null, 2);
     document.getElementById("overlay").classList.add("show");
   }
 
@@ -614,8 +511,7 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
     if (idx > 0) { idx--; render(); }
   });
   document.getElementById("btnNext").addEventListener("click", function () {
-    if (idx < CASOS.length - 1) { idx++; render(); }
-    else toast("ultimo caso");
+    if (idx < CASOS.length - 1) { idx++; render(); } else toast("ultimo caso");
   });
   document.getElementById("btnExport").addEventListener("click", exportar);
   document.getElementById("sheetClose").addEventListener("click", function () {
@@ -624,19 +520,14 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
   document.getElementById("sheetCopy").addEventListener("click", function () {
     var ta = document.getElementById("sheetText");
     ta.select();
-    try {
-      navigator.clipboard.writeText(ta.value);
-      toast("copiado");
-    } catch (e) {
-      document.execCommand("copy");
-      toast("copiado");
-    }
+    try { navigator.clipboard.writeText(ta.value); toast("copiado"); }
+    catch (e) { document.execCommand("copy"); toast("copiado"); }
   });
   document.getElementById("sheetDownload").addEventListener("click", function () {
     var blob = new Blob([document.getElementById("sheetText").value], { type: "application/json" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "verificacao_labels.json";
+    a.download = "task_completion_labels.json";
     a.click();
   });
   document.getElementById("jumpToggle").addEventListener("click", function () {
@@ -644,18 +535,8 @@ TEMPLATE = r"""<title>Verificacao de labels - payflow Camada 2</title>
     var aberto = j.style.display !== "none";
     j.style.display = aberto ? "none" : "flex";
     this.innerHTML = aberto ? "ver todos os casos &#9662;" : "esconder casos &#9652;";
+    if (!aberto) renderJump();
   });
-
-  var nNovos = CASOS.filter(function (c) { return !c.label_anterior; }).length;
-  var nAtencao = CASOS.filter(function (c) {
-    return c.label_anterior && c.label_anterior.task_completion &&
-           c.label_anterior.task_completion.veredito === "FALHA";
-  }).length;
-  document.getElementById("aviso").innerHTML =
-    "Os memos foram <b>regerados</b> em 2026-08-08 &mdash; nao sao os mesmos que voce rotulou. " +
-    "<b>" + nNovos + "</b> casos novos (sem label, exigem rotulagem do zero) vem primeiro; " +
-    "<b>" + nAtencao + "</b> marcados <em>era FALHA</em> merecem leitura atenta (a recomendacao " +
-    "pode ter mudado). Os demais so precisam de confirmacao.";
 
   render();
 })();
@@ -669,40 +550,69 @@ def main() -> None:
         for c in json.loads(LABELS.read_text(encoding="utf-8"))["labels"]
     }
 
+    def contradiz_pesos(memo: dict) -> str | None:
+        """Assinatura da falha que o revisor humano achou por conta propria em
+        2026-08-07: recomendar NEGAR com fatos majoritariamente favoraveis (ou
+        o espelho). Proxy MECANICO, nao veredito - serve so para escolher o
+        que vale a pena reler."""
+        fav = sum(1 for f in memo["fatores_cliente"] if f["peso"] == "favoravel")
+        des = sum(1 for f in memo["fatores_cliente"] if f["peso"] == "desfavoravel")
+        if memo["recomendacao"] == "NEGAR" and fav > des:
+            return "NEGAR com maioria de fatos favoraveis"
+        if memo["recomendacao"] == "APROVAR" and des > fav:
+            return "APROVAR com maioria de fatos desfavoraveis"
+        return None
+
     casos = []
+    n_mantidos = 0
     with MEMOS.open(encoding="utf-8") as fh:
         for linha in fh:
             reg = json.loads(linha)
             if not reg.get("memo"):
                 continue
             sk = reg["sk_id_curr"]
+            anterior = labels.get(sk)
+            tc = (anterior or {}).get("task_completion") or {}
+            veredito_anterior = tc.get("veredito")
+            suspeita = contradiz_pesos(reg["memo"])
+
+            # QUEM PRECISA DE HUMANO (os demais reaproveitam o label de ontem):
+            #  0. caso novo - nunca teve label
+            #  1. era FALHA ou ficou sem veredito - etiqueta fragil: se o agente
+            #     passou a recomendar o que o humano disse ser correto, o label
+            #     virou factualmente errado (medido: 100525 e 353468)
+            #  2. era OK mas o memo de hoje contradiz o peso dos proprios fatos
+            if anterior is None:
+                grupo, motivo = 0, "caso novo, sem label anterior"
+            elif veredito_anterior in ("FALHA", None):
+                grupo, motivo = 1, "label anterior fragil (era FALHA ou sem veredito)"
+            elif suspeita:
+                grupo, motivo = 2, f"label OK, mas hoje: {suspeita}"
+            else:
+                n_mantidos += 1
+                continue
+
             casos.append({
                 "sk_id_curr": sk,
-                "n_chamadas": reg.get("n_chamadas"),
                 "violacoes_trajetoria": reg.get("violacoes_trajetoria", []),
                 "trace": reg["trace"],
                 "memo": reg["memo"],
-                "label_anterior": labels.get(sk),  # None = caso novo
+                "label_anterior": {
+                    "veredito": veredito_anterior,
+                    "evidencia": tc.get("evidencia", ""),
+                } if anterior else None,
+                "era_falha": veredito_anterior == "FALHA",
+                "grupo": grupo,
+                "motivo": motivo,
             })
 
-    # Ordem de trabalho: novos primeiro (rotulagem do zero), depois os que
-    # eram FALHA (leitura atenta), depois os confirmaveis.
-    def prioridade(c):
-        if c["label_anterior"] is None:
-            return (0, c["sk_id_curr"])
-        tc = c["label_anterior"].get("task_completion") or {}
-        if tc.get("veredito") == "FALHA" or tc.get("veredito") is None:
-            return (1, c["sk_id_curr"])
-        return (2, c["sk_id_curr"])
+    casos.sort(key=lambda c: (c["grupo"], c["sk_id_curr"]))
 
-    casos.sort(key=prioridade)
-
-    n_novos = sum(1 for c in casos if c["label_anterior"] is None)
-    n_atencao = sum(1 for c in casos if prioridade(c)[0] == 1)
-    print(f"casos com memo valido: {len(casos)}")
-    print(f"  novos (sem label):     {n_novos}")
-    print(f"  atencao (era FALHA):   {n_atencao}")
-    print(f"  so confirmar:          {len(casos) - n_novos - n_atencao}")
+    for g, nome in enumerate(["novos", "label fragil (era FALHA)", "OK suspeito"]):
+        n = sum(1 for c in casos if c["grupo"] == g)
+        print(f"  {nome:<28} {n}")
+    print(f"  {'reaproveitados sem revisao':<28} {n_mantidos}")
+    print(f"  {'TOTAL a revisar':<28} {len(casos)}")
 
     html = TEMPLATE.replace("__DADOS__", json.dumps(casos, ensure_ascii=False))
     html = html.replace("__N_TOTAL__", str(len(casos)))

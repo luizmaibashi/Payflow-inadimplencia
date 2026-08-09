@@ -1,0 +1,534 @@
+{
+  "gerado_em": "2026-08-09T01:08:06.228697Z",
+  "juiz": "groq/llama-3.3-70b-versatile, temperatura 0",
+  "fonte_memos": "data/processed/piloto_camada2_memos.jsonl (2026-08-08)",
+  "procedencia": "Rodada 1 de 2026-08-08 (75/75 sem erro), transcrita da saida de console por scripts/_reconstruir_vereditos.py - o cache de vereditos so passou a existir depois dela, e a cota diaria do Groq (100k TPD) foi consumida na mesma rodada. Matriz conferida por assert contra o relatorio original: TP=4 FN=4 TN=60 FP=7. evidencia_juiz existe apenas para as 11 discordancias - o relatorio da rodada 1 nao imprimia a das concordancias.",
+  "julgados": [
+    {
+      "sk_id_curr": 100525,
+      "juiz": "OK",
+      "humano": "FALHA",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 101080,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 108447,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 109117,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 111985,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 113011,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 115682,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 117727,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 126645,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 128369,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 143212,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 148582,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 151927,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 153799,
+      "juiz": "FALHA",
+      "humano": "FALHA",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 161761,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 166661,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "O cliente não possui contratos em atraso hoje em outras instituições, utilização do crédito disponível em outras instituições é baixa (28%), possui um histórico"
+    },
+    {
+      "sk_id_curr": 169111,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 169869,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 173034,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 173954,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 181390,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 183280,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 185233,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 187682,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 189743,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 192195,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 199386,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 205320,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 212372,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 219448,
+      "juiz": "FALHA",
+      "humano": "FALHA",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 224770,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "atraso medio de -11 dias, 0 parcelas nunca pagas, 1 atraso de 10 dias há 125 dias e limite de crédito total de R$ 357.750,00 sem atrasos, mas recomendacao foi N"
+    },
+    {
+      "sk_id_curr": 226146,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 235261,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 235776,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 238067,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 240344,
+      "juiz": "FALHA",
+      "humano": "FALHA",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 243962,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 244626,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "atraso medio de -6.028985507246377 dias, 0 parcelas nunca pagas, 2 atrasos minimos (1 dia), e ultimo atraso ocorreu ha mais de 684 dias, mas recomendacao foi NE"
+    },
+    {
+      "sk_id_curr": 246975,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 252397,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "atraso medio de -7.7 dias e 0 parcelas nunca pagas, mas recomendacao foi NEGAR"
+    },
+    {
+      "sk_id_curr": 259658,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 260691,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 264603,
+      "juiz": "OK",
+      "humano": "FALHA",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 279711,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 280852,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 282047,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 285827,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 295370,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "atraso médio de -21.67 dias e 5 meses em dia sem atrasos registrados em outras instituições, mas recomendacao foi NEGAR"
+    },
+    {
+      "sk_id_curr": 299680,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 302315,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 303376,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "atraso médio de -2.28 dias e 0 parcelas nunca pagas, mas recomendacao foi NEGAR"
+    },
+    {
+      "sk_id_curr": 310188,
+      "juiz": "OK",
+      "humano": "FALHA",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 322471,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 325723,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 326137,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 331720,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 333067,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 340715,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 342044,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 348835,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 350878,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 351105,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 353468,
+      "juiz": "OK",
+      "humano": "FALHA",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 358801,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 368123,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 371141,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 374802,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 379149,
+      "juiz": "FALHA",
+      "humano": "FALHA",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 386823,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 396189,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 398836,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 410339,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 417173,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "nenhum fator desfavoravel foi citado, mas a recomendacao foi NEGAR"
+    },
+    {
+      "sk_id_curr": 435752,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 449188,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": ""
+    }
+  ],
+  "erros": []
+}
