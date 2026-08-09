@@ -6,6 +6,18 @@
 
 ---
 
+## Conexão com objetivo de negócio
+
+Doc de origem: `AGENTS.md` (mapa do projeto + Linguagem Ubíqua) e `docs/adr/0001-...md`/`0002-...md`. Objetivo já estava documentado antes deste dicionário — resumo, não sabatina nova:
+
+**Hipótese que este dataset testa:** dado real de risco de crédito (Home Credit, mercado emergente) permite treinar um classificador de PD calibrado e, a partir dele, um motor de decisão por valor esperado (`p* = M/(M+LGD·EAD)`, ADR-0002) que isole corretamente a **zona cinzenta** — os casos onde a decisão de aprovar/negar é genuinamente incerta. As colunas de `application_train` dão o retrato do pedido; as 6 tabelas relacionais (PARTE 2) dão o comportamento passado, que é onde está o sinal real de inadimplência.
+
+**Por que Home Credit e não dado brasileiro:** transferência de **método**, declarada — não existe base pública de crédito pessoal brasileira do mesmo porte. Nunca afirmar que o cliente do dataset é brasileiro (débito #9, escopo negativo do `AGENTS.md`).
+
+**Vale ainda?** Sim — nenhuma decisão em ADR-0001/0002 mudou desde que foram escritas (2026-08-04). Se isso mudar, atualizar aqui e nos ADRs, não sobrescrever calado.
+
+---
+
 ## Como ler os nomes (o padrão por trás da bagunça aparente)
 
 Os nomes parecem confusos, mas seguem prefixos consistentes. Sabendo os prefixos, 80% da confusão some:
@@ -48,6 +60,12 @@ application_train.csv  (1 linha por PEDIDO — é aqui que está o TARGET)
 ---
 
 # PARTE 1 — Colunas originais (`application_train.csv`)
+
+## Colunas (pós-limpeza)
+
+Detalhadas por bloco temático abaixo. `application_test.csv` segue o mesmo esquema de `application_train.csv`, **sem `TARGET`** — é o conjunto de submissão do Kaggle. Nenhuma métrica deste projeto (AUC, Brier, backtest do motor) vem desse arquivo; `camada1_features_test.parquet` é gerado pelo pipeline mas não é consumido por nenhum script de avaliação (deslocamento de distribuição medido entre as duas amostras: `reports/eda_application.md` item 9 — só passaria a importar se alguém decidisse submeter ao Kaggle).
+
+`payflow_credit_risk.csv` é o dataset **sintético do V1 legado** (pré-ADR-0001) — não é coberto por este dicionário, que documenta só a Camada 1 atual (Home Credit real). Status do V1: legado a substituir, não a estender (ver débito #11 do `AGENTS.md`).
 
 ## 1.1 Identificação e alvo
 
@@ -155,6 +173,8 @@ Cada medida aparece em três versões: `_AVG` (média), `_MODE` (moda), `_MEDI` 
 ---
 
 # PARTE 2 — As 32 features que NÓS criamos
+
+## Features criadas
 
 > Definidas em [`app/feature_engineering_home_credit.py`](../app/feature_engineering_home_credit.py), testadas em [`tests/test_paridade.py`](../tests/test_paridade.py).
 > **Motivação geral:** a tabela principal é uma *fotografia* do momento do pedido. Estas features trazem o *filme* — o comportamento passado do cliente, que é onde está o sinal de crédito de verdade.
