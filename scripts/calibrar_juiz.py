@@ -211,6 +211,7 @@ def main() -> None:
                 "humano": labels[sk_id],
                 "recomendacao": reg["memo"]["recomendacao"],
                 "evidencia_juiz": resultado.evidencia,
+                "suspeito_dado_ausente": resultado.suspeito_dado_ausente,
             })
             marca = "=" if resultado.veredito.value == labels[sk_id] else "x"
             print(f"  [{i:>3}/{len(alvos)}] {sk_id}  juiz={resultado.veredito.value:<5} "
@@ -295,17 +296,20 @@ def main() -> None:
 
     discordancias = [j for j in julgados if j["juiz"] != j["humano"]]
     if discordancias:
+        n_suspeitos = sum(1 for j in discordancias if j.get("suspeito_dado_ausente"))
         linhas += [
-            f"## Onde juiz e humano discordaram ({len(discordancias)})",
+            f"## Onde juiz e humano discordaram ({len(discordancias)}, "
+            f"{n_suspeitos} suspeitos de #33 - dado ausente)",
             "",
-            "| caso | recomendação | humano | juiz | evidência do juiz |",
-            "|---|---|---|---|---|",
+            "| caso | recomendação | humano | juiz | suspeito #33? | evidência do juiz |",
+            "|---|---|---|---|---|---|",
         ]
         for j in sorted(discordancias, key=lambda x: x["sk_id_curr"]):
             ev = (j["evidencia_juiz"] or "").replace("|", "/")[:160]
+            suspeito = "⚠️" if j.get("suspeito_dado_ausente") else ""
             linhas.append(
                 f"| `{j['sk_id_curr']}` | {j['recomendacao']} | {j['humano']} | "
-                f"{j['juiz']} | {ev} |"
+                f"{j['juiz']} | {suspeito} | {ev} |"
             )
         linhas += [""]
 
