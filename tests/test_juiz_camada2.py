@@ -187,3 +187,18 @@ def test_prompt_sistema_proibe_segunda_camada_de_analise():
     assert "unico criterio" in prompt
     assert "pare ai" in prompt
     assert "nao existe segunda camada" in prompt
+
+
+def test_prompt_sistema_nao_trata_dado_ausente_como_ausencia_de_risco():
+    """Regressao do debito #33 (2026-08-10): 9 dos 13 casos de discordancia
+    em reports/calibracao_juiz.md tinham a mesma assinatura - campos como
+    utilizacao/pior_atraso_dias vinham None, e o juiz concluia "nenhum
+    sinal grave, nenhum agravante" so por falta de dado, marcando FALHA
+    mesmo quando a ausencia de informacao era o proprio motivo da cautela.
+    O prompt precisa deixar explicito que dado ausente e incerteza, nao
+    evidencia de ausencia de risco."""
+    prompt = _prompt_sistema_juiz().lower()
+
+    assert "dado indisponivel" in prompt
+    assert "nao conta" in prompt
+    assert "nunca torna negar indefensavel" in prompt
