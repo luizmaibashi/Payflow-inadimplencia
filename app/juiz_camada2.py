@@ -52,6 +52,12 @@ class ResultadoJuizTaskCompletion:
     veredito: VeredictoTaskCompletion
     evidencia: str
     categoria_falha: str = ""
+    # Debito #33 / ADR-0012: sinal deterministico, NAO vem do LLM. Marca
+    # quando a evidencia do juiz admite nao ter achado dado nenhum - esse
+    # padrao especifico resistiu a correcao via prompt (validado empirico
+    # 2026-08-10), entao a checagem roda no texto ja produzido em vez de
+    # confiar em instrucao nova.
+    suspeito_dado_ausente: bool = False
 
 
 class JuizLLM(Protocol):
@@ -197,6 +203,55 @@ def _prompt_usuario_juiz(memo: MemoCredito, trace: list[ChamadaFerramenta]) -> s
     )
 
 
+# Debito #33 / ADR-0012. Termos que o juiz usa quando conclui "nao ha
+# dado" - vocabulario observado nos 11 casos reais do rerun de 2026-08-10
+# (reports/calibracao_juiz.md). Heuristica de texto, mesma familia de
+# validar_groundedness_numerica: se o vocabulario do juiz mudar, isto
+# precisa ser revisto (mesma limitacao ja assumida no debito #26).
+_TERMOS_DADO_AUSENTE = ("nao disponivel", "none", "nao disponiveis")
+
+# Campos do criterio do ADR-0011 que, se vierem None, sao o gatilho do #33.
+_CAMPOS_CRITERIO_ADR_0011 = (
+    "utilizacao", "pior_atraso_dias", "deficit_medio_pct",
+    "n_em_atraso_hoje", "dias_desde_ultimo_atraso",
+)
+
+
+def _evidencia_admite_dado_ausente(evidencia: str) -> bool:
+    """A evidencia do juiz, em si, diz que nao achou dado nenhum?"""
+    texto = evidencia.lower()
+    return any(termo in texto for termo in _TERMOS_DADO_AUSENTE)
+
+
+def _campos_criterio_estao_none(trace: list[ChamadaFerramenta]) -> bool:
+    """Confirma contra os DADOS BRUTOS (nao contra a opiniao do juiz) que os
+    campos do ADR-0011 realmente vieram None - sem isso, um FALHA legitimo
+    que so MENCIONA a palavra "disponivel" de passagem seria marcado suspeito
+    por engano."""
+    valores = {}
+    for c in trace:
+        for campo in _CAMPOS_CRITERIO_ADR_0011:
+            if campo in c.retorno:
+                valores[campo] = c.retorno[campo]
+    if not valores:
+        return False
+    return any(v is None for v in valores.values())
+
+
+def suspeito_dado_ausente(
+    resultado: ResultadoJuizTaskCompletion, trace: list[ChamadaFerramenta]
+) -> bool:
+    """Padrao do debito #33: veredito FALHA justificado so pela ausencia de
+    dado, nao por sinal encontrado. NAO sobrescreve o veredito - so sinaliza,
+    mesmo tratamento nao-eliminatorio do #26 (ADR-0012)."""
+    if resultado.veredito != VeredictoTaskCompletion.FALHA:
+        return False
+    return (
+        _evidencia_admite_dado_ausente(resultado.evidencia)
+        and _campos_criterio_estao_none(trace)
+    )
+
+
 def _parse_resposta_juiz(bruto: str) -> ResultadoJuizTaskCompletion:
     try:
         dados = json.loads(bruto)
@@ -242,4 +297,7 @@ def julgar_task_completion(
     resposta = cliente_juiz.perguntar(
         _prompt_sistema_juiz(), _prompt_usuario_juiz(memo, trace)
     )
-    return _parse_resposta_juiz(resposta)
+    resultado = _parse_resposta_juiz(resposta)
+    resultado.suspeito_dado_ausente = suspeito_dado_ausente(resultado, trace)
+    return resultado
+

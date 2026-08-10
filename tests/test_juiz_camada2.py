@@ -23,6 +23,7 @@ from app.juiz_camada2 import (  # noqa: E402
     _prompt_sistema_juiz,
     _prompt_usuario_juiz,
     julgar_task_completion,
+    suspeito_dado_ausente,
 )
 from app.memo_credito import (  # noqa: E402
     CenarioAssumido,
@@ -202,3 +203,47 @@ def test_prompt_sistema_nao_trata_dado_ausente_como_ausencia_de_risco():
     assert "dado indisponivel" in prompt
     assert "nao conta" in prompt
     assert "nunca torna negar indefensavel" in prompt
+
+def test_suspeito_dado_ausente_detecta_o_padrao_do_debito_33():
+    """ADR-0012: caso sintetico replicando o padrao real (117727 e
+    similares) - FALHA justificado so por campos None do ADR-0011."""
+    resultado = ResultadoJuizTaskCompletion(
+        veredito=VeredictoTaskCompletion.FALHA,
+        evidencia=(
+            "nenhum sinal grave ou agravante presente, pois: utilizacao de "
+            "credito nao disponivel, pior_atraso_dias nao disponivel, "
+            "deficit_medio_pct nao disponivel"
+        ),
+    )
+    trace = [
+        ChamadaFerramenta(
+            ferramenta="consultar_bureau",
+            argumentos={},
+            retorno={"utilizacao": None, "n_em_atraso_hoje": 0},
+        ),
+        ChamadaFerramenta(
+            ferramenta="consultar_pagamentos",
+            argumentos={},
+            retorno={"pior_atraso_dias": None, "deficit_medio_pct": None},
+        ),
+    ]
+
+    assert suspeito_dado_ausente(resultado, trace) is True
+
+
+def test_suspeito_dado_ausente_nao_marca_falha_com_sinal_real():
+    """FALHA legitimo (sinal grave de verdade, nao ausencia de dado) nao
+    pode ser marcado como suspeito - senao o sinal perde credibilidade."""
+    resultado = ResultadoJuizTaskCompletion(
+        veredito=VeredictoTaskCompletion.FALHA,
+        evidencia="utilizacao 99.91%, sinal grave presente, recomendacao NEGAR nao se sustenta",
+    )
+    trace = [
+        ChamadaFerramenta(
+            ferramenta="consultar_bureau",
+            argumentos={},
+            retorno={"utilizacao": 0.9991},
+        ),
+    ]
+
+    assert suspeito_dado_ausente(resultado, trace) is False
