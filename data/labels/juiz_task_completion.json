@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-08-09T16:22:11.529523Z",
+  "gerado_em": "2026-08-10T17:10:45.684982Z",
   "juiz": "groq/llama-3.3-70b-versatile, temperatura 0",
   "fonte_memos": "data/processed/piloto_camada2_memos.jsonl (2026-08-08)",
   "julgados": [
@@ -33,10 +33,10 @@
     },
     {
       "sk_id_curr": 111985,
-      "juiz": "FALHA",
+      "juiz": "OK",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 99.91%, deficit 17.8%, pior atraso 5d, n_em_atraso_hoje 0, dias_desde_ultimo_atraso 93 - há um sinal grave (utilizacao >= 80%) e um agravante (deficit_medio_pct >= 15%), mas o memo não menciona o pior_atraso_dias ser menor que 30 dias e o n_em_atraso_hoje ser 0, o que não justifica a negativa com base nos critérios estabelecidos"
+      "evidencia_juiz": "utilizacao 99.91%, deficit_medio_pct 17.8%, n_em_atraso_hoje 0, pior_atraso_dias 5, dias_desde_ultimo_atraso 93 - um sinal grave (utilizacao >= 80%) e um agravante (deficit_medio_pct >= 15%) estao presentes"
     },
     {
       "sk_id_curr": 113011,
@@ -78,14 +78,14 @@
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 0%, deficit 46.66%, pior atraso 36d - um sinal grave (pior atraso >= 30 dias) está presente, justificando a recomendacao de NEGAR"
+      "evidencia_juiz": "deficit_medio_pct 46.66%, pior_atraso_dias 36d, n_pagas_com_atraso 8, utilizacao 0%, n_em_atraso_hoje 0 - há 1 sinal grave (pior_atraso_dias >= 30 dias) e 1 agravante (deficit_medio_pct >= 15%)"
     },
     {
       "sk_id_curr": 143212,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave (utilizacao de credito e pior atraso nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis"
     },
     {
       "sk_id_curr": 144679,
@@ -106,7 +106,7 @@
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave (utilizacao de credito e pior atraso dias nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes para o criterio estao como None ou 0 (utilizacao: None, pior_atraso_dias: None, deficit_medio_pct: None, n_em_atraso_hoje: 0), mas recomendacao foi NEGAR"
     },
     {
       "sk_id_curr": 151927,
@@ -120,14 +120,14 @@
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 57.84%, deficit 3.47%, pior atraso 23d, n_em_atraso_hoje 0, meses_desde_ultimo_atraso 0 - nenhum sinal grave e apenas 1 agravante (pior atraso >= 15 e meses_desde_ultimo_atraso <= 90 nao se aplica pois meses_desde_ultimo_atraso e 0 e pior atraso e 23d), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao 57.84%, deficit_medio_pct 3.47%, pior_atraso_dias 23, n_em_atraso_hoje 0, dias_desde_ultimo_atraso 852 - nenhum sinal grave e apenas 1 agravante (pior_atraso_dias >= 15 e dias_desde_ultimo_atraso <= 90 nao se aplica pois dias_desde_ultimo_atraso e 852), mas recomendacao foi NEGAR"
     },
     {
       "sk_id_curr": 154357,
-      "juiz": "FALHA",
+      "juiz": "OK",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 65.72%, deficit 14.29%, pior atraso 3d, n_em_atraso_hoje 1 - nenhum sinal grave e apenas 1 agravante (1 contrato em atraso no bureau), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao 65.72%, deficit_medio_pct 14.29%, n_em_atraso_hoje 1, pior_atraso_dias 3, dias_desde_ultimo_atraso 258 - nenhum sinal grave e 2 agravantes (1 contrato em atraso no bureau e deficit_medio_pct >= 15% nao, mas pior_atraso_dias < 15 dias e dias_desde_ultimo_atraso > 90 dias, porem n_em_atraso_hoje >= 1)"
     },
     {
       "sk_id_curr": 161761,
@@ -141,7 +141,7 @@
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 28%, deficit 12.9%, pior atraso 16d, n_em_atraso_hoje 0 - nenhum sinal grave e apenas 1 agravante (pior atraso >= 15 e dias_desde_ultimo_atraso > 90), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao 28%, deficit 12.9%, pior atraso 16d, n_em_atraso_hoje 0 - nenhum sinal grave e apenas 1 agravante (pior atraso >= 15 e dias_desde_ultimo_atraso <= 90 nao se aplicam pois dias_desde_ultimo_atraso = 73 e pior atraso = 16, mas deficit_medio_pct >= 15% nao se aplica pois deficit_medio_pct = 12.9%), mas recomendacao foi NEGAR"
     },
     {
       "sk_id_curr": 169111,
@@ -169,7 +169,7 @@
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave (utilizacao de credito e pior atraso nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis"
     },
     {
       "sk_id_curr": 181390,
@@ -197,7 +197,7 @@
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 79.44%, deficit 25%, pior atraso 22d, n_em_atraso_hoje 0 - um sinal grave (utilizacao >= 80% nao atingido, mas proximo) e varios sinais desfavoraveis, mas recomendacao foi NEGAR e atende ao criterio de 1 sinal grave nao atingido, mas com varios sinais desfavoraveis"
+      "evidencia_juiz": "utilizacao 79.44%, deficit_medio_pct 25%, pior_atraso_dias 22, dias_desde_ultimo_atraso 26, n_em_atraso_hoje 0 - presente 1 sinal grave (utilizacao >= 80% nao, mas proximo) e 2 agravantes (deficit_medio_pct >= 15% e pior_atraso_dias >= 15 e dias_desde_ultimo_atraso <= 90)"
     },
     {
       "sk_id_curr": 189743,
@@ -225,7 +225,7 @@
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave e nenhum agravante presente, pois utilizacao de credito e pior atraso nao disponiveis, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0 e pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em atraso hoje = 0, e apenas informacoes neutras ou desfavoraveis sem relevancia para o criterio de negacao"
     },
     {
       "sk_id_curr": 212372,
@@ -239,21 +239,21 @@
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao nao disponivel, deficit 16.13%, pior atraso 11d, n_em_atraso_hoje 0 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao nao disponivel, deficit_medio_pct 16.13%, pior_atraso_dias 11, n_em_atraso_hoje 0, dias_desde_ultimo_atraso 185 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%), mas recomendacao foi NEGAR"
     },
     {
       "sk_id_curr": 222453,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave (utilizacao de credito e pior atraso dias nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis"
     },
     {
       "sk_id_curr": 224770,
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao nao informada, deficit 14.29%, pior atraso 10d e dias_desde_ultimo_atraso 125 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15% nao atendido, mas proximo), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao nao disponivel, deficit_medio_pct 14.29%, n_em_atraso_hoje 0, pior_atraso_dias 10 e dias_desde_ultimo_atraso 125 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15% nao atendido, pois e menor que 15%), mas recomendacao foi NEGAR"
     },
     {
       "sk_id_curr": 226146,
@@ -274,21 +274,21 @@
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave (utilizacao de credito e pior atraso dias nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, n_em_atraso_hoje 0, deficit_medio_pct None, pior_atraso_dias None), mas recomendacao foi NEGAR"
     },
     {
       "sk_id_curr": 238067,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave e nenhum agravante presente, pois n_en_atraso_hoje = 0, deficit_medio_pct = None, pior_atraso_dias = None, utilizacao = None"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois dados brutos nao apresentam utilizacao de credito, pior atraso, deficit medio pct, n_em_atraso_hoje, ou pior_atraso_dias e dias_desde_ultimo_atraso"
     },
     {
       "sk_id_curr": 240344,
       "juiz": "FALHA",
-      "humano": "OK",
+      "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 47%, deficit 0%, pior atraso 4d - nenhum sinal grave e apenas 1 agravante (1 contrato em atraso no bureau), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao 47.2%, deficit 0%, pior atraso 4d, n_em_atraso_hoje 1, pior_severidade 5 e meses_desde_ultimo_atraso 0 - nenhum sinal grave e apenas 1 agravante (1 contrato em atraso no bureau e pior atraso recente), mas recomendacao foi NEGAR"
     },
     {
       "sk_id_curr": 243962,
@@ -299,10 +299,10 @@
     },
     {
       "sk_id_curr": 244626,
-      "juiz": "FALHA",
+      "juiz": "OK",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 99.7%, deficit 0%, pior atraso 1d, n_em_atraso_hoje 0 - um sinal grave (utilizacao >= 80%) esta presente, mas como ha apenas 1 agravante (nenhum dos outros agravantes estao presentes) e o sinal grave de utilizacao de credito esta acima de 80%, a recomendacao de NEGAR parece defensavel devido ao sinal grave, mas como o cliente tem um historico de pagamentos muito bom e nenhum contrato em atraso, a recomendacao de NEGAR pode ser questionada."
+      "evidencia_juiz": "utilizacao de credito 99.75%, nenhum contrato em atraso no bureau, deficit medio 0%, pior atraso 1 dia - um sinal grave (utilizacao de credito >= 80%) esta presente"
     },
     {
       "sk_id_curr": 246975,
@@ -316,7 +316,7 @@
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 95.95%, deficit 20.5%, pior atraso 15d, n_em_atraso_hoje 0 - há um sinal grave (utilizacao >= 80%) e um agravante (deficit >= 15%)"
+      "evidencia_juiz": "utilizacao de credito 95.95%, deficit medio 20.5%, pior atraso 15d e dias desde ultimo atraso 187, n_em_atraso_hoje 0"
     },
     {
       "sk_id_curr": 259658,
@@ -337,7 +337,7 @@
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave (utilizacao de credito e pior atraso nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em atraso hoje = 0, e nao ha registros de historico de pagamentos ou creditos"
     },
     {
       "sk_id_curr": 272758,
@@ -361,149 +361,158 @@
       "evidencia_juiz": ""
     },
     {
-      "sk_id_curr": 417173,
+      "sk_id_curr": 280852,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": ""
+    },
+    {
+      "sk_id_curr": 282047,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave e nenhum agravante presente, pois n_contratos = 0, n_em_atraso_hoje = 0, deficit_medio_pct = None, pior_atraso_dias = None, dias_desde_ultimo_atraso = None, utilizacao = None"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, n_em_atraso_hoje 0, pior_atraso_dias None, deficit_medio_pct None, n_contratos 0, n_ativos 0, n_em_atraso_hoje 0)"
+    },
+    {
+      "sk_id_curr": 285827,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, deficit_medio_pct None, n_em_atraso_hoje 0, pior_atraso_dias None), mas recomendacao foi NEGAR"
+    },
+    {
+      "sk_id_curr": 295370,
+      "juiz": "FALHA",
+      "humano": "FALHA",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "utilizacao 52.4%, deficit_medio_pct 16.67%, pior_atraso_dias 17, n_em_atraso_hoje 0, nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%)"
     }
   ],
   "erros": [
     [
-      280852,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99104, Requested 1371. Please try ag"
-    ],
-    [
-      282047,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99097, Requested 1194. Please try ag"
-    ],
-    [
-      285827,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99090, Requested 1187. Please try ag"
-    ],
-    [
-      295370,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99084, Requested 1452. Please try ag"
-    ],
-    [
       299680,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99077, Requested 1292. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99572, Requested 1525. Please try ag"
     ],
     [
       302315,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99070, Requested 1457. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99564, Requested 1685. Please try ag"
     ],
     [
       303376,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99063, Requested 1335. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99558, Requested 1572. Please try ag"
     ],
     [
       307444,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99056, Requested 1409. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99551, Requested 1624. Please try ag"
     ],
     [
       310188,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99048, Requested 1219. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99544, Requested 1447. Please try ag"
     ],
     [
       322471,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99040, Requested 1255. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99537, Requested 1479. Please try ag"
     ],
     [
       325723,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99034, Requested 1335. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99530, Requested 1563. Please try ag"
     ],
     [
       326137,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99028, Requested 1392. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99524, Requested 1607. Please try ag"
     ],
     [
       331720,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99021, Requested 1275. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99517, Requested 1512. Please try ag"
     ],
     [
       333067,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99013, Requested 1299. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99511, Requested 1536. Please try ag"
     ],
     [
       333746,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99006, Requested 1492. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99505, Requested 1716. Please try ag"
     ],
     [
       336278,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98998, Requested 1231. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99498, Requested 1450. Please try ag"
     ],
     [
       340715,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98992, Requested 1394. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99491, Requested 1618. Please try ag"
     ],
     [
       342044,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98985, Requested 1298. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99484, Requested 1535. Please try ag"
     ],
     [
       344012,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98978, Requested 1396. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99478, Requested 1615. Please try ag"
     ],
     [
       348835,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98971, Requested 1154. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99470, Requested 1369. Please try ag"
     ],
     [
       350878,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98965, Requested 1305. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99463, Requested 1533. Please try ag"
     ],
     [
       351105,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98957, Requested 1445. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99456, Requested 1660. Please try ag"
     ],
     [
       353468,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98951, Requested 1348. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99449, Requested 1585. Please try ag"
     ],
     [
       358801,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98944, Requested 1433. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99442, Requested 1657. Please try ag"
     ],
     [
       368123,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98937, Requested 1270. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99436, Requested 1498. Please try ag"
     ],
     [
       371141,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98931, Requested 1183. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99429, Requested 1411. Please try ag"
     ],
     [
       374802,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98924, Requested 1434. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99422, Requested 1658. Please try ag"
     ],
     [
       379149,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98917, Requested 1308. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99414, Requested 1545. Please try ag"
     ],
     [
       386823,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98909, Requested 1422. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99406, Requested 1646. Please try ag"
     ],
     [
       396189,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98903, Requested 1193. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99399, Requested 1412. Please try ag"
     ],
     [
       398836,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98895, Requested 1366. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99392, Requested 1599. Please try ag"
     ],
     [
       410339,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98887, Requested 1286. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99385, Requested 1505. Please try ag"
+    ],
+    [
+      417173,
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99379, Requested 1373. Please try ag"
     ],
     [
       435752,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99948, Requested 1153. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99371, Requested 1386. Please try ag"
     ],
     [
       449188,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99941, Requested 1353. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99363, Requested 1577. Please try ag"
     ]
   ]
 }

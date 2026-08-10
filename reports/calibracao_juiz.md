@@ -9,81 +9,77 @@
 
 - Labels humanos disponíveis: **98**
 - Com memo correspondente: **86** (12 sem memo — ver débito #30)
-- Julgados sem erro de provider: **52**
+- Julgados sem erro de provider: **55**
 
 > ⚠️ **Regra dura (ADR-0004 §2.5):** leia o intervalo, não a proporção. Com `n` desta ordem o IC de Wilson é largo o bastante para que a estimativa pontual não sustente decisão de política sozinha.
 
 ## Resultado
 
-### Todos os labels pareáveis (n=52)
+### Todos os labels pareáveis (n=55)
 
 | Métrica | Valor | IC95% (Wilson) | n |
 |---|---|---|---|
-| TPR (detecta FALHA real) | 100.0% | [61.0%; 100.0%] | 6 |
-| TNR (não acusa memo bom) | 71.7% | [57.5%; 82.7%] | 46 |
+| TPR (detecta FALHA real) | 87.5% | [52.9%; 97.8%] | 8 |
+| TNR (não acusa memo bom) | 76.6% | [62.8%; 86.4%] | 47 |
 
-Matriz: TP=6 · FN=0 · TN=33 · FP=13
+Matriz: TP=7 · FN=1 · TN=36 · FP=11
 
-## Onde juiz e humano discordaram (13)
+## Onde juiz e humano discordaram (12)
 
 | caso | recomendação | humano | juiz | evidência do juiz |
 |---|---|---|---|---|
-| `111985` | NEGAR | OK | FALHA | utilizacao 99.91%, deficit 17.8%, pior atraso 5d, n_em_atraso_hoje 0, dias_desde_ultimo_atraso 93 - há um sinal grave (utilizacao >= 80%) e um agravante (defici |
 | `117727` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_at |
-| `143212` | NEGAR | OK | FALHA | nenhum sinal grave (utilizacao de credito e pior atraso nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_desde_u |
-| `151515` | NEGAR | OK | FALHA | nenhum sinal grave (utilizacao de credito e pior atraso dias nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_de |
-| `173954` | NEGAR | OK | FALHA | nenhum sinal grave (utilizacao de credito e pior atraso nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_desde_u |
-| `205320` | NEGAR | OK | FALHA | nenhum sinal grave e nenhum agravante presente, pois utilizacao de credito e pior atraso nao disponiveis, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0 |
-| `222453` | NEGAR | OK | FALHA | nenhum sinal grave (utilizacao de credito e pior atraso dias nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_de |
-| `235776` | NEGAR | OK | FALHA | nenhum sinal grave (utilizacao de credito e pior atraso dias nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_de |
-| `238067` | NEGAR | OK | FALHA | nenhum sinal grave e nenhum agravante presente, pois n_en_atraso_hoje = 0, deficit_medio_pct = None, pior_atraso_dias = None, utilizacao = None |
-| `240344` | NEGAR | OK | FALHA | utilizacao 47%, deficit 0%, pior atraso 4d - nenhum sinal grave e apenas 1 agravante (1 contrato em atraso no bureau), mas recomendacao foi NEGAR |
-| `244626` | NEGAR | OK | FALHA | utilizacao 99.7%, deficit 0%, pior atraso 1d, n_em_atraso_hoje 0 - um sinal grave (utilizacao >= 80%) esta presente, mas como ha apenas 1 agravante (nenhum dos  |
-| `264603` | NEGAR | OK | FALHA | nenhum sinal grave (utilizacao de credito e pior atraso nao disponiveis), nenhum agravante (deficit_medio_pct, n_em_atraso_hoje, pior_atraso_dias e dias_desde_u |
-| `417173` | NEGAR | OK | FALHA | nenhum sinal grave e nenhum agravante presente, pois n_contratos = 0, n_em_atraso_hoje = 0, deficit_medio_pct = None, pior_atraso_dias = None, dias_desde_ultimo |
+| `143212` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_at |
+| `151515` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois todos os dados relevantes para o criterio estao como None ou 0 (utilizacao: None, pior_atraso_dias: None, deficit |
+| `154357` | NEGAR | FALHA | OK | utilizacao 65.72%, deficit_medio_pct 14.29%, n_em_atraso_hoje 1, pior_atraso_dias 3, dias_desde_ultimo_atraso 258 - nenhum sinal grave e 2 agravantes (1 contrat |
+| `173954` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_at |
+| `205320` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em at |
+| `222453` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_at |
+| `235776` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, n_em_atraso_hoje 0, deficit_medio_pct None, pior_atr |
+| `238067` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois dados brutos nao apresentam utilizacao de credito, pior atraso, deficit medio pct, n_em_atraso_hoje, ou pior_atra |
+| `264603` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em at |
+| `282047` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, n_em_atraso_hoje 0, pior_atraso_dias None, deficit_m |
+| `285827` | NEGAR | OK | FALHA | nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, deficit_medio_pct None, n_em_atraso_hoje 0, pior_atr |
 
-## Erros de provider/parsing (34, fora da matriz)
+## Erros de provider/parsing (31, fora da matriz)
 
-- `280852`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99104, Requested 1371. Please try ag
-- `282047`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99097, Requested 1194. Please try ag
-- `285827`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99090, Requested 1187. Please try ag
-- `295370`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99084, Requested 1452. Please try ag
-- `299680`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99077, Requested 1292. Please try ag
-- `302315`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99070, Requested 1457. Please try ag
-- `303376`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99063, Requested 1335. Please try ag
-- `307444`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99056, Requested 1409. Please try ag
-- `310188`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99048, Requested 1219. Please try ag
-- `322471`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99040, Requested 1255. Please try ag
-- `325723`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99034, Requested 1335. Please try ag
-- `326137`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99028, Requested 1392. Please try ag
-- `331720`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99021, Requested 1275. Please try ag
-- `333067`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99013, Requested 1299. Please try ag
-- `333746`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99006, Requested 1492. Please try ag
-- `336278`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98998, Requested 1231. Please try ag
-- `340715`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98992, Requested 1394. Please try ag
-- `342044`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98985, Requested 1298. Please try ag
-- `344012`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98978, Requested 1396. Please try ag
-- `348835`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98971, Requested 1154. Please try ag
-- `350878`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98965, Requested 1305. Please try ag
-- `351105`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98957, Requested 1445. Please try ag
-- `353468`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98951, Requested 1348. Please try ag
-- `358801`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98944, Requested 1433. Please try ag
-- `368123`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98937, Requested 1270. Please try ag
-- `371141`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98931, Requested 1183. Please try ag
-- `374802`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98924, Requested 1434. Please try ag
-- `379149`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98917, Requested 1308. Please try ag
-- `386823`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98909, Requested 1422. Please try ag
-- `396189`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98903, Requested 1193. Please try ag
-- `398836`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98895, Requested 1366. Please try ag
-- `410339`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98887, Requested 1286. Please try ag
-- `435752`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99948, Requested 1153. Please try ag
-- `449188`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99941, Requested 1353. Please try ag
+- `299680`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99572, Requested 1525. Please try ag
+- `302315`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99564, Requested 1685. Please try ag
+- `303376`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99558, Requested 1572. Please try ag
+- `307444`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99551, Requested 1624. Please try ag
+- `310188`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99544, Requested 1447. Please try ag
+- `322471`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99537, Requested 1479. Please try ag
+- `325723`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99530, Requested 1563. Please try ag
+- `326137`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99524, Requested 1607. Please try ag
+- `331720`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99517, Requested 1512. Please try ag
+- `333067`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99511, Requested 1536. Please try ag
+- `333746`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99505, Requested 1716. Please try ag
+- `336278`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99498, Requested 1450. Please try ag
+- `340715`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99491, Requested 1618. Please try ag
+- `342044`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99484, Requested 1535. Please try ag
+- `344012`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99478, Requested 1615. Please try ag
+- `348835`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99470, Requested 1369. Please try ag
+- `350878`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99463, Requested 1533. Please try ag
+- `351105`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99456, Requested 1660. Please try ag
+- `353468`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99449, Requested 1585. Please try ag
+- `358801`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99442, Requested 1657. Please try ag
+- `368123`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99436, Requested 1498. Please try ag
+- `371141`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99429, Requested 1411. Please try ag
+- `374802`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99422, Requested 1658. Please try ag
+- `379149`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99414, Requested 1545. Please try ag
+- `386823`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99406, Requested 1646. Please try ag
+- `396189`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99399, Requested 1412. Please try ag
+- `398836`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99392, Requested 1599. Please try ag
+- `410339`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99385, Requested 1505. Please try ag
+- `417173`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99379, Requested 1373. Please try ag
+- `435752`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99371, Requested 1386. Please try ag
+- `449188`: FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99363, Requested 1577. Please try ag
 
 ## 🔴 O ground truth tem ruído de critério — leia isto antes das métricas
 
 **20 casos** têm a MESMA assinatura nos dados brutos: o memo recomenda `NEGAR`, o cliente **nunca deixou de pagar** (`n_nunca_pagas = 0`) e **paga adiantado em média** (`atraso_medio_dias < 0`). É exatamente o padrão que o revisor descreveu ao justificar as FALHAs de 2026-08-07 (*"claramente um bom pagador, nunca deixou de pagar, paga adiantado em média"*).
 
-Desses 20, o revisor marcou **9 como FALHA** e **11 como OK**.
+Desses 20, o revisor marcou **10 como FALHA** e **10 como OK**.
 
 | caso | veredito humano | atraso médio (dias) | dias desde último atraso |
 |---|---|---|---|
@@ -95,7 +91,7 @@ Desses 20, o revisor marcou **9 como FALHA** e **11 como OK**.
 | `187682` | OK | -8.8 | 26 |
 | `219448` | FALHA | -8.2 | 185 |
 | `224770` | FALHA | -11.0 | 125 |
-| `240344` | OK | -6.6 | 39 |
+| `240344` | FALHA | -6.6 | 39 |
 | `244626` | OK | -6.0 | 684 |
 | `252397` | OK | -7.7 | 187 |
 | `272758` | FALHA | -6.6 | 369 |
