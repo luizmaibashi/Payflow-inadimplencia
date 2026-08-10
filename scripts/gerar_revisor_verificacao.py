@@ -19,6 +19,8 @@ label<->memo se desfez (debito #30) - os labels de ontem descrevem memos que
 nao existem mais.
 
 Uso: python scripts/gerar_revisor_verificacao.py
+     python scripts/gerar_revisor_verificacao.py --debito-31  (inclui os 64
+     OK de 2026-08-08 nunca recoletados sob o criterio do ADR-0011)
 Saida: scripts/_revisor_verificacao.html (temporario, nao versionar)
 """
 import json
@@ -544,7 +546,8 @@ TEMPLATE = r"""<title>Task Completion - verificacao payflow</title>
 """
 
 
-def main() -> None:
+def main(incluir_debito_31: bool = False) -> None:
+    INCLUIR_DEBITO_31 = incluir_debito_31
     labels = {
         c["sk_id_curr"]: c
         for c in json.loads(LABELS.read_text(encoding="utf-8"))["labels"]
@@ -576,13 +579,24 @@ def main() -> None:
             veredito_anterior = tc.get("veredito")
             suspeita = contradiz_pesos(reg["memo"])
 
+            if INCLUIR_DEBITO_31:
+                # Modo #31: SO caso o veredito ATUAL seja OK. FALHA ja e
+                # julgamento real por construcao (10/10 no diagnostico
+                # original do debito #31) - nao ha razao pra reabrir, e as
+                # condicoes de "fragil"/"suspeito" abaixo foram desenhadas
+                # pra outra transicao (memos regenerados, debito #30) e
+                # reabririam FALHA ja solido (ex.: 295370) sem motivo.
+                if veredito_anterior != "OK":
+                    n_mantidos += 1
+                    continue
+                grupo, motivo = 3, "label OK de 2026-08-08 nao recoletado sob ADR-0011 (debito #31)"
             # QUEM PRECISA DE HUMANO (os demais reaproveitam o label de ontem):
             #  0. caso novo - nunca teve label
             #  1. era FALHA ou ficou sem veredito - etiqueta fragil: se o agente
             #     passou a recomendar o que o humano disse ser correto, o label
             #     virou factualmente errado (medido: 100525 e 353468)
             #  2. era OK mas o memo de hoje contradiz o peso dos proprios fatos
-            if anterior is None:
+            elif anterior is None:
                 grupo, motivo = 0, "caso novo, sem label anterior"
             elif veredito_anterior in ("FALHA", None):
                 grupo, motivo = 1, "label anterior fragil (era FALHA ou sem veredito)"
@@ -608,11 +622,16 @@ def main() -> None:
 
     casos.sort(key=lambda c: (c["grupo"], c["sk_id_curr"]))
 
-    for g, nome in enumerate(["novos", "label fragil (era FALHA)", "OK suspeito"]):
+    if INCLUIR_DEBITO_31:
+        nomes_grupo = {3: "OK nao recoletado sob ADR-0011 (#31)"}
+    else:
+        nomes_grupo = {0: "novos", 1: "label fragil (era FALHA)", 2: "OK suspeito"}
+    for g, nome in nomes_grupo.items():
         n = sum(1 for c in casos if c["grupo"] == g)
-        print(f"  {nome:<28} {n}")
-    print(f"  {'reaproveitados sem revisao':<28} {n_mantidos}")
-    print(f"  {'TOTAL a revisar':<28} {len(casos)}")
+        print(f"  {nome:<38} {n}")
+    if not INCLUIR_DEBITO_31:
+        print(f"  {'reaproveitados sem revisao':<38} {n_mantidos}")
+    print(f"  {'TOTAL a revisar':<38} {len(casos)}")
 
     html = TEMPLATE.replace("__DADOS__", json.dumps(casos, ensure_ascii=False))
     html = html.replace("__N_TOTAL__", str(len(casos)))
@@ -621,4 +640,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(incluir_debito_31="--debito-31" in sys.argv)

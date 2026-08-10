@@ -132,7 +132,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -252,7 +252,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -420,7 +420,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -467,9 +467,9 @@
         "categoria_falha": ""
       },
       "task_completion": {
-        "veredito": "OK",
-        "evidencia": "é defensavel porem esse caso pode ser analisado melhor e possivelmnete ser aprovado. precisaria de mais inforamções",
-        "categoria_falha": ""
+        "veredito": "FALHA",
+        "evidencia": "cliente possui 0 parcelas não pagas, esta a mais de 1000 dias sem atrasar nenhuma parcela.\naparentemente teve alguns atrasos e pagas a menor, mas que não compremete e nega.",
+        "categoria_falha": "recomendacao_ignora_fato"
       },
       "trajectory": {
         "veredito": "OK",
@@ -564,7 +564,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -900,7 +900,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -948,7 +948,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -1020,7 +1020,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -1116,7 +1116,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -1212,7 +1212,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -1260,7 +1260,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -1668,7 +1668,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -1860,7 +1860,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -2076,7 +2076,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -2100,7 +2100,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -2124,7 +2124,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -2148,7 +2148,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -2172,7 +2172,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -2244,7 +2244,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
@@ -2267,9 +2267,9 @@
         "categoria_falha": ""
       },
       "task_completion": {
-        "veredito": "OK",
-        "evidencia": "",
-        "categoria_falha": ""
+        "veredito": "FALHA",
+        "evidencia": "possveil cliente bom pagador, nunca deixou de honrar conoso, esta a mais de1000 dias sem atrasrs.",
+        "categoria_falha": "recomendacao_ignora_fato"
       },
       "trajectory": {
         "veredito": "OK",
@@ -2316,7 +2316,7 @@
       },
       "task_completion": {
         "veredito": "OK",
-        "evidencia": "",
+        "evidencia": "confirmado na recoleta #31 (2026-08-10) - revisao binaria, sem texto adicional",
         "categoria_falha": ""
       },
       "trajectory": {
