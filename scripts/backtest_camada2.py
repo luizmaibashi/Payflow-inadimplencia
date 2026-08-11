@@ -36,6 +36,9 @@ import pandas as pd
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from calibrar_juiz import intervalo_wilson  # noqa: E402
 
 MEMOS_PATH = RAIZ / "data" / "processed" / "piloto_camada2_memos.jsonl"
 ZONA_CINZENTA_PATH = RAIZ / "data" / "processed" / "zona_cinzenta.parquet"
@@ -54,7 +57,16 @@ def carregar_memos_com_desfecho() -> pd.DataFrame:
     TODO: implementar. Ver _carregar_memos() em calibrar_juiz.py para o
     padrao de leitura do jsonl (mesmo arquivo, mesmo formato).
     """
-    raise NotImplementedError
+    linhas = []
+    with MEMOS_PATH.open(encoding="utf-8") as fh:
+        for linha in fh:
+            reg = json.loads(linha)
+            if reg.get("memo"):
+                linhas.append({
+                    "sk_id_curr": reg["sk_id_curr"],
+                    "recomendacao": reg["memo"]["recomendacao"],
+                })
+    return pd.DataFrame(linhas)
 
 
 def juntar_com_target(memos: pd.DataFrame) -> pd.DataFrame:
@@ -68,7 +80,17 @@ def juntar_com_target(memos: pd.DataFrame) -> pd.DataFrame:
     Avisar se algum sk_id_curr do memo nao aparecer na zona cinzenta (nao
     deveria acontecer, mas silencio aqui esconderia bug de universo).
     """
-    raise NotImplementedError
+    zona = pd.read_parquet(ZONA_CINZENTA_PATH)
+    df = memos.merge(
+        zona, left_on="sk_id_curr", right_on="SK_ID_CURR", how="inner",
+    )
+    faltantes = set(memos["sk_id_curr"]) - set(df["sk_id_curr"])
+    if faltantes:
+        print(
+            f"AVISO: {len(faltantes)} sk_id_curr do memo nao apareceram na "
+            f"zona cinzenta (bug de universo?): {sorted(faltantes)[:10]}"
+        )
+    return df
 
 
 def taxa_default_por_recomendacao(df: pd.DataFrame) -> pd.DataFrame:
@@ -78,7 +100,18 @@ def taxa_default_por_recomendacao(df: pd.DataFrame) -> pd.DataFrame:
     TODO: implementar. Reusar intervalo_wilson de calibrar_juiz.py
     (`from calibrar_juiz import intervalo_wilson` - mesmo diretorio scripts/).
     """
-    raise NotImplementedError
+    linhas = []
+    for rec in ("APROVAR", "NEGAR", "DEFERIR"):
+        sub = df[df["recomendacao"] == rec]
+        n = len(sub)
+        k = int(sub["TARGET"].sum())
+        taxa = k / n if n else None
+        ic_lo, ic_hi = intervalo_wilson(k, n) if n else (None, None)
+        linhas.append({
+            "recomendacao": rec, "k": k, "n": n,
+            "taxa": taxa, "ic_lo": ic_lo, "ic_hi": ic_hi,
+        })
+    return pd.DataFrame(linhas)
 
 
 def bootstrap_separacao(df: pd.DataFrame, grupo_a="NEGAR", grupo_b="APROVAR",
@@ -102,23 +135,47 @@ def bootstrap_separacao(df: pd.DataFrame, grupo_a="NEGAR", grupo_b="APROVAR",
     usa bootstrap para o delta de EV) - mesma metodologia, resultados
     comparaveis entre motor e agente.
     """
-    raise NotImplementedError
+    import numpy as np
+
+    alvo_a = df.loc[df["recomendacao"] == grupo_a, "TARGET"].to_numpy()
+    alvo_b = df.loc[df["recomendacao"] == grupo_b, "TARGET"].to_numpy()
+    n_a, n_b = len(alvo_a), len(alvo_b)
+
+    rng = np.random.default_rng(seed)
+    deltas = np.empty(n_reamostragens)
+    for i in range(n_reamostragens):
+        reamostra_a = rng.choice(alvo_a, size=n_a, replace=True)
+        reamostra_b = rng.choice(alvo_b, size=n_b, replace=True)
+        deltas[i] = reamostra_a.mean() - reamostra_b.mean()
+
+    delta_observado = alvo_a.mean() - alvo_b.mean()
+    ic_lo, ic_hi = np.percentile(deltas, [2.5, 97.5])
+    return {
+        "delta_observado": delta_observado,
+        "ic_lo": ic_lo,
+        "ic_hi": ic_hi,
+    }
 
 
-def comparar_com_motor(df: pd.DataFrame) -> pd.DataFrame:
-    """Nos MESMOS casos, decisao_motor (Camada 1) concorda ou discorda da
-    recomendacao do agente? Quando discordam, quem acerta mais o TARGET?
+def comparar_com_motor(df: pd.DataFrame) -> pd.DataFrame | None:
+    """NAO FAZ SENTIDO com os dados atuais - documentado, nao implementado.
 
-    Pergunta espelhada no debito #13 (o motor sozinho NAO supera o threshold
-    legado, ADR-0002 SS2.8) - mesma pergunta, agora para o agente: ele
-    concorda com o motor, ou agrega informacao que o motor nao tem?
+    A premissa do TODO original era comparar decisao_motor (APROVAR/NEGAR do
+    motor) com a recomendacao do agente. Mas `zona_cinzenta.parquet` e, por
+    definicao, o recorte onde o motor se ABSTEVE - toda linha tem
+    decisao_motor == "ZONA_CINZENTA" (confirmado 2026-08-11, nenhuma
+    variacao). Nao existe uma decisao real do motor pra comparar dentro
+    deste universo - e exatamente por isso que a Camada 2 existe (decidir
+    onde o motor nao decide).
 
-    TODO: implementar. df ja tem decisao_motor (da zona_cinzenta.parquet) e
-    recomendacao (do memo) lado a lado apos juntar_com_target(). Cruzar as
-    duas, ver onde discordam, comparar taxa de default real nos dois
-    subconjuntos (concordam vs discordam).
+    Uma comparacao alternativa (ex.: usar p_hat vs o ponto medio de
+    p_estrela_inf/p_estrela_sup como proxy de "o que o motor faria sem
+    abster-se") e uma decisao de design nova, nao a implementacao do que
+    ja estava especificado - fica para decisao futura, nao bloqueia o
+    backtest principal (taxa_default_por_recomendacao + bootstrap_separacao
+    ja respondem a pergunta central do ADR-0004 SS2.1).
     """
-    raise NotImplementedError
+    return None
 
 
 def main() -> None:
@@ -141,7 +198,7 @@ def main() -> None:
     print(f"casos com memo + TARGET: {len(df)}")
     if len(df) < 400:
         print(
-            f"⚠️  n={len(df)} e pequeno demais para separacao de 10pp "
+            f"AVISO: n={len(df)} e pequeno demais para separacao de 10pp "
             f"(precisa de ~722). Rode com mais casos antes de confiar no resultado."
         )
 
@@ -154,12 +211,69 @@ def main() -> None:
           f"IC95% [{sep['ic_lo']:+.1%}; {sep['ic_hi']:+.1%}]")
 
     comp = comparar_com_motor(df)
-    print("\nagente vs motor da Camada 1:")
-    print(comp)
+    if comp is None:
+        print(
+            "\ncomparacao com o motor: NAO DISPONIVEL - zona_cinzenta.parquet "
+            "so tem decisao_motor='ZONA_CINZENTA' (motor se absteve em todos "
+            "os casos deste universo, por definicao)."
+        )
 
-    # TODO: escrever reports/backtest_camada2.md seguindo o padrao dos outros
-    # reports (limitacoes declaradas no topo, IC sempre ao lado da proporcao,
-    # aviso de "leia o intervalo nao a proporcao" se n for pequeno).
+    def fmt_pct(v):
+        return "n/d" if pd.isna(v) else f"{v:.1%}"
+
+    linhas_taxas = [
+        "| Recomendação | k (default) | n | Taxa | IC95% (Wilson) |",
+        "|---|---|---|---|---|",
+    ]
+    for _, r in taxas.iterrows():
+        ic = "n/d" if pd.isna(r["ic_lo"]) else f"[{r['ic_lo']:.1%}; {r['ic_hi']:.1%}]"
+        linhas_taxas.append(
+            f"| {r['recomendacao']} | {r['k']} | {r['n']} | "
+            f"{fmt_pct(r['taxa'])} | {ic} |"
+        )
+
+    aviso_n = ""
+    if len(df) < 400:
+        aviso_n = (
+            f"\n> ⚠️ **n={len(df)} é pequeno demais pra separação de 10pp** "
+            f"(poder estatístico exige ~722). Leia o intervalo, não o ponto "
+            f"— não sustenta decisão de política sozinho (ADR-0004 §2.5).\n"
+        )
+
+    linhas = [
+        "# Backtest da Camada 2 — agente vs. default real (ADR-0004 §2.1)",
+        "",
+        "**Gerado por:** `scripts/backtest_camada2.py`  ",
+        "**Pergunta:** as recomendações do agente (APROVAR/NEGAR/DEFERIR) "
+        "separam risco real (`TARGET`) na zona cinzenta?",
+        "",
+        f"## O que foi medido (n={len(df)})",
+        aviso_n,
+        "### Taxa de default real por recomendação",
+        "",
+        *linhas_taxas,
+        "",
+        "### Separação NEGAR − APROVAR (IC bootstrap, ADR-0004 §2.5)",
+        "",
+        f"**{sep['delta_observado']:+.1%}**, IC95% "
+        f"[{sep['ic_lo']:+.1%}; {sep['ic_hi']:+.1%}]",
+        "",
+        "## Limitações declaradas",
+        "",
+        "- **Comparação com o motor da Camada 1 não disponível.** "
+        "`zona_cinzenta.parquet` é, por definição, o recorte onde o motor "
+        "se absteve (`decisao_motor` constante). Não existe decisão real "
+        "do motor pra comparar dentro deste universo.",
+        "- **DEFERIR não separa risco por construção** — é encaminhamento "
+        "a humano, não uma aposta de risco. A taxa de default sob `DEFERIR` "
+        "não é comparável às outras duas colunas do mesmo jeito.",
+        "- Revisor único e não especialista aplicou o critério de Task "
+        "Completion (ADR-0011) aos memos — este backtest mede separação de "
+        "`TARGET`, não a qualidade do julgamento humano.",
+        "",
+    ]
+    REPORT_PATH.write_text("\n".join(linhas), encoding="utf-8")
+    print(f"\nrelatorio: {REPORT_PATH}")
 
 
 if __name__ == "__main__":

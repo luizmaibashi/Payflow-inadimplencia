@@ -19,13 +19,13 @@
 
 ---
 
-## 🚧 Estado atual (2026-08-08)
+## 🚧 Estado atual (2026-08-11)
 
-A **V2** reconstrói a Camada 1 sobre dado real com outcome de default ([Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk)) e adiciona uma camada agêntica de underwriting (LLM) com avaliação formal — juiz calibrado, ADRs documentando cada decisão de risco (11 até aqui, [`docs/adr/`](docs/adr/)), débitos técnicos numerados e vivos ([`AGENTS.md`](AGENTS.md)).
+A **V2** reconstrói a Camada 1 sobre dado real com outcome de default ([Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk)) e adiciona uma camada agêntica de underwriting (LLM) com avaliação formal — juiz calibrado, ADRs documentando cada decisão de risco (12 até aqui, [`docs/adr/`](docs/adr/)), débitos técnicos numerados e vivos ([`AGENTS.md`](AGENTS.md)).
 
-**O que já está medido na V2:** modelo treinado sobre dado real (AUC 0,776, IC95%), zona cinzenta isolada (2.102 casos, 4,3× a taxa de default da carteira), agente com juiz LLM calibrado contra rubrica explícita ([ADR-0011](docs/adr/0011-criterio-de-task-completion.md)).
+**O que já está medido na V2:** modelo treinado sobre dado real (AUC 0,776, IC95%), zona cinzenta isolada (2.102 casos, 4,3× a taxa de default da carteira), agente com juiz LLM calibrado contra rubrica explícita ([ADR-0011](docs/adr/0011-criterio-de-task-completion.md), 2 bugs de raciocínio achados e corrigidos), 87/87 labels de ground truth como julgamento humano deliberado.
 
-**O que ainda falta — a contribuição central do projeto:** o backtest que mede se as recomendações do agente separam risco real de fato, com `n` suficiente para significar algo (`scripts/backtest_camada2.py`, débito em aberto).
+**A contribuição central do projeto — o backtest que mede se as recomendações do agente separam risco real de fato — está implementada e validada** (`scripts/backtest_camada2.py`, débito #34): reproduziu a medição preliminar contra os 86 casos existentes (separação NEGAR−APROVAR de +7,2pp, IC95% cruza zero). **O que falta é só volume**: `n=86` não tem poder estatístico pra confirmar separação de 10pp — precisa de ~722 casos (~US$7 de API), pendente de uma sessão dedicada.
 
 **Demo ao vivo:** despublicada (2026-08-11, débito #11). Os links do Streamlit Cloud e do Render apontavam pra **V1** — dado sintético, sem outcome real, sem backtest possível (ver limitações abaixo). Manter esse deploy no ar sob o nome do projeto atual (V2, dado real, agente com juiz) criava o risco de alguém ver o link e achar que era o estado atual. A V2 ainda não tem deploy próprio; sem demo ao vivo até lá.
 
