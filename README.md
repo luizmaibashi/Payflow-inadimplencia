@@ -27,13 +27,7 @@ A **V2** reconstrói a Camada 1 sobre dado real com outcome de default ([Home Cr
 
 **O que ainda falta — a contribuição central do projeto:** o backtest que mede se as recomendações do agente separam risco real de fato, com `n` suficiente para significar algo (`scripts/backtest_camada2.py`, débito em aberto).
 
-**Demo ao vivo:** os links abaixo (Streamlit + API) ainda apontam para a **V1**, descrita na íntegra logo a seguir — é o projeto original, funcional, mas com as limitações que a seção seguinte assume abertamente. A V2 ainda não tem deploy próprio.
-
-| Componente (V1) | URL |
-|---|---|
-| 🎯 **Simulador (Frontend)** | [payflow-inadimplencia.streamlit.app](https://payflow-inadimplencia-pdve4qkbja5woxpdpzbvbw.streamlit.app/) |
-| ⚡ **API REST (Backend)** | [payflow-inadimplencia.onrender.com](https://payflow-inadimplencia.onrender.com) |
-| 📖 **Documentação da API** | [/docs (Swagger)](https://payflow-inadimplencia.onrender.com/docs) |
+**Demo ao vivo:** despublicada (2026-08-11, débito #11). Os links do Streamlit Cloud e do Render apontavam pra **V1** — dado sintético, sem outcome real, sem backtest possível (ver limitações abaixo). Manter esse deploy no ar sob o nome do projeto atual (V2, dado real, agente com juiz) criava o risco de alguém ver o link e achar que era o estado atual. A V2 ainda não tem deploy próprio; sem demo ao vivo até lá.
 
 ## 🔎 O que este projeto assume abertamente
 

@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-08-10T17:10:45.684982Z",
+  "gerado_em": "2026-08-11T17:11:51.734905Z",
   "juiz": "groq/llama-3.3-70b-versatile, temperatura 0",
   "fonte_memos": "data/processed/piloto_camada2_memos.jsonl (2026-08-08)",
   "julgados": [
@@ -8,511 +8,622 @@
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 101080,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 108447,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 109117,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 111985,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 99.91%, deficit_medio_pct 17.8%, n_em_atraso_hoje 0, pior_atraso_dias 5, dias_desde_ultimo_atraso 93 - um sinal grave (utilizacao >= 80%) e um agravante (deficit_medio_pct >= 15%) estao presentes"
+      "evidencia_juiz": "utilizacao 99.91%, deficit_medio_pct 17.8%, n_em_atraso_hoje 0, pior_atraso_dias 5, dias_desde_ultimo_atraso 93 - 1 sinal grave (utilizacao >= 80%) e 2 agravantes (deficit_medio_pct >= 15% e pior_atraso_dias >= 15 não está presente, mas pior_atraso_dias >= 15 não é necessário para ser considerado agravante, pois o agravante é o deficit_medio_pct e o n_em_atraso_hoje não está presente, mas o pior_atraso_dias não é um agravante sozinho, mas o deficit_medio_pct é um agravante)",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 113011,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 115682,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 117727,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0, e pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em atraso hoje igual a 0, e apenas informacoes neutras ou desfavoraveis sem relevancia para o criterio de negacao",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 122014,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 126645,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 128369,
       "juiz": "OK",
-      "humano": "OK",
+      "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "deficit_medio_pct 46.66%, pior_atraso_dias 36d, n_pagas_com_atraso 8, utilizacao 0%, n_em_atraso_hoje 0 - há 1 sinal grave (pior_atraso_dias >= 30 dias) e 1 agravante (deficit_medio_pct >= 15%)"
+      "evidencia_juiz": "utilizacao 0%, deficit_medio_pct 46.66%, pior_atraso_dias 36, n_em_atraso_hoje 0, presença de 1 sinal grave (pior_atraso_dias >= 30 dias) e 1 agravante (deficit_medio_pct >= 15%)",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 143212,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em atraso hoje 0, pior atraso dias e dias desde ultimo atraso nao disponiveis",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 144679,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 148582,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 151515,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes para o criterio estao como None ou 0 (utilizacao: None, pior_atraso_dias: None, deficit_medio_pct: None, n_em_atraso_hoje: 0), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes para o criterio estao como None ou 0 (utilizacao: None, pior_atraso_dias: None, deficit_medio_pct: None, n_em_atraso_hoje: 0), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 151927,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 153799,
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 57.84%, deficit_medio_pct 3.47%, pior_atraso_dias 23, n_em_atraso_hoje 0, dias_desde_ultimo_atraso 852 - nenhum sinal grave e apenas 1 agravante (pior_atraso_dias >= 15 e dias_desde_ultimo_atraso <= 90 nao se aplica pois dias_desde_ultimo_atraso e 852), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao 57.84%, deficit_medio_pct 3.47%, pior_atraso_dias 23d, n_em_atraso_hoje 0, dias_desde_ultimo_atraso 852 - nenhum sinal grave e apenas 1 agravante (pior_atraso_dias >= 15 e dias_desde_ultimo_atraso <= 90 nao se aplicam pois dias_desde_ultimo_atraso > 90), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 154357,
       "juiz": "OK",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 65.72%, deficit_medio_pct 14.29%, n_em_atraso_hoje 1, pior_atraso_dias 3, dias_desde_ultimo_atraso 258 - nenhum sinal grave e 2 agravantes (1 contrato em atraso no bureau e deficit_medio_pct >= 15% nao, mas pior_atraso_dias < 15 dias e dias_desde_ultimo_atraso > 90 dias, porem n_em_atraso_hoje >= 1)"
+      "evidencia_juiz": "utilizacao 65.72%, deficit_medio_pct 14.29%, n_em_atraso_hoje 1, pior_atraso_dias 3d - nenhum sinal grave e 2 agravantes (1 contrato em atraso no bureau e deficit_medio_pct >= 15% nao, mas proximo)",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 161761,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 166661,
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 28%, deficit 12.9%, pior atraso 16d, n_em_atraso_hoje 0 - nenhum sinal grave e apenas 1 agravante (pior atraso >= 15 e dias_desde_ultimo_atraso <= 90 nao se aplicam pois dias_desde_ultimo_atraso = 73 e pior atraso = 16, mas deficit_medio_pct >= 15% nao se aplica pois deficit_medio_pct = 12.9%), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao 28%, deficit 12.9%, pior atraso 16d, n_em_atraso_hoje 0 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15% nao atendido, mas pior_atraso_dias >= 15 e dias_desde_ultimo_atraso <= 90 nao atendido), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 169111,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 169869,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 173034,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 173954,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_atraso_hoje 0, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 181390,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 183280,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 185233,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 187682,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 79.44%, deficit_medio_pct 25%, pior_atraso_dias 22, dias_desde_ultimo_atraso 26, n_em_atraso_hoje 0 - presente 1 sinal grave (utilizacao >= 80% nao, mas proximo) e 2 agravantes (deficit_medio_pct >= 15% e pior_atraso_dias >= 15 e dias_desde_ultimo_atraso <= 90)"
+      "evidencia_juiz": "utilizacao 79.44%, deficit_medio_pct 25%, pior_atraso_dias 22, dias_desde_ultimo_atraso 26, n_em_atraso_hoje 0 - presente 1 sinal grave (utilizacao >= 80% nao, mas proximo) e 2 agravantes (deficit_medio_pct >= 15% e pior_atraso_dias >= 15 e dias_desde_ultimo_atraso <= 90)",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 189743,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 192195,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 199386,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 205320,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em atraso hoje = 0, e apenas informacoes neutras ou desfavoraveis sem relevancia para o criterio de negacao"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 212372,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 219448,
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao nao disponivel, deficit_medio_pct 16.13%, pior_atraso_dias 11, n_em_atraso_hoje 0, dias_desde_ultimo_atraso 185 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao nao disponivel, deficit_medio_pct 16.13%, pior_atraso_dias 11, n_em_atraso_hoje 0, nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%)",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 222453,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior_atraso_dias nao disponivel, deficit_medio_pct nao disponivel, n_em_atraso_hoje = 0, pior_atraso_dias e dias_desde_ultimo_atraso nao disponiveis"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em atraso hoje 0, e nenhum outro sinal ou agravante foi encontrado",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 224770,
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao nao disponivel, deficit_medio_pct 14.29%, n_em_atraso_hoje 0, pior_atraso_dias 10 e dias_desde_ultimo_atraso 125 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15% nao atendido, pois e menor que 15%), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao nao disponivel, deficit_medio_pct 14.29%, pior_atraso_dias 10d, dias_desde_ultimo_atraso 125d - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15% nao atendido, mas proximo), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 226146,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 235261,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 235776,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, n_em_atraso_hoje 0, deficit_medio_pct None, pior_atraso_dias None), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, n_em_atraso_hoje 0, deficit_medio_pct None, pior_atraso_dias None), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 238067,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois dados brutos nao apresentam utilizacao de credito, pior atraso, deficit medio pct, n_em_atraso_hoje, ou pior_atraso_dias e dias_desde_ultimo_atraso"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois dados brutos nao apresentam utilizacao de credito, pior atraso dias, deficit medio pct, n em atraso hoje, ou pior atraso dias e dias desde ultimo atraso",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 240344,
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 47.2%, deficit 0%, pior atraso 4d, n_em_atraso_hoje 1, pior_severidade 5 e meses_desde_ultimo_atraso 0 - nenhum sinal grave e apenas 1 agravante (1 contrato em atraso no bureau e pior atraso recente), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao 47.2%, deficit 0%, pior atraso 4d, n_em_atraso_hoje 1, pior_severidade 5 e meses_desde_ultimo_atraso 0 - nenhum sinal grave e apenas 1 agravante (1 contrato em atraso no bureau e pior atraso recente), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 243962,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 244626,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao de credito 99.75%, nenhum contrato em atraso no bureau, deficit medio 0%, pior atraso 1 dia - um sinal grave (utilizacao de credito >= 80%) esta presente"
+      "evidencia_juiz": "utilizacao de credito 99.75%, nenhum contrato em atraso no bureau, deficit medio 0%, pior atraso 1 dia - um sinal grave (utilizacao de credito >= 80%) esta presente",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 246975,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 252397,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao de credito 95.95%, deficit medio 20.5%, pior atraso 15d e dias desde ultimo atraso 187, n_em_atraso_hoje 0"
+      "evidencia_juiz": "utilizacao de credito 95.95%, deficit_medio_pct 20.51%, n_em_atraso_hoje 0, pior_atraso_dias 15 e dias_desde_ultimo_atraso 187, apresenta 1 sinal grave (utilizacao de credito >= 80%) e 2 agravantes (deficit_medio_pct >= 15% e pior_atraso_dias >= 15 dias)",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 259658,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 260691,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 264603,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em atraso hoje = 0, e nao ha registros de historico de pagamentos ou creditos"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em atraso hoje 0, e apenas informacoes neutras ou desfavoraveis sem relevancia para o criterio de negacao",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 272758,
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 63.2%, deficit_medio_pct 18.75%, pior_atraso_dias 4d, n_em_atraso_hoje 0 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "utilizacao 63.2%, deficit_medio_pct 18.75%, pior_atraso_dias 4d, n_em_atraso_hoje 0, nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%)",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 274325,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 279711,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 280852,
       "juiz": "OK",
       "humano": "OK",
       "recomendacao": "APROVAR",
-      "evidencia_juiz": ""
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
     },
     {
       "sk_id_curr": 282047,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, n_em_atraso_hoje 0, pior_atraso_dias None, deficit_medio_pct None, n_contratos 0, n_ativos 0, n_em_atraso_hoje 0)"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, pior_atraso_dias None, deficit_medio_pct None, n_em_atraso_hoje 0), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 285827,
       "juiz": "FALHA",
       "humano": "OK",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao None, deficit_medio_pct None, n_em_atraso_hoje 0, pior_atraso_dias None), mas recomendacao foi NEGAR"
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois todos os dados relevantes sao None ou zero (utilizacao: None, n_em_atraso_hoje: 0, pior_atraso_dias: None, deficit_medio_pct: None, n_contratos em atraso: 0), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": true
     },
     {
       "sk_id_curr": 295370,
       "juiz": "FALHA",
       "humano": "FALHA",
       "recomendacao": "NEGAR",
-      "evidencia_juiz": "utilizacao 52.4%, deficit_medio_pct 16.67%, pior_atraso_dias 17, n_em_atraso_hoje 0, nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%)"
+      "evidencia_juiz": "utilizacao 52.4%, deficit_medio_pct 16.67%, pior_atraso_dias 17, n_em_atraso_hoje 0, nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 299680,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 302315,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 303376,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "utilizacao 87.86%, deficit_medio_pct 0%, pior_atraso_dias 6d, n_em_atraso_hoje 0 - um sinal grave (utilizacao >= 80%) esta presente",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 307444,
+      "juiz": "FALHA",
+      "humano": "FALHA",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "utilizacao 59%, deficit_medio_pct 34.6%, n_em_atraso_hoje 0, pior_atraso_dias 17, dias_desde_ultimo_atraso 1188 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15%), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 310188,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois dados brutos indicam ausência de registros de crédito e pagamentos, com 'utilizacao' e 'pior_atraso_dias' como None, e 'n_em_atraso_hoje' igual a 0, 'deficit_medio_pct' igual a None",
+      "suspeito_dado_ausente": true
+    },
+    {
+      "sk_id_curr": 322471,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 325723,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 326137,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 331720,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 333067,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 333746,
+      "juiz": "FALHA",
+      "humano": "FALHA",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "utilizacao 52.7%, deficit_medio_pct 10%, pior_atraso_dias 5d, n_em_atraso_hoje 0, dias_desde_ultimo_atraso 592 - nenhum sinal grave e apenas 1 agravante (deficit_medio_pct >= 15% nao, mas pior_atraso_dias >= 15 nao, apenas 1 atraso recente com pior_severidade 1 e dias_desde_ultimo_atraso 4 meses, mas isso nao se enquadra nos agravantes), mas recomendacao foi NEGAR",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 336278,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 340715,
+      "juiz": "OK",
+      "humano": "OK",
+      "recomendacao": "APROVAR",
+      "evidencia_juiz": "",
+      "suspeito_dado_ausente": false
+    },
+    {
+      "sk_id_curr": 417173,
+      "juiz": "FALHA",
+      "humano": "OK",
+      "recomendacao": "NEGAR",
+      "evidencia_juiz": "nenhum sinal grave ou agravante presente, pois: utilizacao de credito nao disponivel, pior atraso dias nao disponivel, deficit medio pct nao disponivel, n em atraso hoje = 0, e apenas informacoes neutras foram citadas",
+      "suspeito_dado_ausente": true
     }
   ],
   "erros": [
     [
-      299680,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99572, Requested 1525. Please try ag"
-    ],
-    [
-      302315,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99564, Requested 1685. Please try ag"
-    ],
-    [
-      303376,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99558, Requested 1572. Please try ag"
-    ],
-    [
-      307444,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99551, Requested 1624. Please try ag"
-    ],
-    [
-      310188,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99544, Requested 1447. Please try ag"
-    ],
-    [
-      322471,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99537, Requested 1479. Please try ag"
-    ],
-    [
-      325723,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99530, Requested 1563. Please try ag"
-    ],
-    [
-      326137,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99524, Requested 1607. Please try ag"
-    ],
-    [
-      331720,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99517, Requested 1512. Please try ag"
-    ],
-    [
-      333067,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99511, Requested 1536. Please try ag"
-    ],
-    [
-      333746,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99505, Requested 1716. Please try ag"
-    ],
-    [
-      336278,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99498, Requested 1450. Please try ag"
-    ],
-    [
-      340715,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99491, Requested 1618. Please try ag"
-    ],
-    [
       342044,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99484, Requested 1535. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98743, Requested 1519. Please try ag"
     ],
     [
       344012,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99478, Requested 1615. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98737, Requested 1628. Please try ag"
     ],
     [
       348835,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99470, Requested 1369. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98729, Requested 1348. Please try ag"
     ],
     [
       350878,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99463, Requested 1533. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98722, Requested 1537. Please try ag"
     ],
     [
       351105,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99456, Requested 1660. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98715, Requested 1662. Please try ag"
     ],
     [
       353468,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99449, Requested 1585. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98708, Requested 1580. Please try ag"
     ],
     [
       358801,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99442, Requested 1657. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98701, Requested 1627. Please try ag"
     ],
     [
       368123,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99436, Requested 1498. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98694, Requested 1468. Please try ag"
     ],
     [
       371141,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99429, Requested 1411. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98687, Requested 1415. Please try ag"
     ],
     [
       374802,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99422, Requested 1658. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98679, Requested 1628. Please try ag"
     ],
     [
       379149,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99414, Requested 1545. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98671, Requested 1529. Please try ag"
     ],
     [
       386823,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99406, Requested 1646. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98665, Requested 1639. Please try ag"
     ],
     [
       396189,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99399, Requested 1412. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98658, Requested 1425. Please try ag"
     ],
     [
       398836,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99392, Requested 1599. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98651, Requested 1594. Please try ag"
     ],
     [
       410339,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99385, Requested 1505. Please try ag"
-    ],
-    [
-      417173,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99379, Requested 1373. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98644, Requested 1484. Please try ag"
     ],
     [
       435752,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99371, Requested 1386. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99942, Requested 1381. Please try ag"
     ],
     [
       449188,
-      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99363, Requested 1577. Please try ag"
+      "FalhaProvider: provider falhou em 3 tentativa(s): Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kza7fbhmetrvaapeds50542g` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99934, Requested 1581. Please try ag"
     ]
   ]
 }
