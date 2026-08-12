@@ -206,6 +206,8 @@ Todo gasto de API real deste projeto passa pela chave `GEMINI_API_KEY`, faturada
 
 Se o faturamento do GCP mostrar um valor diferente de ~US$8,95 convertido, a diferença provavelmente é câmbio na hora exata de cada cobrança, taxas do provedor, ou chamadas de desenvolvimento/teste anteriores a 2026-08-06 (antes da telemetria de custo existir) que não geraram relatório. Este é o piso reconstruível a partir dos artefatos versionados, não uma reconciliação exata linha a linha com o extrato do GCP.
 
+> ⚠️ **Faturamento do GCP desvinculado deliberadamente em 2026-08-12** (fechamento de custo em R$61, decisão do usuário — não tinha mais nada planejado que exigisse a chave no momento). **`GEMINI_API_KEY` não funciona até a conta de faturamento ser revinculada no console do GCP.** Qualquer script que chame `ClienteGemini`/`piloto_camada2.py` vai falhar com erro de billing, não é bug do código — é esperado. `GROQ_API_KEY` (usada pelo juiz, débito #10) é conta separada, não afetada por essa decisão.
+
 **Não há trabalho planejado que exija gastar mais nessa chave no momento** — os próximos passos do débito #34 (feature importance da Camada 1, segmentação por confiança) usam dado e modelo já salvos localmente, sem chamada de API nova. O débito #10 (calibração do juiz) usa Groq, cobrança separada, não afetada por decisões sobre o faturamento do GCP.
 
 ---
