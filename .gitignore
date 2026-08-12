@@ -37,3 +37,12 @@ data/processed/*
 # memos, versiona-los junto e o que mantem o par label<->memo de pe (mesma
 # causa raiz do debito #28, por outra porta). 194KB.
 !data/processed/piloto_camada2_memos.jsonl
+
+# EXCECAO: universo da zona cinzenta (SK_ID_CURR + TARGET real + p_hat).
+# E regeneravel em teoria (zona_cinzenta_universo.py), mas exige o dataset
+# Home Credit bruto (~3.3GB, gitignored) so disponivel nesta maquina. A demo
+# estatica (app/main_v2.py) precisa dele pra rodar em qualquer lugar,
+# inclusive Streamlit Cloud - achado em producao 2026-08-12: FileNotFoundError
+# porque este arquivo nao existia no clone remoto. 40KB, sem PII (dataset
+# anonimizado).
+!data/processed/zona_cinzenta.parquet
