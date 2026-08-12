@@ -2,7 +2,7 @@
 
 > **Projeto**: classificador de risco de crédito (PD) + motor de decisão por valor esperado + agente de underwriting que produz memo de crédito auditável para a zona cinzenta.
 > **Stack alvo**: Python · scikit-learn · Pydantic · FastAPI · Streamlit · DeepEval · APIs BCB SGS / IBGE
-> **Estado (2026-08-04)**: Camada 1 **treinada e calibrada** sobre Home Credit (AUC 0,776) e motor de decisão implementado/backtestado. Camada 2 (agente), evals e tela de revisão **não iniciados**. O deploy público ainda serve o modelo legado.
+> **Estado (2026-08-12)**: Camada 1 treinada e calibrada (AUC 0,776), motor de decisão implementado/backtestado, Camada 2 (agente + juiz LLM) completa e **medida com poder estatístico** — débito #34 concluiu que o agente não separa risco real de forma detectável na zona cinzenta (AUC do próprio modelo campeão ali é 0,56, robusto a 3 ângulos de verificação). Demo estática da V2 em `app/main_v2.py` (não gera memo novo, não depende de API). Deploy legado (V1) despublicado.
 
 > ⚠️ **Este não é um refactor — é projeto novo reaproveitando o esqueleto arquitetural.** A Camada 1 é retreinada do zero sobre dado real (Home Credit). Tratar código, modelo e testes atuais como legado a substituir, não como base a estender.
 
