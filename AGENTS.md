@@ -192,6 +192,24 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 
 ---
 
+## Custo acumulado — Gemini/GCP (reconstruído 2026-08-12)
+
+Todo gasto de API real deste projeto passa pela chave `GEMINI_API_KEY`, faturada num projeto GCP. Nenhum outro serviço GCP é usado (sem Cloud Storage, BigQuery, Vertex AI — confirmado por grep no código, 2026-08-12). Reconstrução do que os relatórios documentam:
+
+| Quando | O quê | Custo |
+|---|---|---|
+| 2026-08-06 | Piloto n=25 (débito #25, achou o bug de telemetria de thinking tokens) | US$ 0,2867 |
+| ~2026-08-07/08 | Piloto n=100, 87 memos válidos (débito #29, gerou o ground truth original) | US$ 1,10 |
+| 2026-08-11 | Smoke test n=5 (validação do pipeline antes do lote grande) | US$ 0,0482 |
+| 2026-08-11 | Piloto n=722, 563 memos válidos (débito #34, backtest final) | US$ 7,5169 |
+| **Total documentado** | | **≈ US$ 8,95** |
+
+Se o faturamento do GCP mostrar um valor diferente de ~US$8,95 convertido, a diferença provavelmente é câmbio na hora exata de cada cobrança, taxas do provedor, ou chamadas de desenvolvimento/teste anteriores a 2026-08-06 (antes da telemetria de custo existir) que não geraram relatório. Este é o piso reconstruível a partir dos artefatos versionados, não uma reconciliação exata linha a linha com o extrato do GCP.
+
+**Não há trabalho planejado que exija gastar mais nessa chave no momento** — os próximos passos do débito #34 (feature importance da Camada 1, segmentação por confiança) usam dado e modelo já salvos localmente, sem chamada de API nova. O débito #10 (calibração do juiz) usa Groq, cobrança separada, não afetada por decisões sobre o faturamento do GCP.
+
+---
+
 ## Escopo negativo
 
 - **Sem decisão de crédito autônoma.** O agente propõe; humano decide na tela de revisão. `DEFERIR` é ação de primeira classe, não fallback de erro.
