@@ -62,13 +62,15 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
                                        → memo JSON (APROVAR|NEGAR|DEFERIR)
                                                     │
                         ┌───────────────────────────┼───────────────────────┐
-                     JUIZ LLM                  TELA DE REVISÃO           BACKTEST
-                (rubrica ADR-0011,          (não construída —          (débito #34,
-                 validação determinística    decisão de escopo          MEDIDO: AUC
-                 pós-resposta, ADR-0012)     pendente)                  0,56 na zona)
+                     JUIZ LLM                  DEMO ESTÁTICA             BACKTEST
+                (rubrica ADR-0011,          (app/main_v2.py —          (débito #34,
+                 validação determinística    navega os 564 casos        MEDIDO: AUC
+                 pós-resposta, ADR-0012)     já processados)             0,56 na zona)
 ```
 
 **Ponto crítico do desenho:** o agente forma parecer **independente** do score (`p_default` nunca entra no contexto — garantido por schema, não por disciplina, [ADR-0003](docs/adr/0003-contrato-do-memo-e-agente-cego-ao-score.md)). O confronto parecer × score acontece depois, no backtest — é o que permitiu medir, e não supor, que o agente não agrega separação de risco mensurável nesta população.
+
+**Sobre a tela de revisão humana (produção):** decisão de escopo **tomada, não pendente** — não foi construída de propósito. Uma tela de revisão de verdade faz sentido pra um sistema em produção, decidindo crédito real; não faz sentido investir nisso depois que o próprio backtest mostrou que o agente não agrega separação de risco mensurável nesta população (débito #34). O que existe em vez disso é a demo estática acima, que mostra a arquitetura (memo, juiz, dados brutos) sem fingir que há um fluxo de produção por trás.
 
 ## 🔎 O que este projeto assume abertamente
 
