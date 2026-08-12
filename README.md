@@ -125,7 +125,6 @@ payflow_inadimplencia/
 | O quê | Onde |
 |---|---|
 | **Resultado do backtest (a pergunta central do projeto)** | [`reports/backtest_camada2.md`](reports/backtest_camada2.md) |
-| **Como contar essa história (currículo, LinkedIn, entrevista)** | [`docs/PITCH.md`](docs/PITCH.md) |
 | Calibração do juiz LLM | [`reports/calibracao_juiz.md`](reports/calibracao_juiz.md) |
 | Treino e métricas da Camada 1 | [`reports/camada1_treino_final.md`](reports/camada1_treino_final.md) |
 | EDA (application + tabelas relacionais) | [`reports/eda_application.md`](reports/eda_application.md), [`reports/eda_tabelas_relacionais.md`](reports/eda_tabelas_relacionais.md) |
