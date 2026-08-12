@@ -3,21 +3,19 @@
 **Gerado por:** `scripts/backtest_camada2.py`  
 **Pergunta:** as recomendações do agente (APROVAR/NEGAR/DEFERIR) separam risco real (`TARGET`) na zona cinzenta?
 
-## O que foi medido (n=86)
-
-> ⚠️ **n=86 é pequeno demais pra separação de 10pp** (poder estatístico exige ~722). Leia o intervalo, não o ponto — não sustenta decisão de política sozinho (ADR-0004 §2.5).
+## O que foi medido (n=564)
 
 ### Taxa de default real por recomendação
 
 | Recomendação | k (default) | n | Taxa | IC95% (Wilson) |
 |---|---|---|---|---|
-| APROVAR | 15 | 49 | 30.6% | [19.5%; 44.5%] |
-| NEGAR | 14 | 37 | 37.8% | [24.1%; 53.9%] |
-| DEFERIR | 0 | 0 | n/d | n/d |
+| APROVAR | 85 | 260 | 32.7% | [27.3%; 38.6%] |
+| NEGAR | 103 | 303 | 34.0% | [28.9%; 39.5%] |
+| DEFERIR | 0 | 1 | 0.0% | [0.0%; 79.3%] |
 
 ### Separação NEGAR − APROVAR (IC bootstrap, ADR-0004 §2.5)
 
-**+7.2%**, IC95% [-12.4%; +28.3%]
+**+1.3%**, IC95% [-6.7%; +9.2%]
 
 ## Limitações declaradas
 
