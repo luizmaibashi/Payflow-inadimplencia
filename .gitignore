@@ -46,3 +46,7 @@ data/processed/*
 # porque este arquivo nao existia no clone remoto. 40KB, sem PII (dataset
 # anonimizado).
 !data/processed/zona_cinzenta.parquet
+
+# Saida gerada por script de verificacao/revisao pontual (AGENTS.md: saida
+# regeneravel de script fica fora do git).
+scripts/_revisor_verificacao.html
