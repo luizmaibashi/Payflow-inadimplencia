@@ -209,7 +209,37 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 - **Bootstrap estável entre seeds**: testado com 5 seeds diferentes (42, 1, 7, 999, 123456) — IC95% sempre entre aproximadamente `[-6,3% a -7,0%; +8,7% a +9,2%]`. A conclusão "cruza zero" não é artefato da seed 42, é robusta.
 - **A amostra de 722 NÃO é independente da de 86 anterior — é a mesma extração determinística, estendida.** `preparar_lote()` reusa `seed=42` pra embaralhar sempre a mesma população de 2.102; `--n 722` e `--n 86` tiram os primeiros N da mesma sequência embaralhada. 100 dos 722 IDs já tinham aparecido no lote de 86. **Não invalida a estatística** (ainda é uma amostra válida de 564 casos únicos), mas a descrição correta é "amostra estendida por reprodutibilidade determinística", não "722 casos novos independentes" — importa pra descrever o método com precisão.
 - **Viés de atrito leve, não dominante**: os 158 casos excluídos (`memo_invalido`/`erro_provider`/`teto`) têm taxa de default real de 36,1% contra 33,3% dos 564 válidos — diferença pequena (~2,8pp, `n=158` no grupo excluído), sugere leve tendência de casos mais difíceis também confundirem a geração do memo (MNAR técnico). Não muda a conclusão central, mas é limitação real, não silenciada.
-- **Sem teste automatizado para `backtest_camada2.py`.** Validado manualmente (contra os 86 grátis, contra 5 seeds), mas zero regressão automática — débito remanescente se o script for tocado de novo no futuro.
+- **Sem teste automatizado para `backtest_camada2.py`.** Validado manualmente (contra os 86 grátis, contra 5 seeds), mas zero regressão automática — débito remanescente se o script for tocado de novo no futuro. **Parcialmente endereçado em 2026-09-01:** `tests/test_analise_zona_cinzenta.py` (22 testes) cobre as funções puras dos dois scripts de análise novos; `backtest_camada2.py` em si segue sem teste, mas `separacao_por_confianca.py` replica sua separação global como controle (+1,3% IC95% [-6,7%; +9,2%], idêntico) — uma regressão nele apareceria como divergência ali.
+
+**Fechamento do #34 — auditoria de 2026-09-01 (custo zero de API, só dado local).** Revisão pediu duas coisas: (1) o número da headline não tinha script nem intervalo, quebrando a regra do próprio projeto; (2) a hipótese (b) seguia registrada como não testada. As duas fechadas.
+
+**(1) `scripts/auc_zona_cinzenta.py` + `reports/auc_zona_cinzenta.md`** — o AUC dentro da zona agora é reproduzível e tem intervalo:
+
+| Medição | AUC | IC95% (bootstrap, 2000×) |
+|---|---|---|
+| Zona cinzenta, calibrado (`p_hat`) | **0,5612** | **[0,5368; 0,5846]** |
+| Zona cinzenta, score bruto pré-calibração | 0,5643 | [0,5381; 0,5888] |
+| Referência: mesmo modelo, teste inteiro | 0,776 | ver `camada1_treino_final.md` |
+
+**Achado que muda uma afirmação publicada: o IC não contém 0,50.** A leitura correta é *"o modelo discrimina fracamente, mas de forma detectável"*, não *"é indistinguível de acaso"*. O ponto (0,5612) e o teste de robustez do score bruto (0,5643) reproduziram **exatamente** os valores ad-hoc de 2026-08-12 — a conta original estava certa, só não era reproduzível nem tinha precisão declarada.
+
+⚠️ **As sub-fatias NÃO reproduziram os números ad-hoc.** Registrado antes: centro 0,531 / meio 0,568 / borda 0,509. Reconstruído por script: centro 0,5157 / meio 0,5409 / borda 0,5343 (IC a 98,33%, Bonferroni para 3 comparações). A medição de 2026-08-12 não deixou script, então a definição de fatia aqui é reconstrução da descrição em prosa, não a mesma conta. **A conclusão é a mesma nas duas versões** (nenhuma fatia recupera previsibilidade — as três ficam *abaixo* do AUC da zona inteira), mas **os números reproduzíveis são os novos**. Não citar os antigos daqui em diante.
+
+**(2) `scripts/separacao_por_confianca.py` + `reports/separacao_por_confianca.md`** — hipótese (b) testada. Proxy de confiança: `assimetria = |n_favoravel − n_desfavoravel| / n_fatos` sobre `fatores_cliente` (`neutro` no denominador — fato neutro não sustenta lado nenhum). Separação NEGAR−APROVAR por tercil de assimetria (IC a 98,33%, Bonferroni):
+
+| Assimetria | n | Separação | IC98,33% |
+|---|---|---|---|
+| 0,00–0,43 (evidência apertada) | 212 | −3,7% | [−19,4%; +12,1%] |
+| 0,43–0,67 | 168 | +2,0% | [−17,0%; +20,0%] |
+| 0,67–1,00 (evidência unânime) | 184 | +5,5% | [−11,8%; +24,0%] |
+
+**Hipótese (b) não sustentada, mas não refutada com força.** Nenhum grupo separa de forma detectável — nem o de evidência unânime, o cenário mais favorável possível ao agente. **Porém os pontos crescem monotonicamente na direção prevista** (−3,7 → +2,0 → +5,5pp), e omitir isso seria desonesto: três pontos ordenados por acaso acontecem em 1 de 6 vezes. Os intervalos têm ~30pp de largura, e com n≈190 por grupo (contra os 722 que o próprio projeto calculou para detectar 10pp) o estudo está **~4× subdimensionado**. **Conclusão precisa: descarta sinal grande escondido nos casos unânimes, não descarta sinal pequeno.** É "não achamos", não "não existe".
+
+**Isso não reabre o #34.** A conclusão central dele vem do teto de previsibilidade da zona (AUC 0,56 do modelo campeão, que independe de qual agente decide), não deste teste. Um sinal pequeno sobrevivente nos casos unânimes seria compatível com esse teto, não uma contradição dele.
+
+**Achado lateral de contrato, pego por guarda:** a primeira versão de `assimetria_evidencia()` assumia dois pesos (`favoravel`/`desfavoravel`) e levantou exceção em vez de ignorar o desconhecido — revelando que `app/memo_credito.py::Peso` tem **três** valores, com `neutro` em 447 dos 2.885 fatos (15,5%). Se a guarda fosse um `continue` silencioso, o denominador encolheria e a assimetria seria inflada sem ninguém notar. É a regra de guarda silenciosa do `AGENTS.md` da base funcionando na prática.
+
+**Hipótese remanescente, agora a única em aberto:** segmentar por confiança com `n` suficiente para detectar 10pp por grupo (~722 casos **por grupo**, ~2.200 no total). Custo estimado ~US$23 de API, e exigiria revincular o faturamento do GCP. **Não recomendado**: o teto de previsibilidade da zona (0,56) limita o que qualquer sinal encontrado ali poderia valer, então o retorno esperado não paga o custo. Registrado para não parecer que a possibilidade passou despercebida.
 
 ---
 
