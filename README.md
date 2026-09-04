@@ -11,13 +11,6 @@
   <sub>Versão anterior com dado sintético preservada como registro histórico em <a href="docs/LEGADO_V1.md">docs/LEGADO_V1.md</a></sub>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Gemini_%2F_Groq-LLM_agent-4285F4?style=for-the-badge&logoColor=white"/>
-</p>
-
 ---
 
 ## Estado atual (2026-08-12)
