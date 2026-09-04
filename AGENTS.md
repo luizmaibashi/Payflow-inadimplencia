@@ -93,6 +93,13 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 | **Trajectory quality** | Qualidade da *sequência* de chamadas de ferramenta, não só da resposta final |
 | **Ancoragem** | Viés de o agente parafrasear o score em vez de julgar — evitado ocultando `p_default` do agente |
 | **Memo de crédito** | Objeto Pydantic (fonte de verdade) com decisão, fundamentos e citações de tool; a narrativa é **renderizada** dele, nunca o contrário |
+| **Point-in-time** | Um dado só pode entrar no modelo se existia no instante em que a decisão de crédito foi tomada |
+| **Contrato de disponibilidade** | Fonte de verdade que classifica cada feature como permitida, bloqueada ou desconhecida na data de decisão |
+| **Coorte** | Grupo de solicitações de crédito decidido no mesmo mês ou semana, usado para medir estabilidade ao longo do tempo |
+| **Drift** | Mudança no perfil dos dados ou no desempenho do modelo entre coortes |
+| **KS de feature** | Maior distância entre as distribuições acumuladas do treino e da nova coorte; sinaliza mudança, mas não sua causa |
+| **Drift de ausência** | Diferença na proporção de valores ausentes entre treino e coorte; detecta quebra de cobertura que o KS dos valores preenchidos não enxerga |
+| **Gate fail-closed** | Nova feature sem contrato ou com regra temporal inválida é bloqueada explicitamente; nunca passa por omissão |
 
 ---
 
@@ -124,6 +131,11 @@ Home Credit ──► CAMADA 1 (PD, calibrada) ──► MOTOR DE DECISÃO (valo
 | 0011 | Critério explícito de Task Completion — quando `NEGAR` é defensável | Accepted |
 | 0012 | Validação determinística pós-resposta para falhas de raciocínio do juiz que prompt não corrige | Accepted |
 | 0013 | Exposição parcial de `EXT_SOURCE_1` ao agente — testa poder preditivo sem replicar o score inteiro | **Rejected** (mesmo dia — sinal desaparece dentro da zona cinzenta, ver §7 do ADR) |
+| 0014 | Contrato point-in-time e monitoramento de confiabilidade de crédito | **Accepted** — gate e relatório de coorte implementados; integração com score pendente |
+| 0015 | Modos estrito e exploratório de disponibilidade | **Accepted** — proxy semântico não atravessa para o modo estrito; fronteira testada |
+| 0016 | Política de uso por coorte | **Accepted** — manter/revisar/aguardar pesquisa por evidência, não decisão individual |
+| 0017 | Evidência mínima para semáforo de coorte | **Accepted** — exige tamanho, eventos, IC da AUC e Brier antes de liberar decisão |
+| 0018 | KS e ausência para drift de features | **Accepted** — mede mudança de distribuição e perda de cobertura sem retreino automático |
 
 ---
 

@@ -13,6 +13,43 @@
 
 ---
 
+## Recomeço do projeto: confiabilidade por coorte
+
+A V2 respondeu uma pergunta difícil e trouxe um resultado negativo: o agente
+não separou risco de forma detectável na zona cinzenta. A nova frente parte
+desse aprendizado e muda a pergunta. Quando chega uma nova safra de contratos,
+o modelo ainda representa o comportamento atual ou estamos decidindo com um
+retrato velho?
+
+O primeiro experimento reproduzível já roda sobre 1.526.659 propostas. O modelo
+foi treinado em dados até setembro de 2019 e avaliado em três coortes futuras.
+As AUCs foram 0,6148, 0,6089 e 0,6194. Cada resultado vem acompanhado de tamanho
+da amostra, número de inadimplentes, intervalo de confiança e Brier.
+
+Ainda não é um modelo autorizado para decisão real. As seis variáveis usadas
+não têm prova de disponibilidade no instante da concessão, e a janela de 90
+dias foi declarada apenas para a demonstração. Por isso, o sistema devolve
+`PESQUISA`, nunca `MANTER`. Se AUC ou Brier piorarem além da tolerância, ele
+devolve `REVISAR`, mesmo no modo exploratório.
+
+Na primeira medição de drift, 2020-H2 teve três alertas e nenhuma feature
+crítica. `annuity_780A` e `inittransactionamount_650A` mudaram de distribuição.
+`price_1097A` teve aumento de ausência de 14,39% para 21,26%. A AUC permaneceu
+na faixa de 0,61. Isso sugere mudança da população sem evidência de queda de
+discriminação neste recorte. O monitor aponta onde investigar; ele não prova
+a causa nem retreina o modelo sozinho.
+
+```bash
+python scripts/proxy_estabilidade_reproduzivel.py --data-referencia 2021-01-04 --janela-dias 90 --bootstrap 100
+```
+
+O desenho técnico e seus limites estão na
+[`spec 0007`](docs/spec/0007-experimento-reproduzivel-proxy-temporal.md). A
+ligação entre o projeto e os conteúdos da Pós-Tech está na
+[`matriz de conhecimento`](docs/MATRIZ_POS_TECH_PAYFLOW.md).
+
+---
+
 ## Estado atual (2026-08-12)
 
 A **V2** reconstrói a Camada 1 sobre dado real com outcome de default ([Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk)) e adiciona uma camada agêntica de underwriting (LLM) com avaliação formal: juiz calibrado, ADRs documentando cada decisão de risco (12 até aqui, [`docs/adr/`](docs/adr/)), débitos técnicos numerados e vivos ([`AGENTS.md`](AGENTS.md)).

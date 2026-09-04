@@ -21,6 +21,7 @@ pip-delete-this-directory.txt
 
 # Dataset Home Credit (Kaggle, ~3.3GB extraido - baixar via scripts/baixar_home_credit.md)
 data/raw/home_credit/
+data/raw/home_credit_stability/
 
 # Features processadas (~45MB, regeneravel via scripts/camada1_feature_engineering.py)
 # Padrao com /* (nao data/processed/) DE PROPOSITO: o git nao entra em
