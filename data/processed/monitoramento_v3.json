@@ -1,0 +1,563 @@
+{
+  "versao_schema": 1,
+  "gerado_em": "2026-09-04T20:27:35.728767Z",
+  "uso": "PESQUISA",
+  "n_total": 1526659,
+  "n_treino": 733757,
+  "janela_maturacao_dias": 90,
+  "data_referencia": "2021-01-04",
+  "coortes": [
+    {
+      "coorte": "2019-Q4",
+      "decisao": "PESQUISA",
+      "motivo": "Modo exploratório não libera uso operacional do modelo.",
+      "n": 337005,
+      "inadimplentes": 12147,
+      "taxa_inadimplencia": 0.036043975608670495,
+      "taxa_ic95_inferior": 0.03541992062622291,
+      "taxa_ic95_superior": 0.03667860757155928,
+      "auc": 0.6148006273450972,
+      "auc_ic95_inferior": 0.6104980695181133,
+      "auc_ic95_superior": 0.6200148993318656,
+      "brier": 0.034572164522140306,
+      "drift": [
+        {
+          "feature": "annuity_780A",
+          "status": "ESTAVEL",
+          "ks": 0.008232422841992215,
+          "delta_ausencia": 0.0
+        },
+        {
+          "feature": "credamount_770A",
+          "status": "ESTAVEL",
+          "ks": 0.04579138368866198,
+          "delta_ausencia": 0.0
+        },
+        {
+          "feature": "downpmt_116A",
+          "status": "ESTAVEL",
+          "ks": 0.007949178224792242,
+          "delta_ausencia": 0.0
+        },
+        {
+          "feature": "price_1097A",
+          "status": "ESTAVEL",
+          "ks": 0.08134043563678839,
+          "delta_ausencia": 0.04022146082502391
+        },
+        {
+          "feature": "maininc_215A",
+          "status": "ESTAVEL",
+          "ks": 0.03841815675491744,
+          "delta_ausencia": 0.010464148787976468
+        },
+        {
+          "feature": "inittransactionamount_650A",
+          "status": "CRITICO",
+          "ks": 0.2318006484157079,
+          "delta_ausencia": 0.056373713272746206
+        }
+      ],
+      "calibracao": [
+        {
+          "faixa": 1,
+          "limite_inferior": 0.0,
+          "limite_superior": 0.01924954235170665,
+          "n": 51594,
+          "inadimplentes": 877,
+          "previsto": 0.014564569732166485,
+          "observado": 0.016998100554328023,
+          "observado_ic95_inferior": 0.01591813429346457,
+          "observado_ic95_superior": 0.018149985789108956,
+          "gap": 0.0024335308221615382,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 2,
+          "limite_inferior": 0.01924954235170665,
+          "limite_superior": 0.021785464546398764,
+          "n": 34232,
+          "inadimplentes": 755,
+          "previsto": 0.02066670346010048,
+          "observado": 0.022055386772610423,
+          "observado_ic95_inferior": 0.020552404440802478,
+          "observado_ic95_superior": 0.023665625387427735,
+          "gap": 0.0013886833125099432,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 3,
+          "limite_inferior": 0.021785464546398764,
+          "limite_superior": 0.023811757822340563,
+          "n": 30815,
+          "inadimplentes": 803,
+          "previsto": 0.02280691273357082,
+          "observado": 0.026058737627778678,
+          "observado_ic95_inferior": 0.02433821260531086,
+          "observado_ic95_superior": 0.027897412830892542,
+          "gap": 0.0032518248942078574,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 4,
+          "limite_inferior": 0.023811757822340563,
+          "limite_superior": 0.025547451480191788,
+          "n": 32090,
+          "inadimplentes": 1015,
+          "previsto": 0.024713129068388857,
+          "observado": 0.031629791212215645,
+          "observado_ic95_inferior": 0.029770308352462662,
+          "observado_ic95_superior": 0.0336013968212635,
+          "gap": 0.006916662143826788,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 5,
+          "limite_inferior": 0.025547451480191788,
+          "limite_superior": 0.026967512033591268,
+          "n": 29688,
+          "inadimplentes": 1097,
+          "previsto": 0.02628935384212059,
+          "observado": 0.03695095661546753,
+          "observado_ic95_inferior": 0.03486434063366071,
+          "observado_ic95_superior": 0.03915738893366361,
+          "gap": 0.010661602773346941,
+          "status": "SUBESTIMA_RISCO"
+        },
+        {
+          "faixa": 6,
+          "limite_inferior": 0.026967512033591268,
+          "limite_superior": 0.0284966058813139,
+          "n": 29476,
+          "inadimplentes": 1126,
+          "previsto": 0.02768165612204324,
+          "observado": 0.038200569955217804,
+          "observado_ic95_inferior": 0.03607184129900863,
+          "observado_ic95_superior": 0.040449650920404964,
+          "gap": 0.010518913833174565,
+          "status": "SUBESTIMA_RISCO"
+        },
+        {
+          "faixa": 7,
+          "limite_inferior": 0.0284966058813139,
+          "limite_superior": 0.0305029273688288,
+          "n": 30684,
+          "inadimplentes": 1293,
+          "previsto": 0.0295145130190893,
+          "observado": 0.042139225655064526,
+          "observado_ic95_inferior": 0.0399480004970598,
+          "observado_ic95_superior": 0.04444507948857367,
+          "gap": 0.012624712635975227,
+          "status": "SUBESTIMA_RISCO"
+        },
+        {
+          "faixa": 8,
+          "limite_inferior": 0.0305029273688288,
+          "limite_superior": 0.032519874638397575,
+          "n": 29900,
+          "inadimplentes": 1372,
+          "previsto": 0.03147903140797706,
+          "observado": 0.04588628762541806,
+          "observado_ic95_inferior": 0.043572389480706575,
+          "observado_ic95_superior": 0.04831685700973612,
+          "gap": 0.014407256217441003,
+          "status": "SUBESTIMA_RISCO"
+        },
+        {
+          "faixa": 9,
+          "limite_inferior": 0.032519874638397575,
+          "limite_superior": 0.03761401838981177,
+          "n": 32224,
+          "inadimplentes": 1499,
+          "previsto": 0.034728402603068066,
+          "observado": 0.046518123138033766,
+          "observado_ic95_inferior": 0.04427221949771172,
+          "observado_ic95_superior": 0.04887213404691876,
+          "gap": 0.0117897205349657,
+          "status": "SUBESTIMA_RISCO"
+        },
+        {
+          "faixa": 10,
+          "limite_inferior": 0.03761401838981177,
+          "limite_superior": 1.0,
+          "n": 36302,
+          "inadimplentes": 2310,
+          "previsto": 0.05323608209442049,
+          "observado": 0.06363285769379097,
+          "observado_ic95_inferior": 0.06116773790872575,
+          "observado_ic95_superior": 0.06619031999678267,
+          "gap": 0.01039677559937048,
+          "status": "SUBESTIMA_RISCO"
+        }
+      ]
+    },
+    {
+      "coorte": "2020-H1",
+      "decisao": "PESQUISA",
+      "motivo": "Modo exploratório não libera uso operacional do modelo.",
+      "n": 305657,
+      "inadimplentes": 11771,
+      "taxa_inadimplencia": 0.03851048724550722,
+      "taxa_ic95_inferior": 0.03783409661432535,
+      "taxa_ic95_superior": 0.039198477615477775,
+      "auc": 0.6089117539037462,
+      "auc_ic95_inferior": 0.604386109025015,
+      "auc_ic95_superior": 0.613893251144819,
+      "brier": 0.036782805965336805,
+      "drift": [
+        {
+          "feature": "annuity_780A",
+          "status": "ESTAVEL",
+          "ks": 0.06731336661688703,
+          "delta_ausencia": 0.0
+        },
+        {
+          "feature": "credamount_770A",
+          "status": "ESTAVEL",
+          "ks": 0.05291613026881414,
+          "delta_ausencia": 0.0
+        },
+        {
+          "feature": "downpmt_116A",
+          "status": "ESTAVEL",
+          "ks": 0.0035279952215757637,
+          "delta_ausencia": 0.0
+        },
+        {
+          "feature": "price_1097A",
+          "status": "ESTAVEL",
+          "ks": 0.03882162423412916,
+          "delta_ausencia": 0.022077219491667383
+        },
+        {
+          "feature": "maininc_215A",
+          "status": "ESTAVEL",
+          "ks": 0.05657374231134038,
+          "delta_ausencia": 0.012452893036369928
+        },
+        {
+          "feature": "inittransactionamount_650A",
+          "status": "ALERTA",
+          "ks": 0.19045672643189,
+          "delta_ausencia": 0.023488442726771752
+        }
+      ],
+      "calibracao": [
+        {
+          "faixa": 1,
+          "limite_inferior": 0.0,
+          "limite_superior": 0.01924954235170665,
+          "n": 33521,
+          "inadimplentes": 654,
+          "previsto": 0.014931123062028758,
+          "observado": 0.019510157811521135,
+          "observado_ic95_inferior": 0.018083663451914655,
+          "observado_ic95_superior": 0.021046766454280667,
+          "gap": 0.004579034749492377,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 2,
+          "limite_inferior": 0.01924954235170665,
+          "limite_superior": 0.021785464546398764,
+          "n": 27888,
+          "inadimplentes": 734,
+          "previsto": 0.020655960249415746,
+          "observado": 0.02631956397016638,
+          "observado_ic95_inferior": 0.024504971770923017,
+          "observado_ic95_superior": 0.02826463331211568,
+          "gap": 0.0056636037207506325,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 3,
+          "limite_inferior": 0.021785464546398764,
+          "limite_superior": 0.023811757822340563,
+          "n": 28531,
+          "inadimplentes": 807,
+          "previsto": 0.02281758091534342,
+          "observado": 0.028285023307980793,
+          "observado_ic95_inferior": 0.026423908881006496,
+          "observado_ic95_superior": 0.03027314553071819,
+          "gap": 0.0054674423926373734,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 4,
+          "limite_inferior": 0.023811757822340563,
+          "limite_superior": 0.025547451480191788,
+          "n": 31954,
+          "inadimplentes": 1011,
+          "previsto": 0.024716440136871905,
+          "observado": 0.0316392313951305,
+          "observado_ic95_inferior": 0.02977563409075635,
+          "observado_ic95_superior": 0.03361542632961322,
+          "gap": 0.006922791258258596,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 5,
+          "limite_inferior": 0.025547451480191788,
+          "limite_superior": 0.026967512033591268,
+          "n": 31332,
+          "inadimplentes": 1134,
+          "previsto": 0.026293667398236336,
+          "observado": 0.036193029490616625,
+          "observado_ic95_inferior": 0.0341811804402536,
+          "observado_ic95_superior": 0.03831859467528573,
+          "gap": 0.00989936209238029,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 6,
+          "limite_inferior": 0.026967512033591268,
+          "limite_superior": 0.0284966058813139,
+          "n": 32186,
+          "inadimplentes": 1249,
+          "previsto": 0.02765738379238108,
+          "observado": 0.038805691915739765,
+          "observado_ic95_inferior": 0.03675020861080118,
+          "observado_ic95_superior": 0.04097125087576417,
+          "gap": 0.011148308123358684,
+          "status": "SUBESTIMA_RISCO"
+        },
+        {
+          "faixa": 7,
+          "limite_inferior": 0.0284966058813139,
+          "limite_superior": 0.0305029273688288,
+          "n": 30474,
+          "inadimplentes": 1142,
+          "previsto": 0.0295269954337235,
+          "observado": 0.03747456848460983,
+          "observado_ic95_inferior": 0.03539985670620745,
+          "observado_ic95_superior": 0.03966587463542476,
+          "gap": 0.007947573050886333,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 8,
+          "limite_inferior": 0.0305029273688288,
+          "limite_superior": 0.032519874638397575,
+          "n": 30319,
+          "inadimplentes": 1180,
+          "previsto": 0.03147039239579656,
+          "observado": 0.03891948942907088,
+          "observado_ic95_inferior": 0.03680027756769176,
+          "observado_ic95_superior": 0.041155525552898364,
+          "gap": 0.007449097033274316,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 9,
+          "limite_inferior": 0.032519874638397575,
+          "limite_superior": 0.03761401838981177,
+          "n": 28697,
+          "inadimplentes": 1344,
+          "previsto": 0.03471727273031868,
+          "observado": 0.046834163849879776,
+          "observado_ic95_inferior": 0.044449698430248014,
+          "observado_ic95_superior": 0.04933993706468638,
+          "gap": 0.012116891119561095,
+          "status": "SUBESTIMA_RISCO"
+        },
+        {
+          "faixa": 10,
+          "limite_inferior": 0.03761401838981177,
+          "limite_superior": 1.0,
+          "n": 30755,
+          "inadimplentes": 2516,
+          "previsto": 0.05335622137473579,
+          "observado": 0.08180783612420744,
+          "observado_ic95_inferior": 0.07879675728335045,
+          "observado_ic95_superior": 0.0849233706532812,
+          "gap": 0.02845161474947165,
+          "status": "SUBESTIMA_RISCO"
+        }
+      ]
+    },
+    {
+      "coorte": "2020-H2",
+      "decisao": "PESQUISA",
+      "motivo": "Modo exploratório não libera uso operacional do modelo.",
+      "n": 150240,
+      "inadimplentes": 3175,
+      "taxa_inadimplencia": 0.021132854100106496,
+      "taxa_ic95_inferior": 0.020417733115467795,
+      "taxa_ic95_superior": 0.02187246258990609,
+      "auc": 0.6193832541237992,
+      "auc_ic95_inferior": 0.610478897434227,
+      "auc_ic95_superior": 0.6299313919631976,
+      "brier": 0.02055605131457836,
+      "drift": [
+        {
+          "feature": "annuity_780A",
+          "status": "ALERTA",
+          "ks": 0.1368707774022967,
+          "delta_ausencia": 0.0
+        },
+        {
+          "feature": "credamount_770A",
+          "status": "ESTAVEL",
+          "ks": 0.09442679890005978,
+          "delta_ausencia": 0.0
+        },
+        {
+          "feature": "downpmt_116A",
+          "status": "ESTAVEL",
+          "ks": 0.010708635976343306,
+          "delta_ausencia": 0.0
+        },
+        {
+          "feature": "price_1097A",
+          "status": "ALERTA",
+          "ks": 0.08091746462171656,
+          "delta_ausencia": 0.06866406328979069
+        },
+        {
+          "feature": "maininc_215A",
+          "status": "ESTAVEL",
+          "ks": 0.05053732245585085,
+          "delta_ausencia": 0.015072507139474667
+        },
+        {
+          "feature": "inittransactionamount_650A",
+          "status": "ALERTA",
+          "ks": 0.15288991935451024,
+          "delta_ausencia": 0.02075572424377603
+        }
+      ],
+      "calibracao": [
+        {
+          "faixa": 1,
+          "limite_inferior": 0.0,
+          "limite_superior": 0.01924954235170665,
+          "n": 16166,
+          "inadimplentes": 188,
+          "previsto": 0.015373987111980597,
+          "observado": 0.01162934554002227,
+          "observado_ic95_inferior": 0.010088832524275386,
+          "observado_ic95_superior": 0.013401902359429334,
+          "gap": -0.003744641571958328,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 2,
+          "limite_inferior": 0.01924954235170665,
+          "limite_superior": 0.021785464546398764,
+          "n": 14826,
+          "inadimplentes": 220,
+          "previsto": 0.020650840351923102,
+          "observado": 0.014838796708485093,
+          "observado_ic95_inferior": 0.013014461698472134,
+          "observado_ic95_superior": 0.016914479892248657,
+          "gap": -0.005812043643438009,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 3,
+          "limite_inferior": 0.021785464546398764,
+          "limite_superior": 0.023811757822340563,
+          "n": 15094,
+          "inadimplentes": 225,
+          "previsto": 0.022820135461869336,
+          "observado": 0.01490658539817146,
+          "observado_ic95_inferior": 0.013093134433647057,
+          "observado_ic95_superior": 0.016966888388724274,
+          "gap": -0.007913550063697877,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 4,
+          "limite_inferior": 0.023811757822340563,
+          "limite_superior": 0.025547451480191788,
+          "n": 17107,
+          "inadimplentes": 281,
+          "previsto": 0.024704290085018246,
+          "observado": 0.016426024434442042,
+          "observado_ic95_inferior": 0.014626991949878583,
+          "observado_ic95_superior": 0.01844218586831697,
+          "gap": -0.008278265650576204,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 5,
+          "limite_inferior": 0.025547451480191788,
+          "limite_superior": 0.026967512033591268,
+          "n": 16341,
+          "inadimplentes": 303,
+          "previsto": 0.02629509747548619,
+          "observado": 0.01854231687167248,
+          "observado_ic95_inferior": 0.016584259570673814,
+          "observado_ic95_superior": 0.020726684090488817,
+          "gap": -0.007752780603813708,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 6,
+          "limite_inferior": 0.026967512033591268,
+          "limite_superior": 0.0284966058813139,
+          "n": 16282,
+          "inadimplentes": 284,
+          "previsto": 0.0276448398235577,
+          "observado": 0.017442574622282273,
+          "observado_ic95_inferior": 0.015542572290869385,
+          "observado_ic95_superior": 0.019570225550532592,
+          "gap": -0.010202265201275425,
+          "status": "SUPERESTIMA_RISCO"
+        },
+        {
+          "faixa": 7,
+          "limite_inferior": 0.0284966058813139,
+          "limite_superior": 0.0305029273688288,
+          "n": 14424,
+          "inadimplentes": 284,
+          "previsto": 0.029532070125659445,
+          "observado": 0.01968940654464781,
+          "observado_ic95_inferior": 0.01754671758804222,
+          "observado_ic95_superior": 0.022087863957147246,
+          "gap": -0.009842663581011636,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 8,
+          "limite_inferior": 0.0305029273688288,
+          "limite_superior": 0.032519874638397575,
+          "n": 13690,
+          "inadimplentes": 312,
+          "previsto": 0.031471637607262376,
+          "observado": 0.02279035792549306,
+          "observado_ic95_inferior": 0.020421134576985765,
+          "observado_ic95_superior": 0.025427319321703043,
+          "gap": -0.008681279681769315,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 9,
+          "limite_inferior": 0.032519874638397575,
+          "limite_superior": 0.03761401838981177,
+          "n": 13069,
+          "inadimplentes": 370,
+          "previsto": 0.03469691539189498,
+          "observado": 0.028311270946514654,
+          "observado_ic95_inferior": 0.025603307197730227,
+          "observado_ic95_superior": 0.03129644647585226,
+          "gap": -0.006385644445380322,
+          "status": "APROXIMADA"
+        },
+        {
+          "faixa": 10,
+          "limite_inferior": 0.03761401838981177,
+          "limite_superior": 1.0,
+          "n": 13241,
+          "inadimplentes": 708,
+          "previsto": 0.05250805093551844,
+          "observado": 0.05347028170077789,
+          "observado_ic95_inferior": 0.04976628552762065,
+          "observado_ic95_superior": 0.057433295776172136,
+          "gap": 0.0009622307652594475,
+          "status": "APROXIMADA"
+        }
+      ]
+    }
+  ]
+}

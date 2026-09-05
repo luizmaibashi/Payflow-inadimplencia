@@ -1,8 +1,8 @@
 """Ponto unico de leitura de configuracao/segredo do projeto.
 
-POR QUE ESTE ARQUIVO EXISTE: o projeto tem QUATRO entrypoints (scripts/,
-notebooks/, Streamlit em app/main.py, FastAPI). Chamar `load_dotenv()` em cada
-um significa lembrar em quatro lugares — e o esquecido sempre e o notebook.
+POR QUE ESTE ARQUIVO EXISTE: scripts de experimento e adaptadores de LLM podem
+precisar das mesmas chaves. Chamar `load_dotenv()` em cada entrypoint significa
+lembrar em varios lugares e criar configuracoes divergentes.
 Chamar dentro do adaptador esconderia efeito colateral em codigo de biblioteca
 (importar um modulo passaria a mexer no ambiente do processo, vazando entre
 testes). Centralizar aqui resolve os dois: explicito, achavel, um lugar so.

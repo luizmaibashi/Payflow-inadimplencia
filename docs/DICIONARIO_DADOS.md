@@ -65,7 +65,7 @@ application_train.csv  (1 linha por PEDIDO — é aqui que está o TARGET)
 
 Detalhadas por bloco temático abaixo. `application_test.csv` segue o mesmo esquema de `application_train.csv`, **sem `TARGET`** — é o conjunto de submissão do Kaggle. Nenhuma métrica deste projeto (AUC, Brier, backtest do motor) vem desse arquivo; `camada1_features_test.parquet` é gerado pelo pipeline mas não é consumido por nenhum script de avaliação (deslocamento de distribuição medido entre as duas amostras: `reports/eda_application.md` item 9 — só passaria a importar se alguém decidisse submeter ao Kaggle).
 
-`payflow_credit_risk.csv` é o dataset **sintético do V1 legado** (pré-ADR-0001) — não é coberto por este dicionário, que documenta só a Camada 1 atual (Home Credit real). Status do V1: legado a substituir, não a estender (ver débito #11 do `AGENTS.md`).
+`payflow_credit_risk.csv` era o dataset **sintético do V1 legado** (pré-ADR-0001). Foi removido do estado atual pelo [ADR-0021](adr/0021-remocao-do-runtime-v1.md), mas permanece recuperável no histórico Git. Este dicionário documenta somente a Camada 1 atual (Home Credit real).
 
 ## 1.1 Identificação e alvo
 

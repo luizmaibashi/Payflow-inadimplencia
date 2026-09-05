@@ -2,7 +2,7 @@
 
 > Este documento preserva a narrativa original do projeto, de quando ele usava dado **sintético** e um pipeline mais simples (Random Forest, thresholds fixos). Foi movido pra cá em 2026-08-12 pra manter o [`README.md`](../README.md) principal focado na V2 (dado real, camada agêntica, medição com poder estatístico) — a V1 continua aqui como registro de onde o projeto começou.
 >
-> **A V1 não está mais no ar.** O deploy (Streamlit Cloud + Render) foi despublicado em 2026-08-11 (débito #11) pra não ser confundido com o estado atual do projeto. Instruções de execução abaixo servem só pra rodar localmente, se quiser.
+> **A V1 não está mais no ar nem faz parte do runtime atual.** O deploy foi despublicado em 2026-08-11 e os arquivos executáveis foram removidos do `HEAD` em 2026-09-04 para não serem confundidos com V2/V3. A narrativa, as figuras e o histórico Git foram preservados; veja [ADR-0021](adr/0021-remocao-do-runtime-v1.md).
 
 ## O que este projeto assumia abertamente (V1)
 
@@ -19,7 +19,7 @@
 | 3. Preparação dos Dados | Imputação, remoção de data leakage, encoding |
 | 4. Modelagem | Random Forest com e sem balanceamento |
 | 5. Avaliação | Classification Report + Matriz de Confusão |
-| 6. Deploy | App interativo via Streamlit em `app/main.py` |
+| 6. Deploy | App interativo via Streamlit, hoje preservado apenas no histórico Git |
 
 ## Problema de Negócio
 
@@ -123,9 +123,9 @@ A partir da Fase 8, o projeto passou por rodadas de **refinamento técnico e est
 }
 ```
 
-## Modelo Serializado (.pkl)
+## Modelo Serializado (.pkl) — histórico
 
-O modelo final foi exportado via `joblib` e está disponível na pasta `models/`.
+O modelo final foi exportado via `joblib`. Os binários abaixo foram removidos do estado atual junto com o runtime V1; continuam recuperáveis no histórico Git.
 
 | Arquivo | Tamanho | Conteúdo |
 |---------|---------|----------|
@@ -143,27 +143,9 @@ O modelo final foi exportado via `joblib` e está disponível na pasta `models/`
 
 > ⚠️ Um número anterior de "Perda Evitada" (R$ 186.000,00) apareceu em versão anterior desta narrativa, referente a um snapshot diferente do pipeline. A tabela acima é o valor final registrado; a divergência é inconsistência de rascunho da V1, não da V2 — mantida aqui em vez de silenciada.
 
-## Como rodar a V1 localmente
+## Como consultar a V1
 
-Sem deploy no ar — só execução local.
-
-```bash
-git clone https://github.com/luizmaibashi/Payflow-inadimplencia.git
-cd Payflow-inadimplencia
-python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# Linux/Mac:
-source .venv/bin/activate
-pip install -r requirements.txt
-streamlit run app/main.py
-```
-
-Ou, pra explorar a modelagem original:
-
-```bash
-jupyter notebook notebooks/01_credit_risk_modeling_payflow.ipynb
-```
+A V1 não é suportada no `HEAD` atual. Este documento é a fonte histórica legível. Código, notebook, dataset sintético e modelos antigos podem ser inspecionados em um commit anterior ao ADR-0021, sem misturá-los aos entrypoints suportados hoje.
 
 ## Conclusão e Reflexões (V1)
 

@@ -292,7 +292,7 @@ def main():
         del dt
 
     # --- datasets presentes mas fora de uso ---
-    L.append("## 10. Datasets presentes na pasta e **não usados**\n")
+    L.append("## 10. Datasets auxiliares e históricos\n")
     L.append(
         "Registrado para não virar lacuna silenciosa no gate de CRISP-DM — arquivo "
         "que existe mas ninguém examina é exatamente o tipo de coisa que some do radar.\n"
@@ -300,9 +300,9 @@ def main():
     L.append("| Arquivo | Situação |")
     L.append("|---|---|")
     L.append(
-        "| `payflow_credit_risk.csv` | **Legado.** Base sintética do projeto antigo, "
-        "substituída pelo Home Credit no ADR-0001. Nenhum script atual a lê. Mantida "
-        "só como referência histórica — não deve ser usada para nenhuma conclusão. |"
+        "| `payflow_credit_risk.csv` | **Legado removido do estado atual.** Base "
+        "sintética substituída pelo Home Credit no ADR-0001; narrativa preservada em "
+        "`docs/LEGADO_V1.md` e artefato recuperável no histórico Git. |"
     )
     L.append(
         "| `sample_submission.csv` | Template de submissão do Kaggle, não é dado de análise. |"

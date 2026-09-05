@@ -21,6 +21,7 @@ pip-delete-this-directory.txt
 
 # Dataset Home Credit (Kaggle, ~3.3GB extraido - baixar via scripts/baixar_home_credit.md)
 data/raw/home_credit/
+data/raw/home_credit_stability/
 
 # Features processadas (~45MB, regeneravel via scripts/camada1_feature_engineering.py)
 # Padrao com /* (nao data/processed/) DE PROPOSITO: o git nao entra em
@@ -46,6 +47,11 @@ data/processed/*
 # porque este arquivo nao existia no clone remoto. 40KB, sem PII (dataset
 # anonimizado).
 !data/processed/zona_cinzenta.parquet
+
+# EXCECAO: snapshot agregado e versionado que alimenta o dashboard V3 sem
+# carregar centenas de MB do Kaggle no deploy. Regeneravel, mas necessario em
+# runtime e sem dado individual (ADR-0020).
+!data/processed/monitoramento_v3.json
 
 # Saida gerada por script de verificacao/revisao pontual (AGENTS.md: saida
 # regeneravel de script fica fora do git).
