@@ -31,27 +31,43 @@ from app.memo_credito import MAX_FATORES, MIN_FATORES, MemoCredito, Recomendacao
 # pontual sem virar exploracao infinita.
 MAX_CHAMADAS_POR_CASO = 6
 
-# Ferramentas de CASO que se aplicam a QUALQUER cliente: nao existe condicao
-# que justifique pular. `consultar_historico_bureau` fica FORA desta tupla de
-# proposito - ela e o 2o salto do multi-hop e so faz sentido se
-# `consultar_bureau` indicar `tem_historico_mensal=True`. Cobra-la sempre
-# penalizaria o agente justamente por respeitar o desenho.
-FERRAMENTAS_SEMPRE_APLICAVEIS = ("consultar_bureau", "consultar_pagamentos")
-
-FERRAMENTAS_DISPONIVEIS = {
-    "consultar_bureau":
-        "Credito do cliente em OUTRAS instituicoes: quantos contratos, quantos "
-        "ativos, quantos vencidos hoje, quanto do limite ja usou. Devolve "
+# Registro único: ferramenta nova precisa declarar descrição e aplicabilidade.
+# O teste de contrato compara este registro aos métodos `consultar_*` reais de
+# FerramentasCaso; esquecer o registro faz a suíte falhar, em vez de o gate
+# aprovar uma trajetória por omissão.
+DEFINICOES_FERRAMENTAS = {
+    "consultar_bureau": {
+        "aplicabilidade": "SEMPRE",
+        "descricao": "Credito do cliente em OUTRAS instituicoes: quantos contratos, "
+        "quantos ativos, quantos vencidos hoje, quanto do limite ja usou. Devolve "
         "tem_historico_mensal, que diz se vale chamar consultar_historico_bureau.",
-    "consultar_historico_bureau":
-        "Comportamento mes a mes nos contratos de outras instituicoes: meses em "
-        "dia, em atraso e SEM INFORMACAO, pior severidade e ha quantos meses foi "
-        "o ultimo atraso. So faz sentido se consultar_bureau indicou historico.",
-    "consultar_pagamentos":
-        "Como o cliente pagou os contratos ANTERIORES desta casa, parcela a "
-        "parcela: quantas nunca pagou, quantas atrasou, atraso medio (negativo = "
-        "adianta), quanto faltou pagar.",
+    },
+    "consultar_historico_bureau": {
+        "aplicabilidade": "CONDICIONAL",
+        "descricao": "Comportamento mes a mes nos contratos de outras instituicoes: "
+        "meses em dia, em atraso e SEM INFORMACAO, pior severidade e ha quantos "
+        "meses foi o ultimo atraso. So faz sentido se consultar_bureau indicou "
+        "historico.",
+    },
+    "consultar_pagamentos": {
+        "aplicabilidade": "SEMPRE",
+        "descricao": "Como o cliente pagou os contratos ANTERIORES desta casa, "
+        "parcela a parcela: quantas nunca pagou, quantas atrasou, atraso medio "
+        "(negativo = adianta), quanto faltou pagar.",
+    },
 }
+APLICABILIDADE_FERRAMENTAS = {
+    nome: definicao["aplicabilidade"]
+    for nome, definicao in DEFINICOES_FERRAMENTAS.items()
+}
+FERRAMENTAS_DISPONIVEIS = {
+    nome: definicao["descricao"] for nome, definicao in DEFINICOES_FERRAMENTAS.items()
+}
+FERRAMENTAS_SEMPRE_APLICAVEIS = tuple(
+    nome
+    for nome, aplicabilidade in APLICABILIDADE_FERRAMENTAS.items()
+    if aplicabilidade == "SEMPRE"
+)
 
 
 @dataclass

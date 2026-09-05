@@ -6,6 +6,13 @@ from typing import Iterable
 import pandas as pd
 from sklearn.ensemble import HistGradientBoostingClassifier
 
+from app.calibracao_faixas import (
+    PoliticaCalibracao,
+    RelatorioCalibracaoFaixas,
+    avaliar_calibracao_faixas,
+    criar_limites_quanticos,
+    formatar_calibracao_markdown,
+)
 from app.contrato_disponibilidade import ModoExecucao
 from app.contrato_home_credit_proxy import contrato_proxy_proposta
 from app.drift_features import (
@@ -14,7 +21,7 @@ from app.drift_features import (
     avaliar_drift_features,
     formatar_resumo_drift_markdown,
 )
-from app.estabilidade_coorte import PoliticaMaturacao, ResultadoCoorte
+from app.estabilidade_coorte import PoliticaMaturacao, ResultadoCoorte, StatusCoorte
 from app.monitoramento_coorte import executar_monitoramento_coorte
 from app.politica_uso_modelo import (
     DecisaoCoorte,
@@ -70,6 +77,7 @@ class ResultadoExperimentoProxy:
     coortes: tuple[ResultadoCoorte, ...]
     decisoes: tuple[DecisaoCoorte, ...]
     drift_coortes: tuple[RelatorioDriftFeatures, ...]
+    calibracao_coortes: tuple[RelatorioCalibracaoFaixas, ...]
     configuracao: ConfiguracaoExperimentoProxy
 
 
@@ -138,6 +146,8 @@ def executar_experimento_proxy(
     configuracao: ConfiguracaoExperimentoProxy,
     politica: PoliticaEvidencia,
     politica_drift: PoliticaDrift,
+    politica_calibracao: PoliticaCalibracao,
+    n_faixas_calibracao: int = 10,
 ) -> ResultadoExperimentoProxy:
     """Treina no passado e mede apenas as coortes posteriores ao corte."""
 
@@ -147,6 +157,8 @@ def executar_experimento_proxy(
         raise TypeError("politica deve ser uma PoliticaEvidencia")
     if not isinstance(politica_drift, PoliticaDrift):
         raise TypeError("politica_drift deve ser uma PoliticaDrift")
+    if not isinstance(politica_calibracao, PoliticaCalibracao):
+        raise TypeError("politica_calibracao deve ser uma PoliticaCalibracao")
 
     corte = pd.to_datetime(configuracao.corte_treino, utc=True)
     datas = pd.to_datetime(dados["date_decision"], errors="coerce", utc=True)
@@ -164,6 +176,10 @@ def executar_experimento_proxy(
         random_state=configuracao.random_state,
     )
     modelo.fit(treino.loc[:, FEATURES_PROXY], treino["target"])
+    limites_calibracao = criar_limites_quanticos(
+        pd.Series(modelo.predict_proba(treino.loc[:, FEATURES_PROXY])[:, 1]),
+        n_faixas=n_faixas_calibracao,
+    )
 
     monitoramento = executar_monitoramento_coorte(
         avaliacao,
@@ -200,12 +216,31 @@ def executar_experimento_proxy(
         )
         for coorte, grupo in avaliacao.groupby("coorte", sort=True)
     )
+    status_por_coorte = {
+        coorte.coorte: coorte.status for coorte in monitoramento.coortes.coortes
+    }
+    calibracao_coortes = tuple(
+        avaliar_calibracao_faixas(
+            pd.DataFrame(
+                {
+                    "predicao": modelo.predict_proba(grupo.loc[:, FEATURES_PROXY])[:, 1],
+                    "target": grupo["target"].to_numpy(),
+                }
+            ),
+            limites=limites_calibracao,
+            coorte=str(coorte),
+            politica=politica_calibracao,
+        )
+        for coorte, grupo in avaliacao.groupby("coorte", sort=True)
+        if status_por_coorte[str(coorte)] is StatusCoorte.AVALIADA
+    )
     return ResultadoExperimentoProxy(
         n_total=len(dados),
         n_treino=len(treino),
         coortes=monitoramento.coortes.coortes,
         decisoes=decisoes,
         drift_coortes=drift_coortes,
+        calibracao_coortes=calibracao_coortes,
         configuracao=configuracao,
     )
 
@@ -261,4 +296,5 @@ def formatar_relatorio_markdown(resultado: ResultadoExperimentoProxy) -> str:
         ]
     )
     linhas.extend(["", formatar_resumo_drift_markdown(resultado.drift_coortes)])
+    linhas.extend(["", formatar_calibracao_markdown(resultado.calibracao_coortes)])
     return "\n".join(linhas)

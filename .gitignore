@@ -48,6 +48,11 @@ data/processed/*
 # anonimizado).
 !data/processed/zona_cinzenta.parquet
 
+# EXCECAO: snapshot agregado e versionado que alimenta o dashboard V3 sem
+# carregar centenas de MB do Kaggle no deploy. Regeneravel, mas necessario em
+# runtime e sem dado individual (ADR-0020).
+!data/processed/monitoramento_v3.json
+
 # Saida gerada por script de verificacao/revisao pontual (AGENTS.md: saida
 # regeneravel de script fica fora do git).
 scripts/_revisor_verificacao.html

@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 
+from app.calibracao_faixas import PoliticaCalibracao
 from app.drift_features import PoliticaDrift
 from app.experimento_proxy_estabilidade import (
     FEATURES_PROXY,
@@ -11,6 +12,7 @@ from app.experimento_proxy_estabilidade import (
     rotular_particao_temporal,
 )
 from app.politica_uso_modelo import PoliticaEvidencia
+from app.snapshot_monitoramento import construir_snapshot
 
 
 def _base():
@@ -107,6 +109,12 @@ def resultado_experimento_com_drift():
             ausencia_alerta=0.10,
             ausencia_critica=0.20,
         ),
+        politica_calibracao=PoliticaCalibracao(
+            minimo_observacoes=2,
+            minimo_inadimplentes=1,
+            tolerancia_absoluta=0.20,
+        ),
+        n_faixas_calibracao=2,
     )
 
 
@@ -125,3 +133,33 @@ def test_relatorio_integrado_exibe_resumo_de_drift(resultado_experimento_com_dri
     relatorio = formatar_relatorio_markdown(resultado_experimento_com_drift)
 
     assert "## Drift das features contra o treino" in relatorio
+
+
+def test_experimento_usa_as_mesmas_faixas_de_calibracao_em_todas_as_coortes(
+    resultado_experimento_com_drift,
+):
+    limites = {
+        relatorio.limites
+        for relatorio in resultado_experimento_com_drift.calibracao_coortes
+    }
+
+    assert len(limites) == 1
+
+
+def test_relatorio_integrado_exibe_calibracao_por_faixa(
+    resultado_experimento_com_drift,
+):
+    relatorio = formatar_relatorio_markdown(resultado_experimento_com_drift)
+
+    assert "## Calibração por faixa de score" in relatorio
+
+
+def test_snapshot_do_experimento_carrega_metricas_agregadas(
+    resultado_experimento_com_drift,
+):
+    snapshot = construir_snapshot(
+        resultado_experimento_com_drift,
+        gerado_em="2026-09-04T12:00:00Z",
+    )
+
+    assert len(snapshot.coortes) == 3

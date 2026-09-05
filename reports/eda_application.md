@@ -138,13 +138,13 @@ Diferença padronizada de média (|média_treino − média_teste| ÷ desvio do 
 
 > **Quando isso passaria a importar:** se alguém decidir usar esse arquivo para inferência ou para submeter ao Kaggle. Aí o deslocamento acima precisa ser tratado — em especial `FLAG_EMAIL` (0,458) e as consultas ao bureau.
 
-## 10. Datasets presentes na pasta e **não usados**
+## 10. Datasets auxiliares e históricos
 
 Registrado para não virar lacuna silenciosa no gate de CRISP-DM — arquivo que existe mas ninguém examina é exatamente o tipo de coisa que some do radar.
 
 | Arquivo | Situação |
 |---|---|
-| `payflow_credit_risk.csv` | **Legado.** Base sintética do projeto antigo, substituída pelo Home Credit no ADR-0001. Nenhum script atual a lê. Mantida só como referência histórica — não deve ser usada para nenhuma conclusão. |
+| `payflow_credit_risk.csv` | **Legado removido do estado atual.** Base sintética substituída pelo Home Credit no ADR-0001; narrativa preservada em `docs/LEGADO_V1.md` e artefato recuperável no histórico Git. |
 | `sample_submission.csv` | Template de submissão do Kaggle, não é dado de análise. |
 | `HomeCredit_columns_description.csv` | Dicionário oficial de colunas — traduzido em `docs/DICIONARIO_DADOS.md`. |
 

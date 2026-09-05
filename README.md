@@ -5,7 +5,7 @@
 <h1 align="center">PayFlow: Previsão de Risco de Crédito</h1>
 
 <p align="center">
-  <strong>Projeto de portfólio | Camada 1 (PD sobre dado real) + Camada 2 (agente de underwriting) medidas com rigor estatístico. Inclui um resultado negativo, investigado até a causa raiz</strong>
+  <strong>Projeto de portfólio sobre decisão de crédito, limites de modelos e monitoramento de confiabilidade ao longo do tempo</strong>
 </p>
 <p align="center">
   <sub>Versão anterior com dado sintético preservada como registro histórico em <a href="docs/LEGADO_V1.md">docs/LEGADO_V1.md</a></sub>
@@ -13,7 +13,9 @@
 
 ---
 
-## Recomeço do projeto: confiabilidade por coorte
+## Resultado final: confiabilidade por coorte
+
+O repositório tem dois entregáveis atuais. A demo V2 mostra a investigação do agente de underwriting e o resultado negativo do backtest. O dashboard V3 mostra quando o score continua confiável em novas safras, com AUC, Brier, drift de features e calibração por faixa. A antiga V1 sintética permanece somente como narrativa histórica; seu runtime foi removido pelo [ADR-0021](docs/adr/0021-remocao-do-runtime-v1.md).
 
 A V2 respondeu uma pergunta difícil e trouxe um resultado negativo: o agente
 não separou risco de forma detectável na zona cinzenta. A nova frente parte
@@ -39,20 +41,38 @@ na faixa de 0,61. Isso sugere mudança da população sem evidência de queda de
 discriminação neste recorte. O monitor aponta onde investigar; ele não prova
 a causa nem retreina o modelo sozinho.
 
+A calibração acrescenta a pergunta que a AUC não responde: o número do score
+ainda significa o que promete? Dez faixas foram definidas pelos quantis do
+treino e congeladas para as três coortes. Em `2020-H2`, nove ficaram dentro da
+tolerância prática de 1 p.p. Na faixa de maior score, o modelo previu 5,25% de
+inadimplência e observou 5,35% (708 eventos em 13.241 propostas; IC95%
+[4,98%; 5,74%]). A cauda de maior risco continuou aproximadamente calibrada,
+mesmo com a mudança da população. O resultado ainda é de pesquisa: as features
+são proxies sem prova point-in-time e a tolerância de 1 p.p. é demonstrativa.
+
 ```bash
 python scripts/proxy_estabilidade_reproduzivel.py --data-referencia 2021-01-04 --janela-dias 90 --bootstrap 100
 ```
 
-O desenho técnico e seus limites estão na
-[`spec 0007`](docs/spec/0007-experimento-reproduzivel-proxy-temporal.md). A
+O dashboard V3 lê somente o snapshot agregado e versionado. Ele abre pela
+decisão da coorte, mostra o que merece investigação e mantém tamanho da amostra,
+eventos e intervalos junto das métricas. Não acessa os dados brutos nem chama
+API externa.
+
+```bash
+streamlit run app/monitoramento_v3.py
+```
+
+O desenho técnico e seus limites estão nas
+[`specs 0007 a 0011`](docs/spec/). A
 ligação entre o projeto e os conteúdos da Pós-Tech está na
 [`matriz de conhecimento`](docs/MATRIZ_POS_TECH_PAYFLOW.md).
 
 ---
 
-## Estado atual (2026-08-12)
+## Investigação V2, encerrada em 2026-08-12
 
-A **V2** reconstrói a Camada 1 sobre dado real com outcome de default ([Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk)) e adiciona uma camada agêntica de underwriting (LLM) com avaliação formal: juiz calibrado, ADRs documentando cada decisão de risco (12 até aqui, [`docs/adr/`](docs/adr/)), débitos técnicos numerados e vivos ([`AGENTS.md`](AGENTS.md)).
+A **V2** reconstrói a Camada 1 sobre dado real com outcome de default ([Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk)) e adiciona uma camada agêntica de underwriting (LLM) com avaliação formal: juiz calibrado, decisões registradas em [`docs/adr/`](docs/adr/) e débitos numerados em [`AGENTS.md`](AGENTS.md).
 
 **O que já está medido na V2:** modelo treinado sobre dado real (AUC 0,776, IC95%), zona cinzenta isolada (2.102 casos, 4,3× a taxa de default da carteira), agente com juiz LLM calibrado contra rubrica explícita ([ADR-0011](docs/adr/0011-criterio-de-task-completion.md), 2 bugs de raciocínio achados e corrigidos), 87/87 labels de ground truth como julgamento humano deliberado.
 
@@ -144,16 +164,18 @@ payflow_inadimplencia/
 │   ├── clientes_llm.py           # Adaptadores Gemini/Groq
 │   ├── motor_decisao.py          # Motor de decisão por valor esperado
 │   ├── main_v2.py                # Demo Streamlit da V2 (atual)
-│   └── main.py, api.py, service.py, utils.py, schemas.py  # V1 (legado)
+│   ├── monitoramento_v3.py       # Livro de coortes da V3
+│   ├── snapshot_monitoramento.py # Contrato agregado e fail-closed da V3
 ├── scripts/                      # Treino, EDA, calibração, backtest; ver AGENTS.md
 ├── docs/
-│   ├── adr/                      # 13 ADRs, decisões de arquitetura
+│   ├── adr/                      # Decisões de arquitetura e retenção
 │   ├── DICIONARIO_DADOS.md
-│   └── LEGADO_V1.md              # Narrativa completa da V1
+│   ├── LEGADO_V1.md              # Narrativa histórica, não executável
+│   └── spec/                     # Contratos de implementação e aceite
 ├── data/labels/, data/processed/ # Ground truth e memos versionados (débitos #30/#31)
 ├── reports/                      # Backtest, calibração do juiz, EDAs, gates
-├── models/                       # Camada 1 (V2) + modelo legado (V1)
-├── tests/                        # 169 testes
+├── models/                       # Modelo calibrado da Camada 1 (V2)
+├── tests/                        # 301 testes no fechamento da V3
 ├── AGENTS.md                     # Débitos técnicos + ADRs, vivo
 └── README.md
 ```
@@ -167,9 +189,10 @@ payflow_inadimplencia/
 | Treino e métricas da Camada 1 | [`reports/camada1_treino_final.md`](reports/camada1_treino_final.md) |
 | EDA (application + tabelas relacionais) | [`reports/eda_application.md`](reports/eda_application.md), [`reports/eda_tabelas_relacionais.md`](reports/eda_tabelas_relacionais.md) |
 | Dicionário de dados (colunas + features criadas) | [`docs/DICIONARIO_DADOS.md`](docs/DICIONARIO_DADOS.md) |
-| Todas as decisões de arquitetura (13 ADRs) | [`docs/adr/`](docs/adr/) |
+| Todas as decisões de arquitetura | [`docs/adr/`](docs/adr/) |
 | Débitos técnicos, numerados e vivos (34) | [`AGENTS.md`](AGENTS.md) |
-| Versão anterior (dado sintético) | [`docs/LEGADO_V1.md`](docs/LEGADO_V1.md) |
+| Auditoria de fechamento | [`docs/audit/fechamento_2026-09-04.md`](docs/audit/fechamento_2026-09-04.md) |
+| Versão anterior (registro histórico) | [`docs/LEGADO_V1.md`](docs/LEGADO_V1.md) |
 
 ---
 

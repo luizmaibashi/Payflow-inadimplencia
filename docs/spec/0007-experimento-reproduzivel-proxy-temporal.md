@@ -1,7 +1,7 @@
 # Spec 0007 — Experimento reproduzível do proxy temporal
 
 **Data:** 2026-09-04
-**Status:** Implementada; revisão humana pendente
+**Status:** Implementada e aprovada em 2026-09-04
 **Dono da aprovação de merge:** Luiz Maibashi
 
 ## Objetivo

@@ -1,7 +1,7 @@
 # Spec 0005 — Contrato proxy e semáforo de uso
 
 **Data:** 2026-09-04
-**Status:** Implementada — revisão humana pendente
+**Status:** Implementada e aprovada em 2026-09-04
 **Dono da aprovação de merge:** Luiz Maibashi
 
 ## Objetivo

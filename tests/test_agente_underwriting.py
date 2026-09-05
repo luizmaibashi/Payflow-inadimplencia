@@ -24,6 +24,8 @@ from app.agente_underwriting import (  # noqa: E402
     validar_groundedness,
     validar_groundedness_numerica,
     validar_trajetoria,
+    APLICABILIDADE_FERRAMENTAS,
+    FERRAMENTAS_DISPONIVEIS,
 )
 from app.ferramenta_cenario import FerramentaCenario  # noqa: E402
 from app.ferramentas_caso import ChamadaFerramenta, FerramentasCaso  # noqa: E402
@@ -349,6 +351,17 @@ def test_prompt_manda_apurar_antes_de_concluir(cenario):
     contexto = montar_contexto_inicial(1, cenario).lower()
     assert "consultar_pagamentos" in contexto
     assert "deferir so vale" in contexto
+
+
+def test_toda_ferramenta_publica_tem_politica_de_aplicabilidade():
+    publicas = {
+        nome
+        for nome in dir(FerramentasCaso)
+        if nome.startswith("consultar_") and callable(getattr(FerramentasCaso, nome))
+    }
+
+    assert set(FERRAMENTAS_DISPONIVEIS) == publicas
+    assert set(APLICABILIDADE_FERRAMENTAS) == publicas
 
 
 # --- Cenario e do lote, nao do cliente (ADR-0008) ---

@@ -1,6 +1,7 @@
 """Executa o baseline canônico do proxy semântico no Stability."""
 
 import argparse
+from datetime import datetime, timezone
 import sys
 from pathlib import Path
 
@@ -16,8 +17,10 @@ from app.experimento_proxy_estabilidade import (  # noqa: E402
     formatar_relatorio_markdown,
     montar_base_proxy,
 )
+from app.calibracao_faixas import PoliticaCalibracao  # noqa: E402
 from app.drift_features import PoliticaDrift  # noqa: E402
 from app.politica_uso_modelo import PoliticaEvidencia  # noqa: E402
+from app.snapshot_monitoramento import construir_snapshot  # noqa: E402
 
 
 def argumentos() -> argparse.Namespace:
@@ -28,6 +31,7 @@ def argumentos() -> argparse.Namespace:
     parser.add_argument("--janela-dias", required=True, type=int)
     parser.add_argument("--bootstrap", type=int, default=200)
     parser.add_argument("--saida", type=Path)
+    parser.add_argument("--saida-json", type=Path)
     return parser.parse_args()
 
 
@@ -72,8 +76,22 @@ def main() -> None:
             ausencia_alerta=0.05,
             ausencia_critica=0.10,
         ),
+        politica_calibracao=PoliticaCalibracao(
+            minimo_observacoes=1_000,
+            minimo_inadimplentes=30,
+            tolerancia_absoluta=0.01,
+        ),
     )
     relatorio = formatar_relatorio_markdown(resultado)
+    if args.saida_json is not None:
+        snapshot = construir_snapshot(
+            resultado,
+            gerado_em=datetime.now(timezone.utc),
+        )
+        args.saida_json.write_text(
+            snapshot.model_dump_json(indent=2),
+            encoding="utf-8",
+        )
     if args.saida is None:
         print(relatorio)
         return
