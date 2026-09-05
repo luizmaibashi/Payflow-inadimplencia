@@ -20,6 +20,15 @@ CORES = {
     "estabilidade": "#39735A",
 }
 
+# Estado do drift/calibração: cor + rótulo textual sempre juntos (regra
+# "color-not-only" — nunca comunicar estado só pela cor).
+ESTADO_DRIFT = {
+    "ESTAVEL": {"cor": "#39735A", "rotulo": "Estável"},
+    "ALERTA": {"cor": "#C58A2A", "rotulo": "Alerta"},
+    "CRITICO": {"cor": "#A5473E", "rotulo": "Crítico"},
+    "INSUFICIENTE": {"cor": "#7A8890", "rotulo": "Amostra insuficiente"},
+}
+
 st.set_page_config(
     page_title="PayFlow V3 — Livro de coortes",
     page_icon="▦",
@@ -74,7 +83,20 @@ def _css() -> str:
     .pf-cohort.active {{ background: #FFFFFF; border-top-color: var(--evidencia);
         box-shadow: 0 5px 18px rgba(20,33,43,.08); }}
     .pf-cohort strong {{ display: block; font: 800 .92rem Consolas, monospace; }}
-    .pf-cohort span {{ color: #566670; font-size: .8rem; }}
+    .pf-cohort span {{ color: #47555E; font-size: .8rem; }}
+    .pf-estado-legenda {{ display: flex; flex-wrap: wrap; gap: .9rem; margin: .2rem 0 1.2rem;
+        font-size: .82rem; color: #40515C; }}
+    .pf-estado-legenda .pf-chip {{ display: inline-flex; align-items: center; gap: .4rem; }}
+    .pf-estado-legenda .pf-dot {{ width: .6rem; height: .6rem; border-radius: 50%;
+        display: inline-block; flex-shrink: 0; }}
+    .pf-badge {{ display: inline-flex; align-items: center; gap: .35rem;
+        padding: .18rem .55rem; font: 700 .74rem Consolas, monospace; color: #FFFFFF;
+        white-space: nowrap; }}
+    .pf-drift-linha {{ display: flex; align-items: center; gap: .7rem; flex-wrap: wrap;
+        padding: .55rem 0; border-bottom: 1px solid #DCE3E7; font-size: .87rem; }}
+    .pf-drift-linha:last-child {{ border-bottom: none; }}
+    .pf-drift-linha strong {{ font: 700 .87rem Consolas, monospace; }}
+    .pf-drift-linha span:last-child {{ color: #40515C; }}
     .pf-guide {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem;
         margin: .3rem 0 1.3rem; }}
     .pf-guide-card {{ background: #FFFFFF; border-top: 3px solid var(--evidencia);
@@ -188,6 +210,7 @@ def _grafico_evolucao(snapshot) -> None:
 
 def _grafico_calibracao(coorte) -> None:
     linhas = []
+    banda = []
     for faixa in coorte.calibracao:
         linhas.extend(
             [
@@ -195,8 +218,32 @@ def _grafico_calibracao(coorte) -> None:
                 {"faixa": faixa.faixa, "série": "Observado", "taxa": faixa.observado},
             ]
         )
+        banda.append(
+            {
+                "faixa": faixa.faixa,
+                "inferior": faixa.observado_ic95_inferior,
+                "superior": faixa.observado_ic95_superior,
+            }
+        )
     dados = pd.DataFrame(linhas)
-    spec = {
+    dados_banda = pd.DataFrame(banda)
+
+    camada_banda = {
+        "data": {"values": dados_banda.to_dict("records")},
+        "mark": {"type": "area", "opacity": 0.16, "color": CORES["investigacao"]},
+        "encoding": {
+            "x": {"field": "faixa", "type": "ordinal", "title": "Faixa de score"},
+            "y": {"field": "inferior", "type": "quantitative", "axis": {"format": ".1%"}},
+            "y2": {"field": "superior"},
+            "tooltip": [
+                {"field": "faixa", "type": "ordinal", "title": "Faixa"},
+                {"field": "inferior", "type": "quantitative", "format": ".2%", "title": "IC95% inferior"},
+                {"field": "superior", "type": "quantitative", "format": ".2%", "title": "IC95% superior"},
+            ],
+        },
+    }
+    camada_linhas = {
+        "data": {"values": dados.to_dict("records")},
         "mark": {"type": "line", "point": {"filled": True, "size": 60}, "strokeWidth": 3},
         "encoding": {
             "x": {"field": "faixa", "type": "ordinal", "title": "Faixa de score"},
@@ -204,7 +251,7 @@ def _grafico_calibracao(coorte) -> None:
                 "field": "taxa",
                 "type": "quantitative",
                 "axis": {"format": ".1%"},
-                "title": "Taxa",
+                "title": "Taxa de inadimplência",
             },
             "color": {
                 "field": "série",
@@ -215,16 +262,29 @@ def _grafico_calibracao(coorte) -> None:
                 },
                 "legend": {"orient": "top", "title": None},
             },
+            "strokeDash": {
+                "field": "série",
+                "type": "nominal",
+                "scale": {"domain": ["Previsto", "Observado"], "range": [[6, 3], [1, 0]]},
+                "legend": None,
+            },
             "tooltip": [
-                {"field": "faixa", "type": "ordinal"},
-                {"field": "série", "type": "nominal"},
-                {"field": "taxa", "type": "quantitative", "format": ".2%"},
+                {"field": "faixa", "type": "ordinal", "title": "Faixa"},
+                {"field": "série", "type": "nominal", "title": "Série"},
+                {"field": "taxa", "type": "quantitative", "format": ".2%", "title": "Taxa"},
             ],
         },
+    }
+    spec = {
+        "layer": [camada_banda, camada_linhas],
         "height": 310,
         "config": {"view": {"stroke": None}, "axis": {"gridColor": "#DDE4E8"}},
     }
-    st.vega_lite_chart(dados, spec, width="stretch")
+    st.vega_lite_chart(spec, width="stretch")
+    st.caption(
+        "A faixa sombreada é o intervalo de confiança de 95% da taxa observada: "
+        "quanto mais estreita, mais casos sustentam aquele ponto."
+    )
 
 
 def main() -> None:
@@ -280,6 +340,16 @@ def main() -> None:
         )
     st.markdown(
         f'<div class="pf-strip">{"".join(cartoes)}</div>',
+        unsafe_allow_html=True,
+    )
+
+    legenda_estados = "".join(
+        f'<span class="pf-chip"><span class="pf-dot" style="background:{info["cor"]}"></span>'
+        f'{info["rotulo"]}</span>'
+        for info in ESTADO_DRIFT.values()
+    )
+    st.markdown(
+        f'<div class="pf-estado-legenda">{legenda_estados}</div>',
         unsafe_allow_html=True,
     )
 
@@ -362,22 +432,21 @@ def main() -> None:
             unsafe_allow_html=True,
         )
         nao_estaveis = [item for item in coorte.drift if item.status != "ESTAVEL"]
-        tabela_drift = pd.DataFrame(
-            [
-                {
-                    "Feature": item.feature,
-                    "Estado": item.status,
-                    "KS": f"{item.ks:.4f}",
-                    "Delta ausência": _fmt_pct(item.delta_ausencia),
-                }
+        if nao_estaveis:
+            linhas_drift = "".join(
+                f"""
+                <div class="pf-drift-linha">
+                  <span class="pf-badge" style="background:{ESTADO_DRIFT[item.status]['cor']}">
+                    {ESTADO_DRIFT[item.status]['rotulo']}</span>
+                  <strong>{item.feature}</strong>
+                  <span>KS {item.ks:.4f} · delta de ausência {_fmt_pct(item.delta_ausencia)}</span>
+                </div>
+                """
                 for item in nao_estaveis
-            ]
-        )
-        st.dataframe(
-            tabela_drift,
-            hide_index=True,
-            width="stretch",
-        )
+            )
+            st.markdown(linhas_drift, unsafe_allow_html=True)
+        else:
+            st.caption("Nenhuma feature fora do estado estável nesta coorte.")
     with direita:
         st.markdown("**Leitura da faixa de maior risco**")
         st.markdown(

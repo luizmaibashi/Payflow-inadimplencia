@@ -30,7 +30,9 @@ Este projeto parte de duas perguntas:
 1. **Dá pra ensinar um assistente de IA a julgar melhor esse grupo difícil?** Em vez de só olhar um número de pontuação, o assistente investiga o histórico de cada pessoa como um detetive: consulta pagamentos antigos, dívidas, comportamento, e escreve um parecer justificado.
 2. **Depois que um modelo aprende a decidir, ele continua bom pra sempre?** Ou vai "envelhecendo" conforme o mundo muda, como um mapa antigo que não mostra a rua nova do bairro?
 
-As respostas foram medidas com rigor estatístico (intervalo de confiança, tamanho de amostra, testes de robustez), não com achismo. E uma delas é desconfortável: contar isso também é parte do trabalho.
+A primeira medição da pergunta 1 deu um número bom. Bom demais, na verdade, pra confiar de olho fechado. Em vez de comemorar, o passo seguinte foi desconfiar do próprio resultado, calcular quanto dado seria preciso pra ter certeza, e pagar o preço de coletar isso. O número mudou. E o que restou desse processo é o produto real deste repositório: não é a IA que decide crédito, é o cuidado de medir se ela decide mesmo, com rigor suficiente pra aguentar alguém cético cutucando.
+
+Isso está medido com intervalo de confiança, tamanho de amostra e teste de robustez, não com achismo. E a resposta, no fim, é desconfortável. Contar isso também é parte do trabalho.
 
 ---
 
