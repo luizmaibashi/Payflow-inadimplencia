@@ -8,6 +8,9 @@
   <strong>Projeto de portfólio sobre decisão de crédito, limites de modelos e monitoramento de confiabilidade ao longo do tempo</strong>
 </p>
 <p align="center">
+  <a href="https://luizmaibashi.github.io/Payflow-inadimplencia/"><strong>Ver dashboard de confiabilidade (V3)</strong></a>
+</p>
+<p align="center">
   <sub>Versão anterior com dado sintético preservada como registro histórico em <a href="docs/LEGADO_V1.md">docs/LEGADO_V1.md</a></sub>
 </p>
 
