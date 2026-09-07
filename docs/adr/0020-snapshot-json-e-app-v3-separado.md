@@ -1,6 +1,6 @@
 # ADR-0020: Snapshot JSON e app V3 separado
 **Data:** 2026-09-04
-**Status:** Accepted
+**Status:** Accepted (interface substituída em 2026-09-06, ver [ADR-0023](0023-migracao-do-v3-para-pagina-estatica.md); o contrato de snapshot descrito aqui continua valendo)
 **Proposto por:** Luiz Maibashi
 **Contexto:** dashboard de confiabilidade por coorte
 

@@ -46,14 +46,16 @@ Isso está medido com intervalo de confiança, tamanho de amostra e teste de rob
 O repositório tem dois entregáveis, cada um respondendo a uma pergunta:
 
 - **Demo V2** (`app/main_v2.py`): mostra a investigação do assistente de IA e por que o resultado deu negativo.
-- **Dashboard V3** (`app/monitoramento_v3.py`): mostra se o placar de risco continua confiável em clientes novos, com AUC, calibração e alerta de mudança de padrão (*drift*).
+- **Dashboard V3** ([página estática, GitHub Pages](https://luizmaibashi.github.io/Payflow-inadimplencia/)): mostra se o placar de risco continua confiável em clientes novos, com AUC, calibração e alerta de mudança de padrão (*drift*). Migrado de Streamlit para HTML/SVG estático em 2026-09-06 ([ADR-0023](docs/adr/0023-migracao-do-v3-para-pagina-estatica.md)): carrega instantâneo, sem cold start de plataforma gratuita.
 
 A V1, com dado sintético, existe só como registro histórico em [`docs/LEGADO_V1.md`](docs/LEGADO_V1.md); o runtime dela foi removido ([ADR-0021](docs/adr/0021-remocao-do-runtime-v1.md)).
 
 ```bash
 pip install -r requirements.txt
-streamlit run app/monitoramento_v3.py   # Dashboard V3: confiabilidade
 streamlit run app/main_v2.py            # Demo V2: investigação do assistente
+
+# Dashboard V3: página estática, sem servidor. Regenerar após atualizar o snapshot:
+python scripts/site/gerar.py            # escreve docs/index.html
 ```
 
 ---
@@ -84,9 +86,7 @@ python scripts/proxy_estabilidade_reproduzivel.py --data-referencia 2021-01-04 -
 
 O dashboard V3 lê só o snapshot agregado e versionado (nunca dado bruto nem API externa) e mostra tamanho de amostra, eventos e intervalos ao lado de cada métrica, nunca um número isolado.
 
-```bash
-streamlit run app/monitoramento_v3.py
-```
+**[Abrir o dashboard](https://luizmaibashi.github.io/Payflow-inadimplencia/)** — página estática, nenhum servidor a aguardar.
 
 Desenho técnico completo nas [specs 0007 a 0011](docs/spec/). Ligação com o conteúdo da Pós-Tech na [matriz de conhecimento](docs/MATRIZ_POS_TECH_PAYFLOW.md).
 
