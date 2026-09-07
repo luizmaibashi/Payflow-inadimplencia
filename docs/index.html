@@ -1,16 +1,16 @@
 <title>O placar de risco ainda vale?</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
 <style>
 :root{
-  --ground:#080D17; --raise:#0E1524; --raise-2:#141D30;
-  --rule:#1E2A40; --rule-soft:#151E2F;
-  --ink:#EDF2FA; --ink-2:#98A9C2; --ink-3:#5E7190;
-  --promise:#5B9CFF; --promise-dim:#2B5389;
-  --reality:#F2A73B; --reality-dim:#7E5A1F;
-  --ok:#3FAE83; --warn:#D2A044; --crit:#DD6355; --none:#5E7190;
-  --f-display:'Archivo','Segoe UI',sans-serif;
-  --f-body:'IBM Plex Sans','Segoe UI',sans-serif;
-  --f-mono:'IBM Plex Mono',Consolas,monospace;
+  --ground:#0E1917; --raise:#14211E; --raise-2:#17251F;
+  --rule:#20302C; --rule-soft:#17231F;
+  --ink:#EDF1EC; --ink-2:#9FB3AC; --ink-3:#82938C;
+  --promise:#0FA38F; --promise-dim:#1E5A50;
+  --reality:#C97A3F; --reality-dim:#7A4B22;
+  --ok:#2FA36D; --warn:#BF8A16; --crit:#C63D54; --none:#6B8079;
+  --f-display:'Fraunces',serif;
+  --f-body:'Public Sans','Segoe UI',sans-serif;
+  --f-mono:'Spline Sans Mono',Consolas,monospace;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -19,6 +19,11 @@ body{
   font-family:var(--f-body);font-size:16px;line-height:1.62;
   -webkit-font-smoothing:antialiased;
 }
+/* grão de papel: SVG turbulence, ~5% opacidade, fixo sobre a viewport inteira */
+.grain{position:fixed;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay;z-index:1;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px 180px;}
+
 .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(1.1rem,4vw,2.4rem)}
 /* o scrollytelling rompe a margem do resto: o dado ganha mais ar que o texto */
 .wrap-wide{max-width:1440px}
@@ -54,9 +59,13 @@ h1 em{font-style:normal;color:var(--promise)}
   appearance:none;font:inherit;color:inherit;text-align:left;cursor:pointer;
   background:none;border:0;border-right:1px solid var(--rule-soft);
   padding:.75rem 1rem;display:grid;gap:.28rem;
-  border-top:2px solid transparent;transition:background .18s,border-color .18s;
+  border-top:2px solid transparent;
+  transition:transform .5s cubic-bezier(.34,1.56,.64,1),background .25s ease,box-shadow .4s ease,border-color .25s ease;
 }
-.vint:hover{background:var(--raise)}
+.vint:hover{
+  transform:translateY(-3px) scale(1.015);background:var(--raise);
+  box-shadow:0 10px 24px -8px color-mix(in srgb, var(--promise) 45%, transparent);
+}
 .vint[aria-pressed="true"]{border-top-color:var(--promise);background:var(--raise)}
 .vint-name{font-family:var(--f-mono);font-weight:600;font-size:1rem;letter-spacing:-.01em;color:var(--ink-2)}
 .vint[aria-pressed="true"] .vint-name{color:var(--ink)}
@@ -201,6 +210,8 @@ td.hi{color:var(--ink)}
   .step-in{opacity:1}
 }
 </style>
+
+<div class="grain"></div>
 
 <header class="top">
   <div class="wrap">
@@ -482,6 +493,26 @@ SNAP.coortes.forEach(c => {
   rail.appendChild(b);
 });
 
+// ---------- contagem amarrada ao dado, não decorativa ----------
+function countUp(node){
+  const target=parseFloat(node.dataset.count), dec=+(node.dataset.dec||0), suf=node.dataset.suffix||'';
+  if(target==null || Number.isNaN(target)) return;
+  const fmt=v=>dec?v.toFixed(dec).replace('.',','):Math.round(v).toLocaleString('pt-BR');
+  if(REDUCED){ node.textContent=fmt(target)+suf; return; }
+  const t0=performance.now(), dur=1100;
+  (function step(t){
+    const p=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-p,3);
+    node.textContent=fmt(target*e)+suf;
+    if(p<1) requestAnimationFrame(step);
+  })(t0);
+}
+function observarContagens(){
+  document.querySelectorAll('[data-count]').forEach(n=>{
+    const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){countUp(n);io.disconnect();}})},{threshold:.4});
+    io.observe(n);
+  });
+}
+
 // ---------- svg helpers ----------
 const NS='http://www.w3.org/2000/svg';
 function el(t,a,p){const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);if(p)p.appendChild(n);return n;}
@@ -514,13 +545,13 @@ function serieChart(host,campo,cor,temIC){
 
   for(let k=0;k<=3;k++){
     const v=min+(max-min)*k/3, y=Y(v);
-    el('line',{x1:m.l,y1:y,x2:m.l+iw,y2:y,stroke:'#151E2F','stroke-width':1},svg);
-    el('text',{x:m.l-9,y:y+4,'text-anchor':'end',fill:'#5E7190','font-size':10,
-      'font-family':'IBM Plex Mono, monospace'},svg).textContent=v.toFixed(3).replace('.',',');
+    el('line',{x1:m.l,y1:y,x2:m.l+iw,y2:y,stroke:'#17231F','stroke-width':1},svg);
+    el('text',{x:m.l-9,y:y+4,'text-anchor':'end',fill:'#82938C','font-size':10,
+      'font-family':'Spline Sans Mono, monospace'},svg).textContent=v.toFixed(3).replace('.',',');
   }
   pts.forEach((p,i)=>el('text',{x:X(i),y:H-13,'text-anchor':'middle',
-    fill: p.x===atual ? '#EDF2FA' : '#5E7190','font-size':11,
-    'font-family':'IBM Plex Mono, monospace'},svg).textContent=p.x);
+    fill: p.x===atual ? '#EDF1EC' : '#82938C','font-size':11,
+    'font-family':'Spline Sans Mono, monospace'},svg).textContent=p.x);
 
   if(temIC){
     const up=pts.map((p,i)=>`${X(i)},${Y(p.hi)}`).join(' L');
@@ -533,7 +564,7 @@ function serieChart(host,campo,cor,temIC){
   const tip=tooltip(host);
   pts.forEach((p,i)=>{
     const on=p.x===atual;
-    el('circle',{cx:X(i),cy:Y(p.v),r:on?6:4,fill:cor,stroke:'#080D17','stroke-width':2},svg);
+    el('circle',{cx:X(i),cy:Y(p.v),r:on?6:4,fill:cor,stroke:'#0E1917','stroke-width':2},svg);
     if(on) el('circle',{cx:X(i),cy:Y(p.v),r:10.5,fill:'none',stroke:cor,'stroke-width':1.5,'stroke-opacity':.45},svg);
     const hit=el('circle',{cx:X(i),cy:Y(p.v),r:24,fill:'transparent',style:'cursor:pointer'},svg);
     const html=`<div class="tip-v">${p.x}</div><div class="tip-k">${campo.toUpperCase()} <span class="tip-v">${dec(p.v)}</span></div>`+
@@ -559,39 +590,48 @@ function calibChart(host,c){
 
   for(let k=0;k<=4;k++){
     const v=max*k/4,y=Y(v);
-    el('line',{x1:m.l,y1:y,x2:m.l+iw,y2:y,stroke:'#151E2F','stroke-width':1},svg);
-    el('text',{x:m.l-11,y:y+4,'text-anchor':'end',fill:'#5E7190','font-size':11,
-      'font-family':'IBM Plex Mono, monospace'},svg).textContent=(v*100).toFixed(1).replace('.',',')+'%';
+    el('line',{x1:m.l,y1:y,x2:m.l+iw,y2:y,stroke:'#17231F','stroke-width':1},svg);
+    el('text',{x:m.l-11,y:y+4,'text-anchor':'end',fill:'#82938C','font-size':11,
+      'font-family':'Spline Sans Mono, monospace'},svg).textContent=(v*100).toFixed(1).replace('.',',')+'%';
   }
-  const xlab=f.map((k,i)=>el('text',{x:X(i),y:H-30,'text-anchor':'middle',fill:'#98A9C2',
-    'font-size':11,'font-family':'IBM Plex Mono, monospace'},svg));
+  const xlab=f.map((k,i)=>el('text',{x:X(i),y:H-30,'text-anchor':'middle',fill:'#9FB3AC',
+    'font-size':11,'font-family':'Spline Sans Mono, monospace'},svg));
   xlab.forEach((t,i)=>t.textContent=f[i].faixa);
-  el('text',{x:m.l+iw/2,y:H-8,'text-anchor':'middle',fill:'#5E7190','font-size':11,
-    'font-family':'IBM Plex Sans, sans-serif'},svg).textContent='Faixa de score · 1 = risco menor, 10 = risco maior';
-  el('text',{x:15,y:m.t+ih/2,'text-anchor':'middle',fill:'#5E7190','font-size':11,
-    'font-family':'IBM Plex Sans, sans-serif',transform:`rotate(-90 15 ${m.t+ih/2})`},svg)
+  el('text',{x:m.l+iw/2,y:H-8,'text-anchor':'middle',fill:'#82938C','font-size':11,
+    'font-family':'Public Sans, sans-serif'},svg).textContent='Faixa de score · 1 = risco menor, 10 = risco maior';
+  el('text',{x:15,y:m.t+ih/2,'text-anchor':'middle',fill:'#82938C','font-size':11,
+    'font-family':'Public Sans, sans-serif',transform:`rotate(-90 15 ${m.t+ih/2})`},svg)
     .textContent='Taxa de inadimplência';
 
   const up=f.map((k,i)=>`${X(i)},${Y(k.observado_ic95_superior)}`).join(' L');
   const dn=f.map((k,i)=>`${X(i)},${Y(k.observado_ic95_inferior)}`).reverse().join(' L');
-  const band=el('path',{d:`M${up} L${dn} Z`,fill:'#F2A73B','fill-opacity':.16,
+  const band=el('path',{d:`M${up} L${dn} Z`,fill:'#C97A3F','fill-opacity':.16,
     style:'transition:fill-opacity .45s'},svg);
 
   const lineP=el('path',{d:'M'+f.map((k,i)=>`${X(i)},${Y(k.previsto)}`).join(' L'),fill:'none',
-    stroke:'#5B9CFF','stroke-width':2,'stroke-dasharray':'6 4','stroke-linejoin':'round',
-    style:'transition:opacity .45s,stroke-width .45s'},svg);
+    stroke:'#0FA38F','stroke-width':2,'stroke-dasharray':'6 4','stroke-linejoin':'round',
+    style:'transition:opacity .45s,stroke-width .45s,filter .45s'},svg);
   const lineR=el('path',{d:'M'+f.map((k,i)=>`${X(i)},${Y(k.observado)}`).join(' L'),fill:'none',
-    stroke:'#F2A73B','stroke-width':2,'stroke-linejoin':'round',
-    style:'transition:opacity .45s,stroke-width .45s'},svg);
+    stroke:'#C97A3F','stroke-width':2,'stroke-linejoin':'round',
+    style:'transition:opacity .45s,stroke-width .45s,filter .45s'},svg);
 
-  const dotsP=f.map((k,i)=>el('circle',{cx:X(i),cy:Y(k.previsto),r:3.5,fill:'#5B9CFF',
-    stroke:'#080D17','stroke-width':1.5,style:'transition:opacity .45s'},svg));
-  const dotsR=f.map((k,i)=>el('circle',{cx:X(i),cy:Y(k.observado),r:4,fill:'#F2A73B',
-    stroke:'#080D17','stroke-width':1.5,style:'transition:opacity .45s'},svg));
+  const dotsP=f.map((k,i)=>el('circle',{cx:X(i),cy:Y(k.previsto),r:3.5,fill:'#0FA38F',
+    stroke:'#0E1917','stroke-width':1.5,style:'transition:opacity .45s'},svg));
+  const dotsR=f.map((k,i)=>el('circle',{cx:X(i),cy:Y(k.observado),r:4,fill:'#C97A3F',
+    stroke:'#0E1917','stroke-width':1.5,style:'transition:opacity .45s'},svg));
 
   const halo=el('circle',{cx:X(f.length-1),cy:Y(f[f.length-1].observado),r:15,fill:'none',
-    stroke:'#F2A73B','stroke-width':1.5,'stroke-opacity':0,style:'transition:stroke-opacity .45s'},svg);
-  const guide=el('line',{x1:0,y1:m.t,x2:0,y2:m.t+ih,stroke:'#5B9CFF','stroke-width':1,'stroke-opacity':0},svg);
+    stroke:'#C97A3F','stroke-width':1.5,'stroke-opacity':0,style:'transition:stroke-opacity .45s'},svg);
+  const guide=el('line',{x1:0,y1:m.t,x2:0,y2:m.t+ih,stroke:'#0FA38F','stroke-width':1,'stroke-opacity':0},svg);
+
+  // anotação formal: círculo geométrico + rótulo na fonte do sistema, na faixa de maior risco
+  const altaPt = f[f.length-1];
+  const aX=X(f.length-1), aY=Y(altaPt.observado);
+  el('circle',{cx:aX,cy:aY,r:9,fill:'none',stroke:'#EDF1EC','stroke-width':1.4,opacity:.75},svg);
+  el('line',{x1:aX-11,y1:aY-9,x2:aX-38,y2:aY-24,stroke:'#EDF1EC','stroke-width':1.1,opacity:.55},svg);
+  const notaTexto = `${nf.format(altaPt.inadimplentes)} CASOS, É AQUI QUE DECIDE`;
+  el('text',{x:aX-41,y:aY-29,'text-anchor':'end','font-family':'Spline Sans Mono, monospace',
+    'font-size':11.5,'font-weight':500,fill:'#EDF1EC',opacity:.9},svg).textContent=notaTexto;
 
   const tip=tooltip(host);
   f.forEach((k,i)=>{
@@ -600,8 +640,8 @@ function calibChart(host,c){
     const e=est(k.status);
     const html=`<div class="tip-v">Faixa ${k.faixa}</div>`+
       `<div class="tip-k">n <span class="tip-v">${nf.format(k.n)}</span> · não pagaram <span class="tip-v">${nf.format(k.inadimplentes)}</span></div>`+
-      `<div class="tip-k">prometido <span class="tip-v" style="color:#5B9CFF">${pct(k.previsto)}</span></div>`+
-      `<div class="tip-k">aconteceu <span class="tip-v" style="color:#F2A73B">${pct(k.observado)}</span></div>`+
+      `<div class="tip-k">prometido <span class="tip-v" style="color:#0FA38F">${pct(k.previsto)}</span></div>`+
+      `<div class="tip-k">aconteceu <span class="tip-v" style="color:#C97A3F">${pct(k.observado)}</span></div>`+
       `<div class="tip-k">IC95% ${pct(k.observado_ic95_inferior)} a ${pct(k.observado_ic95_superior)}</div>`+
       `<div class="tip-k">${e.sym} ${e.label}</div>`;
     const mv=ev=>{
@@ -623,23 +663,26 @@ function aplicarFoco(){
   if(!calib) return;
   const {band,lineP,lineR,dotsP,dotsR,halo,xlab}=calib;
   const dim = REDUCED ? 1 : .22;
-  const set=(o,op,w)=>{o.style.opacity=op; if(w)o.setAttribute('stroke-width',w);};
+  const set=(o,op,w,blur)=>{
+    o.style.opacity=op; if(w)o.setAttribute('stroke-width',w);
+    o.style.filter = (!REDUCED && blur) ? `blur(${blur}px)` : 'none';
+  };
 
   const cfg={
     base:    {p:dim, r:dim, b:.06, halo:0},
-    promise: {p:1,   r:dim, b:.06, halo:0, wp:2.6},
-    reality: {p:.45, r:1,   b:.10, halo:0, wr:2.6},
-    band:    {p:.35, r:1,   b:.30, halo:0},
+    promise: {p:1,   r:dim, b:.06, halo:0, wp:2.6, br:1.3},
+    reality: {p:.45, r:1,   b:.10, halo:0, wr:2.6, bp:1.3},
+    band:    {p:.35, r:1,   b:.30, halo:0, bp:1},
     top:     {p:.6,  r:1,   b:.14, halo:1}
   }[foco] || {p:1,r:1,b:.16,halo:0};
 
-  set(lineP,cfg.p,cfg.wp||2); set(lineR,cfg.r,cfg.wr||2);
+  set(lineP,cfg.p,cfg.wp||2,cfg.bp); set(lineR,cfg.r,cfg.wr||2,cfg.br);
   dotsP.forEach(d=>d.style.opacity=cfg.p);
   dotsR.forEach(d=>d.style.opacity=cfg.r);
   band.setAttribute('fill-opacity',cfg.b);
   halo.setAttribute('stroke-opacity',cfg.halo);
   xlab.forEach((t,i)=>t.setAttribute('fill',
-    foco==='top' ? (i===xlab.length-1 ? '#F2A73B' : '#3C4A63') : '#98A9C2'));
+    foco==='top' ? (i===xlab.length-1 ? '#C97A3F' : '#324039') : '#9FB3AC'));
 
   const ativo={base:['promise','reality','band'],promise:['promise'],
     reality:['reality'],band:['reality','band'],top:['reality']}[foco]||['promise','reality','band'];
@@ -679,24 +722,31 @@ function render(){
     'com um responsável humano decidindo o próximo passo.';
   $('#fig-vint').textContent='safra '+c.coorte;
 
-  $('#kpis').innerHTML=[
-    ['Propostas avaliadas',nf.format(c.n),''],
-    ['Quantas não pagaram',c.inadimplentes==null?'n/d':nf.format(c.inadimplentes),''],
-    ['Taxa de inadimplência real',pct(c.taxa_inadimplencia),
-      'IC95% '+pct(c.taxa_ic95_inferior)+' a '+pct(c.taxa_ic95_superior)],
-    ['Variáveis fora do estável',(d.ALERTA||0)+(d.CRITICO||0)+' de '+c.drift.length,
-      (d.ALERTA||0)+' em alerta · '+(d.CRITICO||0)+' crítica(s)']
-  ].map(([k,v,ci])=>`<div class="kpi"><div class="kpi-k">${k}</div><div class="kpi-v">${v}</div>`+
-    (ci?`<div class="kpi-ci">${ci}</div>`:'')+`</div>`).join('');
+  const kpiHtml = (k,v,ci,dataAttr) =>
+    `<div class="kpi"><div class="kpi-k">${k}</div><div class="kpi-v"${dataAttr||''}>${dataAttr?'0':v}</div>`+
+    (ci?`<div class="kpi-ci">${ci}</div>`:'')+`</div>`;
+  $('#kpis').innerHTML = [
+    kpiHtml('Propostas avaliadas', nf.format(c.n), '', ` data-count="${c.n}"`),
+    kpiHtml('Quantas não pagaram', c.inadimplentes==null?'n/d':nf.format(c.inadimplentes), '',
+      c.inadimplentes==null ? '' : ` data-count="${c.inadimplentes}"`),
+    kpiHtml('Taxa de inadimplência real', pct(c.taxa_inadimplencia),
+      'IC95% '+pct(c.taxa_ic95_inferior)+' a '+pct(c.taxa_ic95_superior),
+      ` data-count="${c.taxa_inadimplencia*100}" data-dec="2" data-suffix="%"`),
+    kpiHtml('Variáveis fora do estável', (d.ALERTA||0)+(d.CRITICO||0)+' de '+c.drift.length,
+      (d.ALERTA||0)+' em alerta · '+(d.CRITICO||0)+' crítica(s)')
+  ].join('');
 
-  $('#big-auc').textContent=dec(c.auc,4);
+  $('#big-auc').dataset.count = c.auc;
+  $('#big-auc').dataset.dec = 4;
+  $('#big-auc').textContent = REDUCED ? dec(c.auc,4) : '0,0000';
+  observarContagens();
   $('#auc-line').innerHTML=
     `Nesta safra, o intervalo de confiança vai de <span class="num">${dec(c.auc_ic95_inferior)}</span> a `+
     `<span class="num">${dec(c.auc_ic95_superior)}</span>. <b>Ele não encosta em 0,50</b>, então a `+
     `discriminação é fraca, mas dá pra detectar.`;
 
-  serieChart($('#plot-auc'),'auc','#5B9CFF',true);
-  serieChart($('#plot-brier'),'brier','#F2A73B',false);
+  serieChart($('#plot-auc'),'auc','#0FA38F',true);
+  serieChart($('#plot-brier'),'brier','#C97A3F',false);
   calibChart($('#plot-calib'),c);
 
   const acima=c.calibracao.filter(k=>k.previsto>k.observado).length;
@@ -706,8 +756,8 @@ function render(){
     `que significa um score <b>calibrado</b>.`;
   $('#step-top').innerHTML=
     `Na faixa <b>${alta.faixa}</b>, a mais arriscada, o modelo prometeu `+
-    `<span class="num" style="color:#5B9CFF">${pct(alta.previsto)}</span> e aconteceram `+
-    `<span class="num" style="color:#F2A73B">${pct(alta.observado)}</span>, ou `+
+    `<span class="num" style="color:#0FA38F">${pct(alta.previsto)}</span> e aconteceram `+
+    `<span class="num" style="color:#C97A3F">${pct(alta.observado)}</span>, ou `+
     `<span class="num">${nf.format(alta.inadimplentes)}</span> casos em `+
     `<span class="num">${nf.format(alta.n)}</span> propostas, margem `+
     `<span class="num">${pct(alta.observado_ic95_inferior)} a ${pct(alta.observado_ic95_superior)}</span>.`;
@@ -715,7 +765,7 @@ function render(){
   $('#tb-calib').innerHTML=c.calibracao.map(k=>{
     const e=est(k.status);
     return `<tr><td class="hi">${k.faixa}</td><td>${nf.format(k.n)}</td><td>${nf.format(k.inadimplentes)}</td>`+
-      `<td style="color:#5B9CFF">${pct(k.previsto)}</td><td class="hi" style="color:#F2A73B">${pct(k.observado)}</td>`+
+      `<td style="color:#0FA38F">${pct(k.previsto)}</td><td class="hi" style="color:#C97A3F">${pct(k.observado)}</td>`+
       `<td>${pct(k.observado_ic95_inferior)}</td><td>${pct(k.observado_ic95_superior)}</td>`+
       `<td>${pct(k.gap)}</td><td><span class="chip ${e.cls}"><i>${e.sym}</i>${e.label}</span></td></tr>`;
   }).join('');
@@ -754,8 +804,8 @@ function render(){
 
 render();
 let rt; addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{
-  serieChart($('#plot-auc'),'auc','#5B9CFF',true);
-  serieChart($('#plot-brier'),'brier','#F2A73B',false);
+  serieChart($('#plot-auc'),'auc','#0FA38F',true);
+  serieChart($('#plot-brier'),'brier','#C97A3F',false);
   calibChart($('#plot-calib'),coorte());
 },180);});
 })();
