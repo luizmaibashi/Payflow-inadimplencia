@@ -1,4 +1,10 @@
-<title>O placar de risco ainda vale?</title>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Painel de monitoramento da discriminação, calibração e estabilidade de um modelo de risco de crédito por coorte.">
+<title>PayFlow | Monitoramento de confiabilidade</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
 <style>
 :root{
@@ -30,6 +36,7 @@ body{
 .narrow{max-width:64ch}
 h1,h2,h3{font-family:var(--f-display);text-wrap:balance;letter-spacing:-.025em;margin:0;font-weight:800}
 :focus-visible{outline:2px solid var(--promise);outline-offset:3px;border-radius:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
 /* ============ topo ============ */
 .top{border-bottom:1px solid var(--rule-soft)}
@@ -175,10 +182,11 @@ td.hi{color:var(--ink)}
 .states{display:flex;gap:1.3rem;flex-wrap:wrap;margin-bottom:1.4rem}
 
 .drift-row{display:grid;grid-template-columns:130px 1fr auto;gap:1rem;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--rule-soft)}
-.drift-name{font-family:var(--f-mono);font-size:.84rem;color:var(--ink)}
+.drift-name{font-family:var(--f-body);font-size:.9rem;font-weight:600;color:var(--ink)}
+.drift-code{display:block;margin-top:.18rem;font-family:var(--f-mono);font-size:.64rem;color:var(--ink-3)}
 .drift-bar{height:4px;background:var(--rule-soft);position:relative;border-radius:2px;margin-top:.4rem}
 .drift-bar span{position:absolute;inset:0 auto 0 0;border-radius:2px;background:var(--reality)}
-.drift-num{font-family:var(--f-mono);font-size:.74rem;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.drift-num{font-family:var(--f-mono);font-size:.74rem;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
 
 /* ============ veredito ============ */
 .verdict{margin-top:clamp(3.5rem,9vw,6.5rem);border-top:2px solid var(--promise);padding-top:2rem}
@@ -208,12 +216,20 @@ td.hi{color:var(--ink)}
   .verdict-item{padding:1.2rem 0;border-left:0;border-top:1px solid var(--rule-soft)}
   .verdict-item:first-child{border-top:0;padding-top:0}
 }
+@media (max-width:640px){
+  .drift-row{grid-template-columns:1fr auto;gap:.6rem 1rem}
+  .drift-row>span:nth-child(2){grid-column:1/-1;grid-row:2}
+  .drift-num{text-align:right}
+  .kpi-v{font-size:1.55rem}
+}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *{transition:none!important;animation:none!important}
   .step-in{opacity:1}
 }
 </style>
+</head>
+<body>
 
 <div class="grain"></div>
 
@@ -231,10 +247,10 @@ td.hi{color:var(--ink)}
     <div class="kicker">Monitoramento de confiabilidade</div>
     <h1>O placar de risco <em>ainda vale</em>?</h1>
     <p class="lede">
-      Um banco usa um placar de risco (um número entre 0 e 1) pra decidir quem parece bom pagador.
-      Esse placar foi calculado uma vez, olhando pro passado. A pergunta aqui é outra:
-      <strong>quando chegam clientes novos, meses depois, o placar continua dizendo a verdade,
-      ou envelheceu como um mapa que não mostra a rua nova do bairro?</strong>
+      Um banco usa um placar de risco, um número entre 0 e 1, para estimar quem tem maior chance
+      de não pagar. O modelo aprendeu essa relação com dados do passado. A pergunta aqui é outra:
+      <strong>quando chegam novas propostas, meses depois, o placar continua representando o risco
+      ou envelheceu como um mapa que ainda não mostra as ruas novas do bairro?</strong>
     </p>
   </section>
 
@@ -259,8 +275,8 @@ td.hi{color:var(--ink)}
     <div class="act-rule"><span class="n">01</span><span class="line"></span></div>
     <h2>O modelo ainda ordena o risco certo?</h2>
     <p class="act-lede narrow">
-      Antes de perguntar se o número está certo, pergunte se a <em>ordem</em> está certa:
-      os clientes mais arriscados ficam realmente acima dos menos arriscados?
+      Antes de avaliar o valor exato do score, é preciso verificar a <em>ordem</em>:
+      as propostas de maior risco recebem notas mais altas do que as de menor risco?
     </p>
 
     <div class="bignum">
@@ -268,9 +284,9 @@ td.hi{color:var(--ink)}
       <div class="bignum-side">
         <div class="mono-label">AUC desta safra</div>
         <p>
-          Sorteie dois clientes: um que pagou, outro que não. AUC é a chance de o modelo
-          ter dado nota de risco maior pro que não pagou. <b>0,50 é jogar moeda.</b>
-          <b>1,00 é ordem perfeita.</b>
+          Escolha ao acaso duas propostas: uma adimplente e outra inadimplente. A AUC é a
+          probabilidade de o modelo atribuir uma nota de risco maior à proposta inadimplente.
+          <b>0,50 equivale a ordenar ao acaso.</b> <b>1,00 representa uma ordenação perfeita.</b>
         </p>
         <p id="auc-line"></p>
       </div>
@@ -278,11 +294,11 @@ td.hi{color:var(--ink)}
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:2.2rem">
       <figure style="margin:0">
-        <div class="mono-label" style="margin-bottom:.7rem">A ordem continua certa · AUC por safra</div>
+        <div class="mono-label" style="margin-bottom:.7rem">Capacidade de ordenação · AUC por safra</div>
         <div class="plot" id="plot-auc"></div>
       </figure>
       <figure style="margin:0">
-        <div class="mono-label" style="margin-bottom:.7rem">O número é confiável · Brier por safra</div>
+        <div class="mono-label" style="margin-bottom:.7rem">Precisão das probabilidades · Brier por safra</div>
         <div class="plot" id="plot-brier"></div>
       </figure>
     </div>
@@ -290,9 +306,10 @@ td.hi{color:var(--ink)}
     <div class="note" style="margin-top:1.8rem">
       <div class="note-k">Por que os dois, e não só um</div>
       <p>
-        AUC checa a <b>ordem</b>. Brier checa o <b>número</b>: se o modelo disse "5% de chance de não
-        pagar", isso aconteceu 5% das vezes? Um modelo pode ordenar bem e ainda assim mentir no
-        número. Por isso o próximo ato.
+        A AUC mede a <b>ordenação do risco</b>. O Brier mede a <b>qualidade das probabilidades</b>:
+        previsões próximas de 5% correspondem a taxas observadas próximas de 5%? Um modelo pode
+        ordenar bem e, ainda assim, produzir probabilidades pouco confiáveis. É isso que o próximo
+        ato verifica.
       </p>
     </div>
   </section>
@@ -300,9 +317,9 @@ td.hi{color:var(--ink)}
   <!-- ===== ATO 2 · scrollytelling ===== -->
   <section class="act">
     <div class="act-rule"><span class="n">02</span><span class="line"></span></div>
-    <h2>A porcentagem prometida bate com a realidade?</h2>
+    <h2>A probabilidade prevista bate com a realidade?</h2>
     <p class="act-lede narrow">
-      Os clientes foram divididos em 10 faixas de score, da menor pra maior chance de não pagar.
+      As propostas foram divididas em 10 faixas de score, da menor para a maior chance de não pagar.
       Role a página: o gráfico ao lado fica parado e a leitura avança um passo por vez.
     </p>
   </section>
@@ -312,14 +329,14 @@ td.hi{color:var(--ink)}
   <div class="scrolly" id="scrolly">
     <div class="scrolly-fig">
       <div class="scrolly-fig-head">
-        <span class="fig-title">Prometido pelo modelo × aconteceu de verdade</span>
+        <span class="fig-title">Previsto pelo modelo × observado na safra</span>
         <span class="fig-vint" id="fig-vint"></span>
       </div>
       <div class="plot" id="plot-calib"></div>
       <div class="legend" id="calib-legend">
-        <span data-key="promise"><span class="swatch dash"></span>Prometido pelo score</span>
-        <span data-key="reality"><span class="swatch" style="background:var(--reality)"></span>Aconteceu de verdade</span>
-        <span data-key="band"><span class="swatch" style="background:var(--reality);opacity:.35"></span>Margem de erro (IC95%)</span>
+        <span data-key="promise"><span class="swatch dash"></span>Previsto pelo modelo</span>
+        <span data-key="reality"><span class="swatch" style="background:var(--reality)"></span>Observado na safra</span>
+        <span data-key="band"><span class="swatch" style="background:var(--reality);opacity:.35"></span>Intervalo de confiança (IC95%)</span>
       </div>
     </div>
 
@@ -327,29 +344,29 @@ td.hi{color:var(--ink)}
       <div class="step" data-focus="base">
         <div class="step-in">
           <div class="step-n">Passo 1 / 5</div>
-          <h3>Dez faixas, da menor pra maior chance de calote</h3>
-          <p>Cada ponto no eixo horizontal é um décimo dos clientes, ordenado pelo score do modelo.
-          A faixa <b>1</b> reúne quem o modelo achou mais seguro; a faixa <b>10</b>, quem ele achou
-          mais arriscado.</p>
-          <p>O eixo vertical é a taxa de inadimplência, ou seja, quantos de fato não pagaram.</p>
+          <h3>Dez faixas, do menor para o maior risco</h3>
+          <p>Cada faixa reúne cerca de um décimo das propostas, ordenadas pelo score do modelo.
+          A faixa <b>1</b> contém as propostas consideradas mais seguras; a faixa <b>10</b>, as
+          consideradas mais arriscadas.</p>
+          <p>O eixo vertical mostra a taxa de inadimplência, isto é, a parcela que de fato não pagou.</p>
         </div>
       </div>
       <div class="step" data-focus="promise">
         <div class="step-in">
           <div class="step-n">Passo 2 / 5</div>
-          <h3>O que o modelo prometeu</h3>
-          <p>A linha <b style="color:var(--promise)">azul tracejada</b> é a promessa do score:
-          em cada faixa, qual porcentagem de calote ele previu.</p>
-          <p>Ela sobe da esquerda pra direita, que é como tem que ser. Se não subisse,
-          o modelo não estaria ordenando risco nenhum.</p>
+          <h3>O que o modelo previu</h3>
+          <p>A linha <b style="color:var(--promise)">verde-petróleo tracejada</b> mostra a
+          probabilidade média de inadimplência prevista em cada faixa.</p>
+          <p>Ela sobe da esquerda para a direita, como se espera de um score que separa propostas
+          de menor e maior risco.</p>
         </div>
       </div>
       <div class="step" data-focus="reality">
         <div class="step-in">
           <div class="step-n">Passo 3 / 5</div>
-          <h3>O que aconteceu de verdade</h3>
-          <p>A linha <b style="color:var(--reality)">âmbar</b> é a realidade medida: quantos
-          realmente não pagaram em cada faixa.</p>
+          <h3>O que foi observado</h3>
+          <p>A linha <b style="color:var(--reality)">cobre</b> mostra a taxa de inadimplência
+          observada em cada faixa.</p>
           <p id="step-gap"></p>
         </div>
       </div>
@@ -357,10 +374,10 @@ td.hi{color:var(--ink)}
         <div class="step-in">
           <div class="step-n">Passo 4 / 5</div>
           <h3>Quanta confiança essa medida merece</h3>
-          <p>A área sombreada é a <b>margem de erro</b> da linha âmbar. Quanto mais estreita,
-          mais casos reais sustentam aquele ponto.</p>
-          <p>É por isso que um número sozinho não basta: <b>"5,35%" com 13 mil casos por trás
-          é uma afirmação diferente de "5,35%" com 30 casos.</b></p>
+          <p>A área sombreada representa o <b>intervalo de confiança de 95%</b> da taxa observada.
+          Quanto mais estreita, maior é a precisão da estimativa.</p>
+          <p>Por isso, uma proporção não deve aparecer sozinha: <b>5,35% em uma amostra de 13 mil
+          casos oferece uma evidência diferente de 5,35% em apenas 30 casos.</b></p>
         </div>
       </div>
       <div class="step" data-focus="top">
@@ -368,8 +385,8 @@ td.hi{color:var(--ink)}
           <div class="step-n">Passo 5 / 5</div>
           <h3>A faixa que decide o resultado</h3>
           <p id="step-top"></p>
-          <p>É justamente onde um banco mais precisa confiar no número. Negar crédito a quem
-          pagaria custa receita. Conceder a quem não paga custa o principal.</p>
+          <p>É justamente nessa faixa que a instituição mais precisa confiar no número. Negar
+          crédito a quem pagaria reduz receita. Conceder a quem não paga aumenta a perda.</p>
         </div>
       </div>
     </div>
@@ -379,12 +396,13 @@ td.hi{color:var(--ink)}
 <div class="wrap">
   <div class="tbl-wrap">
     <table>
+      <caption class="sr-only">Calibração por faixa de score na safra selecionada</caption>
       <thead>
         <tr>
-          <th scope="col">Faixa</th><th scope="col">n</th><th scope="col">Não pagaram</th>
-          <th scope="col">Prometido</th><th scope="col">Aconteceu</th>
-          <th scope="col">IC95% inf.</th><th scope="col">IC95% sup.</th>
-          <th scope="col">Diferença</th><th scope="col">Estado</th>
+          <th scope="col">Faixa</th><th scope="col">Amostra (n)</th><th scope="col">Não pagaram</th>
+          <th scope="col">Previsto</th><th scope="col">Observado</th>
+          <th scope="col">IC95% inferior</th><th scope="col">IC95% superior</th>
+          <th scope="col">Diferença (p.p.)</th><th scope="col">Estado</th>
         </tr>
       </thead>
       <tbody id="tb-calib"></tbody>
@@ -394,18 +412,20 @@ td.hi{color:var(--ink)}
   <!-- ===== ATO 3 ===== -->
   <section class="act">
     <div class="act-rule"><span class="n">03</span><span class="line"></span></div>
-    <h2>Os clientes novos mudaram demais?</h2>
+    <h2>As novas propostas mudaram demais?</h2>
     <p class="act-lede narrow">
-      Um modelo aprende com um retrato do passado. Se o presente muda muito, o retrato envelhece.
-      Aqui comparamos a "forma" de cada variável entre quem treinou o modelo e quem chegou depois.
+      Um modelo aprende com um retrato do passado. Se o perfil das novas propostas muda, esse
+      retrato pode envelhecer. Aqui comparamos a distribuição de cada variável no treino e na
+      safra selecionada.
     </p>
     <div class="note">
-      <div class="note-k">O que é KS, e o que é delta de ausência</div>
+      <div class="note-k">O que são KS e variação de dados ausentes</div>
       <p>
-        <b>KS</b> mede o quanto a distribuição de uma variável mudou entre o treino e a safra nova.
-        Zero significa que nada mudou, 1 significa que mudou completamente. <b>Delta de ausência</b>
-        mede se a variável passou a faltar mais vezes nos dados novos. Nenhum dos dois prova que o
-        modelo piorou. Os dois apontam onde vale investigar.
+        O <b>KS</b> mede a distância entre a distribuição de uma variável no treino e na nova safra.
+        Valores próximos de zero indicam distribuições semelhantes; valores maiores indicam mais
+        mudança. A <b>variação de dados ausentes</b>, expressa em pontos percentuais, mostra se a
+        variável passou a faltar com mais ou menos frequência. Nenhuma das duas medidas prova que o
+        modelo piorou. Elas indicam onde investigar.
       </p>
     </div>
     <div class="states">
@@ -424,13 +444,13 @@ td.hi{color:var(--ink)}
   <!-- ===== VEREDITO ===== -->
   <section class="verdict">
     <div class="mono-label" style="margin-bottom:1rem">O que este projeto entrega</div>
-    <h2>Um jeito de descobrir se um placar de crédito envelheceu, antes que o prejuízo apareça.</h2>
+    <h2>Um jeito de descobrir se um placar de crédito envelheceu antes que o prejuízo apareça.</h2>
     <div class="verdict-grid">
       <div class="verdict-item">
         <div class="rot">A dor</div>
-        <p>Bancos treinam um placar de risco uma vez e continuam usando por anos, sem checar se os
-        clientes novos ainda se parecem com os que serviram de base. Quando o placar envelhece em
-        silêncio, o banco segue confiando num número que já não reflete a realidade.</p>
+        <p>Instituições treinam um modelo de risco e podem continuar usando-o sem verificar se as
+        novas propostas ainda se parecem com as que serviram de base. Quando o modelo envelhece em
+        silêncio, decisões continuam apoiadas em um número que já pode não refletir a realidade.</p>
       </div>
       <div class="verdict-item">
         <div class="rot">A resposta medida aqui</div>
@@ -438,11 +458,10 @@ td.hi{color:var(--ink)}
       </div>
       <div class="verdict-item">
         <div class="rot">O valor prático</div>
-        <p>Na falta de um painel assim, a saída costuma ser confiar no modelo por inércia ou
-        desligá-lo por precaução. Aqui o gestor de risco tem os três sinais que sustentam a
-        decisão: se a ordem continua certa, se o número continua honesto, e o que mudou o
-        bastante pra merecer investigação. Cada um vem com o tamanho de amostra e a margem de
-        confiança do lado.</p>
+        <p>Sem esse monitoramento, a equipe pode manter o modelo por inércia ou interrompê-lo por
+        precaução. O painel reúne três sinais para orientar a análise: capacidade de ordenação,
+        qualidade das probabilidades e mudanças no perfil dos dados. As proporções são apresentadas
+        com tamanho de amostra e intervalo de confiança.</p>
       </div>
     </div>
   </section>
@@ -465,13 +484,34 @@ const ESTADO = {
   CRITICO:{cls:'crit',sym:'■',label:'Crítico'},
   INSUFICIENTE:{cls:'none',sym:'○',label:'Amostra insuficiente'},
   APROXIMADA:{cls:'ok',sym:'●',label:'Aproximada'},
-  SUPERESTIMA_RISCO:{cls:'warn',sym:'▲',label:'Superestima risco'},
-  SUBESTIMA_RISCO:{cls:'crit',sym:'■',label:'Subestima risco'}
+  SUPERESTIMA_RISCO:{cls:'warn',sym:'▲',label:'Superestima o risco'},
+  SUBESTIMA_RISCO:{cls:'crit',sym:'■',label:'Subestima o risco'}
 };
 const est = s => ESTADO[s] || {cls:'none',sym:'○',label:s};
 const nf  = new Intl.NumberFormat('pt-BR');
 const pct = (v,d=2) => v==null ? 'n/d' : (v*100).toFixed(d).replace('.',',')+'%';
 const dec = (v,d=4) => v==null ? 'n/d' : v.toFixed(d).replace('.',',');
+const pp  = (v,d=2) => {
+  if(v==null) return 'n/d';
+  const valor=Math.abs(v)<1e-9 ? 0 : v*100;
+  return (valor>0?'+':'')+valor.toFixed(d).replace('.',',')+' p.p.';
+};
+const dataBR = s => new Date(s+'T00:00:00Z').toLocaleDateString('pt-BR',{timeZone:'UTC'});
+const FEATURE_LABEL = {
+  annuity_780A: 'Valor mensal da parcela',
+  credamount_770A: 'Valor do empréstimo ou limite do cartão',
+  downpmt_116A: 'Valor da entrada',
+  price_1097A: 'Preço associado ao crédito',
+  maininc_215A: 'Valor da renda principal',
+  inittransactionamount_650A: 'Valor inicial da solicitação de crédito'
+};
+const ausencia = v => {
+  if(v == null) return 'dados ausentes: n/d';
+  if(Math.abs(v) < 1e-9) return 'dados ausentes: sem mudança';
+  const sinal = v > 0 ? '+' : '';
+  return 'dados ausentes: '+sinal+(v*100).toFixed(2).replace('.',',')+' p.p.';
+};
+const plural = (n, singular, pluralForm) => n+' '+(n===1 ? singular : pluralForm);
 
 let atual = SNAP.coortes[SNAP.coortes.length-1].coorte;
 let foco  = 'base';
@@ -479,10 +519,11 @@ const coorte = () => SNAP.coortes.find(c => c.coorte === atual);
 const contar = c => c.drift.reduce((a,d)=>(a[d.status]=(a[d.status]||0)+1,a),{});
 
 const dt = new Date(SNAP.gerado_em);
-$('#stamp').innerHTML = 'Snapshot de pesquisa<br>' + dt.toLocaleDateString('pt-BR') + ' ' +
-  dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + ' UTC';
-$('#picker-note').textContent = nf.format(SNAP.n_treino) + ' treinaram · ' +
-  nf.format(SNAP.n_total) + ' avaliadas no total';
+$('#stamp').innerHTML = 'Snapshot de pesquisa<br>' +
+  dt.toLocaleDateString('pt-BR',{timeZone:'UTC'}) + ' ' +
+  dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'UTC'}) + ' UTC';
+$('#picker-note').textContent = nf.format(SNAP.n_treino) + ' casos no treino · ' +
+  nf.format(SNAP.n_total) + ' propostas avaliadas';
 
 // ---------- seletor ----------
 const rail = $('#rail');
@@ -493,7 +534,8 @@ SNAP.coortes.forEach(c => {
   b.setAttribute('aria-pressed', String(c.coorte===atual));
   b.innerHTML = '<span class="vint-name">'+c.coorte+'</span>' +
     '<span class="vint-sub">AUC '+dec(c.auc)+' · '+nf.format(c.n)+' propostas</span>' +
-    '<span class="vint-sub">'+(d.ALERTA||0)+' em alerta · '+(d.CRITICO||0)+' crítica(s)</span>';
+    '<span class="vint-sub">'+plural(d.ALERTA||0,'variável em alerta','variáveis em alerta')+' · '+
+    plural(d.CRITICO||0,'crítica','críticas')+'</span>';
   b.addEventListener('click', () => { atual = c.coorte; render(); });
   rail.appendChild(b);
 });
@@ -645,8 +687,8 @@ function calibChart(host,c){
     const e=est(k.status);
     const html=`<div class="tip-v">Faixa ${k.faixa}</div>`+
       `<div class="tip-k">n <span class="tip-v">${nf.format(k.n)}</span> · não pagaram <span class="tip-v">${nf.format(k.inadimplentes)}</span></div>`+
-      `<div class="tip-k">prometido <span class="tip-v" style="color:#0FA38F">${pct(k.previsto)}</span></div>`+
-      `<div class="tip-k">aconteceu <span class="tip-v" style="color:#C97A3F">${pct(k.observado)}</span></div>`+
+      `<div class="tip-k">previsto <span class="tip-v" style="color:#0FA38F">${pct(k.previsto)}</span></div>`+
+      `<div class="tip-k">observado <span class="tip-v" style="color:#C97A3F">${pct(k.observado)}</span></div>`+
       `<div class="tip-k">IC95% ${pct(k.observado_ic95_inferior)} a ${pct(k.observado_ic95_superior)}</div>`+
       `<div class="tip-k">${e.sym} ${e.label}</div>`;
     const mv=ev=>{
@@ -723,8 +765,8 @@ function render(){
 
   $('#scope-seal').textContent=c.decisao;
   $('#scope-text').textContent=c.motivo+
-    ' Este modo de uso não libera concessão de crédito real: serve para aprender e monitorar, '+
-    'com um responsável humano decidindo o próximo passo.';
+    ' Este painel serve para pesquisa e monitoramento. Ele não autoriza concessão de crédito real, '+
+    'e o próximo passo depende de análise humana.';
   $('#fig-vint').textContent='safra '+c.coorte;
 
   const kpiHtml = (k,v,ci,dataAttr) =>
@@ -738,7 +780,7 @@ function render(){
       'IC95% '+pct(c.taxa_ic95_inferior)+' a '+pct(c.taxa_ic95_superior),
       ` data-count="${c.taxa_inadimplencia*100}" data-dec="2" data-suffix="%"`),
     kpiHtml('Variáveis fora do estável', (d.ALERTA||0)+(d.CRITICO||0)+' de '+c.drift.length,
-      (d.ALERTA||0)+' em alerta · '+(d.CRITICO||0)+' crítica(s)')
+      plural(d.ALERTA||0,'em alerta','em alerta')+' · '+plural(d.CRITICO||0,'crítica','críticas'))
   ].join('');
 
   $('#big-auc').dataset.count = c.auc;
@@ -749,14 +791,14 @@ function render(){
   const foraDoEstavel = (d.ALERTA||0)+(d.CRITICO||0);
   $('#kpis-story').innerHTML =
     `Das <b>${nf.format(c.n)}</b> propostas avaliadas nesta safra, <b>${c.inadimplentes==null?'n/d':nf.format(c.inadimplentes)}</b> `+
-    `não pagaram, o que dá a taxa de inadimplência real de <b>${pct(c.taxa_inadimplencia)}</b>. `+
-    `Das <b>${c.drift.length}</b> variáveis que o modelo usa pra decidir, <b>${foraDoEstavel}</b> saíram `+
-    `do padrão esperado nesta safra: é sinal de que parte dos clientes novos mudou de perfil, `+
-    `não prova de que o modelo piorou.`;
+    `não pagaram. A taxa de inadimplência observada foi de <b>${pct(c.taxa_inadimplencia)}</b>, `+
+    `com IC95% de <b>${pct(c.taxa_ic95_inferior)} a ${pct(c.taxa_ic95_superior)}</b>. `+
+    `Entre as <b>${c.drift.length}</b> variáveis monitoradas, <b>${foraDoEstavel}</b> ficaram fora do `+
+    `estado estável. Isso indica mudança no perfil dos dados, mas não prova, por si só, que o modelo piorou.`;
   $('#auc-line').innerHTML=
-    `Nesta safra, o intervalo de confiança vai de <span class="num">${dec(c.auc_ic95_inferior)}</span> a `+
-    `<span class="num">${dec(c.auc_ic95_superior)}</span>. <b>Ele não encosta em 0,50</b>, então a `+
-    `discriminação é fraca, mas dá pra detectar.`;
+    `Nesta safra, o IC95% da AUC vai de <span class="num">${dec(c.auc_ic95_inferior)}</span> a `+
+    `<span class="num">${dec(c.auc_ic95_superior)}</span>. Como o intervalo não inclui `+
+    `<span class="num">0,50</span>, há evidência de discriminação, embora ela seja fraca.`;
 
   serieChart($('#plot-auc'),'auc','#0FA38F',true);
   serieChart($('#plot-brier'),'brier','#C97A3F',false);
@@ -764,15 +806,15 @@ function render(){
 
   const acima=c.calibracao.filter(k=>k.previsto>k.observado).length;
   $('#step-gap').innerHTML=
-    `Em <b>${acima} das ${c.calibracao.length} faixas</b> o modelo prometeu mais calote do que `+
-    `aconteceu, ou seja, ele erra para o lado conservador. As duas linhas andam juntas, e é isso `+
-    `que significa um score <b>calibrado</b>.`;
+    `Em <b>${acima} das ${c.calibracao.length} faixas</b>, a probabilidade prevista ficou acima da `+
+    `taxa observada. Nelas, o modelo estimou o risco de forma conservadora. A calibração é melhor `+
+    `quando as duas linhas permanecem próximas ao longo das faixas.`;
   $('#step-top').innerHTML=
-    `Na faixa <b>${alta.faixa}</b>, a mais arriscada, o modelo prometeu `+
-    `<span class="num" style="color:#0FA38F">${pct(alta.previsto)}</span> e aconteceram `+
-    `<span class="num" style="color:#C97A3F">${pct(alta.observado)}</span>, ou `+
+    `Na faixa <b>${alta.faixa}</b>, a mais arriscada, o modelo previu `+
+    `<span class="num" style="color:#0FA38F">${pct(alta.previsto)}</span> e a taxa observada foi de `+
+    `<span class="num" style="color:#C97A3F">${pct(alta.observado)}</span>, equivalente a `+
     `<span class="num">${nf.format(alta.inadimplentes)}</span> casos em `+
-    `<span class="num">${nf.format(alta.n)}</span> propostas, margem `+
+    `<span class="num">${nf.format(alta.n)}</span> propostas, com IC95% de `+
     `<span class="num">${pct(alta.observado_ic95_inferior)} a ${pct(alta.observado_ic95_superior)}</span>.`;
 
   $('#tb-calib').innerHTML=c.calibracao.map(k=>{
@@ -780,39 +822,40 @@ function render(){
     return `<tr><td class="hi">${k.faixa}</td><td>${nf.format(k.n)}</td><td>${nf.format(k.inadimplentes)}</td>`+
       `<td style="color:#0FA38F">${pct(k.previsto)}</td><td class="hi" style="color:#C97A3F">${pct(k.observado)}</td>`+
       `<td>${pct(k.observado_ic95_inferior)}</td><td>${pct(k.observado_ic95_superior)}</td>`+
-      `<td>${pct(k.gap)}</td><td><span class="chip ${e.cls}"><i>${e.sym}</i>${e.label}</span></td></tr>`;
+      `<td>${pp(k.gap)}</td><td><span class="chip ${e.cls}"><i>${e.sym}</i>${e.label}</span></td></tr>`;
   }).join('');
 
   const ksMax=Math.max(...c.drift.map(x=>x.ks),.2);
   $('#drift-list').innerHTML=c.drift.map(x=>{
     const e=est(x.status);
+    const label=FEATURE_LABEL[x.feature] || x.feature;
     return `<div class="drift-row"><span class="chip ${e.cls}"><i>${e.sym}</i>${e.label}</span>`+
-      `<span><span class="drift-name">${x.feature}</span>`+
+      `<span><span class="drift-name">${label}</span><span class="drift-code">${x.feature}</span>`+
       `<span class="drift-bar" style="display:block"><span style="width:${(x.ks/ksMax*100).toFixed(1)}%"></span></span></span>`+
-      `<span class="drift-num">KS ${dec(x.ks)} · ausência ${pct(x.delta_ausencia)}</span></div>`;
+      `<span class="drift-num">KS ${dec(x.ks)} · ${ausencia(x.delta_ausencia)}</span></div>`;
   }).join('');
 
   $('#drift-line').innerHTML=
-    `<b>${d.ALERTA||0} variável(is) em alerta</b> e <b>${d.CRITICO||0} em estado crítico</b> entre as `+
+    `<b>${plural(d.ALERTA||0,'variável em alerta','variáveis em alerta')}</b> e `+
+    `<b>${plural(d.CRITICO||0,'variável em estado crítico','variáveis em estado crítico')}</b> entre as `+
     `${c.drift.length} monitoradas, com AUC em <span class="num">${dec(c.auc)}</span>. Os clientes `+
-    `mudaram um pouco, sem sinal claro de que o modelo perdeu a capacidade de ordenar risco nesta `+
-    `safra. Drift serve para abrir investigação. Não vale como veredito automático nem como `+
-    `comando de retreino.`;
+    `apresentaram alguma mudança de perfil, sem sinal claro de perda da capacidade de ordenar risco `+
+    `nesta safra. O drift abre uma investigação. Ele não é um veredito automático nem uma ordem de retreino.`;
 
   const aucs=SNAP.coortes.map(x=>x.auc);
   $('#verdict-medido').innerHTML=
-    `Nas ${SNAP.coortes.length} safras testadas, o placar continuou ordenando risco de forma parecida `+
-    `(AUC entre ${dec(Math.min(...aucs))} e ${dec(Math.max(...aucs))}) e a faixa de maior risco seguiu `+
-    `aproximadamente calibrada, mesmo com parte das variáveis mudando de padrão. Isso vale para as `+
-    `safras medidas até aqui. A leitura precisa ser refeita a cada safra nova.`;
+    `Nas ${SNAP.coortes.length} safras avaliadas, o modelo manteve capacidade semelhante de ordenar o `+
+    `risco, com AUC entre ${dec(Math.min(...aucs))} e ${dec(Math.max(...aucs))}. A faixa de maior risco `+
+    `permaneceu aproximadamente calibrada, mesmo com mudanças em parte das variáveis. A conclusão `+
+    `vale apenas para as safras observadas e deve ser reavaliada a cada nova coorte.`;
 
   $('#limits').innerHTML=
     `<b>O que este painel prova, e o que não prova.</b> É um snapshot histórico de pesquisa sobre um `+
     `dataset público de mercado emergente, não uma carteira brasileira real. As ${c.drift.length} `+
-    `variáveis usadas são substitutas (proxies), sem prova de que estavam disponíveis no instante `+
-    `exato da decisão. Janela de maturação declarada: ${SNAP.janela_maturacao_dias} dias. Data de `+
-    `referência: ${SNAP.data_referencia}. Por isso a saída aqui fica em pesquisar, investigar ou `+
-    `revisar, sempre com uma pessoa responsável no fim da linha.`;
+    `variáveis são proxies e não há comprovação de que estavam disponíveis no instante exato da `+
+    `decisão. A janela de maturação é de ${SNAP.janela_maturacao_dias} dias, com data de referência `+
+    `${dataBR(SNAP.data_referencia)}. Portanto, o painel sustenta pesquisa, investigação e revisão humana. `+
+    `Ele não sustenta decisão individual de crédito.`;
 }
 
 render();
@@ -823,3 +866,5 @@ let rt; addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{
 },180);});
 })();
 </script>
+</body>
+</html>
